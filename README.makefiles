@@ -1,0 +1,27 @@
+
+The dir locations are defined in config.mk
+
+The following variables may be defined:
+APP_DIST: 
+Files are installed in ${appdir}
+
+LIB_DIST:
+Files are installed in ${acflibdir}
+
+ETC_DIST:
+Files are installed in ${sysconfdir}
+
+CGI_DIST:
+Files are installed in ${cgidir}
+
+WWW_DIST:
+
+STATIC_DIST:
+
+EXTRA_DIST:
+Files are not installed, just included in the dist package
+
+Finally the Makefile should contain the following line:
+include ../acf.mk
+
+The acf.mk file contains the rules to perform the install and dist packaging.
