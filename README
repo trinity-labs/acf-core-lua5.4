@@ -1,0 +1,11 @@
+Alpine Configuration Framework 
+(A work in progress.)
+
+You can checout from svn to another location and run "make checkpkg DESTDIR=/"
+to make sure that all files get included in dist package.
+
+The config file should be in /etc/acf/acf.conf and contain:
+
+appdir=/var/lib/acf/app/
+
+(or wherever your app dir is)

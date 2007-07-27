@@ -1,0 +1,3 @@
+In the process of cleaning up...
+shell libs are no longer used, just keeping them for historical reference at this point
+lua libs are being worked on.

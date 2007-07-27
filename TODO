@@ -1,0 +1,8 @@
+Todo items
+
+* Menu controller
+* Role Based Access Control
+* Clean up the code - is m/c/v as simple as it can be?
+* Work on a non-trivial webconf (openssl CA or interfaces file) to see how hard this is going to be
+* Work at a slightly faster than glacial pace
+* fix Makefiles so ncopa can create packages again

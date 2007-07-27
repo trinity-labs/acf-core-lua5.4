@@ -1,0 +1,367 @@
+/* webconf.css - For Alpine webconf
+ */
+
+/* Default definitions */
+body {
+	background: #fff url("/static/alpine.gif") no-repeat top center;
+	font-family: Geneva, Arial, Helvetica, San-Serif;
+	margin: 0em;
+	padding: 0em;
+	font-size: small;
+	}
+
+p {
+	margin: 0em 0em 0em 0em;
+	}
+
+a {
+	text-decoration: none;
+	color: #333;
+	}
+
+a:link { color: #226;
+	}
+
+a:visited {	
+	color: #226;
+	}
+
+a:hover {
+	color: #44C;
+	}
+
+a:active {
+	}
+
+pre.code {
+	border: 1px solid #666;
+	background: #f8f8f8;
+	padding: .5em;
+}
+/*----------------------------------------------------------------------------------
+ * Header
+ *----------------------------------------------------------------------------------
+ */
+#head {
+	padding: 1em 1em 1em 0em;
+	color: #333; 
+	// margin: -1em 0em 0em 0em;
+	padding: 1em;
+	}
+
+#head h1 {
+	font-size: 259%;
+	color: #33A;
+	// font-family: Palatino, Times-Roman, Serif;
+	font-weight: bold;
+	margin: 0em 0em 0em 0em;
+	//float: left;
+	// width: 49%;
+	}
+
+#head h2 {
+	margin: 0em 0em 0em 0em;
+	font-size: 100%;
+	font-weight: light;
+	float: right;
+	width: 30%;
+	}
+
+#head h3 {
+	float: right;
+	font-size: 90%;
+	color: #222;
+	}
+
+#head p {
+	// border: 1px inset #ccc;
+	// border-top: 1px solid #ccc;
+	// border-bottom: 1px solid #ccc;
+	}
+
+/*----------------------------------------------------------------------------------
+ * Left (Main) Menu
+ *----------------------------------------------------------------------------------
+ */
+#mainmenu {
+	display: block;
+	background: #eee;
+	// border: 1px #222 solid;
+	width: 19%;
+	float: left;
+	margin: 5em 0em 0em 1em;
+	padding: 0em 0em 0em .5em;
+	// border-right: 1px #ccc solid;
+	}
+
+#mainmenu h3 {
+	// background-color: #eee;
+	color: #448;
+	padding:  .25em 0em  0em .25em;
+	font-weight: normal;
+	font-size: 138%;
+	margin: 0em 0em .1em 0em;
+	}
+
+#mainmenu ul {
+	padding: .2em 0em .6em 1em;
+	margin: 0;
+	list-style-type: none;
+	}
+#mainmenu li {
+	background-color: inherit;
+	padding: .1em 0em .1em 1em;
+	}
+
+#mainmenu a:hover {
+	display: block;
+//	background: transparent url("/static/unselected.gif") repeat top left;
+//	background-color: #f8f8f8;
+//	color: #669;
+	text-decoration: underline;
+	}
+	 
+#mainmenu #selected {
+	background-color: #fff;
+	// border: 1px solid #666;
+	//border-right: 1px solid #ffd;
+	}
+	
+
+/*----------------------------------------------------------------------------------
+ * Submenu ( Horizontal Tabs)
+ *----------------------------------------------------------------------------------
+ */
+#submenu {
+	width: 75%;
+	margin: 0 1em 0 0;
+//	font-weight: Bold;
+	background: transparent url(/static/greypx.gif) repeat-x bottom left;
+	float: right;
+	}
+	
+#submenu p {
+	display: none;
+	}
+
+#submenu h2 {
+	font-weight: normal;
+	font-size: 161%;
+	color: #228;
+	float: left;
+	margin: 0em;
+	margin-top: .2em;
+	}
+
+#submenu ul {
+	margin: 0em 2em 0em 0em;
+	list-style: none;
+	padding: 0em 2em 0em 2em;
+	float: right;
+	background: transparent;
+	}
+
+#submenu li {
+	// display: block;
+	// float: left;
+	// border: 1px solid #666;
+	// padding: .5em 1em .6em 1em;
+	// margin: 0em .5em 0em .5em;
+	// border-bottom: none;
+	color: #33A;
+	background: transparent url("/static/unselected.gif") repeat-x top left;
+	float: left;
+	margin: 0;
+	padding: 0;
+	}
+
+#submenu #selected {
+	// background: #fff url("/static/selected.gif") repeat-x top left;
+	background: #fff;
+	display: block;
+	float: left;
+	margin: 0em;
+	padding: .75em 1em;
+	border: 1px solid #ccc;
+	border-bottom: none;
+	}
+
+
+#submenu a {
+	display: block;
+	float: left;
+	margin: 0em;
+	padding: .75em 1em;
+	border: 1px solid #ccc;
+	border-bottom: none;
+	// background: #eee;
+	} 
+
+#submenu a:hover {
+	// color: #226;
+//	background: #eee;
+	text-decoration: underline;
+	}
+
+/*----------------------------------------------------------------------------------
+ * Content
+ *----------------------------------------------------------------------------------
+ */
+#content {
+	display: block;
+	float:left;
+	width: 70%;
+	color: #333;
+	padding: 2em 0em 3em 3em;
+	// border-left: #ccc 1px solid;
+	}
+
+#content h1 {
+	font-size: 120%;
+	// width: 100%;
+	background-color: #eee;
+	border-bottom: 2px solid #aaa;
+	margin: 1em 0em 1em 0em;
+	clear: both;
+	}
+ 
+#content h2 {
+	font-size: 100%;
+	// width: 100%;
+	background-color: #eee;
+	border-bottom: 1px solid #aaa;
+	// margin: 1em 1em 0em 1em;
+	clear: both;
+	}	
+
+#content h3 {
+	font-size: 100%;
+	// width: 100%;
+	background-color: #fff;
+	border-bottom: 0px solid #eee;
+	margin: 0em 0em 0em 0em;
+	clear: both;
+	}	
+
+#content p {
+	// margin: 1em 1em 0em 1em;
+	clear: both;
+	padding: .5em 0em .5em 0em;
+	}
+
+#content p.error {
+	// border: 2px solid #c00;
+	// margin: 1em 2em;
+	// padding: 1em 0em;
+	font-size: 120%;
+	font-weight: bold;
+	background-color: #eee;
+	color: #f44;
+	}
+
+#content p.warn {
+        // border: 2px solid #cc0;
+        // margin: 1em 2em;
+        // padding: 1em;
+        background-color: #cc4;
+        }
+
+#content p.ok {
+	font-size: 120%;
+	font-weight: bold;
+	// border: 2px solid #0c0;
+        // margin: 1em 2em;
+        // padding: 1em 0em;
+        color: #090;
+        }
+                                                 
+                                        
+#content input, textarea  {
+	float: left;
+	background-color: #eee;
+	margin-top: -0.3em;
+	}
+
+
+#content input.error {
+	/* yellow snow - bad */
+	background-color: #ffa;
+	}	
+
+#content input.button {
+	font-family: Geneva, Arial, Helvetica, Serif;
+	font-size: 100%;
+	font-weight: bold;
+	color: #228;
+	}
+
+#content dt {
+	font-size: 110%;
+	// font-weight: bold;
+	color: #228;
+	margin: .7em 1em .5em 0em;
+	float: left;
+	border-top: 1px dotted #ccf;
+	border-bottom: 1px dotted #ccf;
+	// background-color: #eef;
+	width: 20%;
+	clear: both;
+	}
+
+#content th {
+	font-weight: inherit;
+	color: #228;
+	background: #eef;
+	}
+	
+#content a {
+	text-decoration: underline;
+	color: #449;
+	}
+	
+#content form {
+	padding: 1em 0em;
+	}
+
+#content dl {
+	margin: 0em;
+	}
+
+#content dd {
+	color: #444;
+	float: left;
+	margin: 1em 0em .5em 0em;
+	// font-size: 90%;
+	font-weight: light;
+        // margin: .5em 1em .5em 0em;
+        // border-top: 1px dotted #ccc;
+        // border-bottom: 1px dotted #ccc;
+	}
+	
+#content .grey {
+	background-color: #eee;
+	}
+
+
+#content form {
+	display: inline;
+	}
+
+
+/*----------------------------------------------------------------------------------
+ * footer
+ *----------------------------------------------------------------------------------
+ */
+
+#footer {
+	float: right;
+	clear: both;
+	text-align: center;
+	font-size: 80%;
+	width: 70%;	
+	color: #666;
+	margin: 1em 3em 1em 2em;
+	padding: 1em 0em 1em;
+	border-top: 1px dotted #ccc;
+	border-bottom: 1px dotted #ccc;
+	}

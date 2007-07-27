@@ -1,0 +1,48 @@
+Each directory has a collection of controllers, models and views
+for a specific package.
+
+
+How to make a new package
+-------------------------
+
+Create a directory for your package with the package name.
+In this dir you put your controller, model, menu files.
+
+Create a Makefile that describes the the following:
+
+ * package name
+
+ * version of package
+
+ * what files should be installed on the running system
+
+ * what additional files should be included in the distribution package 
+   (tar.gz source package). The Makefile and acf-pkg.mk wil automatically be
+   added so only extra files like README and ChangeLog needs to be specified
+   here.
+
+ * just include the acf-pkg.mk makefile which contains the rules to install
+   the package and build the dist package-
+
+If you have an acf-foo package it should look like this:
+
+PACAKGE = foo
+VERSION = 0.2.0
+INSTALL_FILES = foo.controller.lua foo.model.lua
+EXTRA_DIST = ChangeLog README
+include acf-pkg.mk
+
+
+Then you just need to create a link to ../acf-pkg.mk
+
+  ln -s ../acf-pkg.mk acf-pkg.mk
+
+To build the distribution package you then run:
+
+  make dist
+
+To install the files in the running system:
+
+  make install
+
+
