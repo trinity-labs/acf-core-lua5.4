@@ -1,4 +1,4 @@
-#!/usr/bin/haserl --shell=lua -a
+#!/usr/bin/haserl --shell=lua
 <? 
 require("mvc")
 
