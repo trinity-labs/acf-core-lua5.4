@@ -8,6 +8,7 @@ DISTPKG=$(P).tar.bz2
 
 SUBDIRS=app lib www
 EXTRA_DIST=ChangeLog Makefile README TODO
+CONF_FILES=acf.conf
 
 DISTFILES=$(EXTRA_DIST)
 
@@ -48,6 +49,8 @@ $(DISTPKG): distdir $(DISTFILES)
 	rm -r $(DISTDIR)
 
 phony+=install
-install: install-recursive
+install: install-recursive $(CONF_FILES)
+	mkdir -p $(DESTDIR)/etc/acf
+	cp $(CONF_FILES) $(DESTDIR)/etc/acf
 
 .PHONY: $(phony)

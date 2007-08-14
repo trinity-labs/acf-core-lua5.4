@@ -1,11 +1,18 @@
 Alpine Configuration Framework 
 (A work in progress.)
 
-You can checout from svn to another location and run "make checkpkg DESTDIR=/"
-to make sure that all files get included in dist package.
+To install the package run:
 
-The config file should be in /etc/acf/acf.conf and contain:
+  make install
 
-appdir=/var/lib/acf/app/
+To set up mini_httpd create a /etc/mini_httpd.conf file containing:
+nochroot
+dir=/usr/share/acf/www
+user=nobody
+logfile=/var/log/mini_httpd.log
+cgipat=cgi-bin/*
+#host=<ip-addr>
 
-(or wherever your app dir is)
+Then start mini_httpd with:
+
+  mini_httpd -C /etc/mini_httpd.conf
