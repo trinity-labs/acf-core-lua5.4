@@ -102,17 +102,17 @@ dispatch = function (self)
 	local action = controller.conf.action
 
 	-- Because of the inheritance, normally the 
-	-- controller.worker.action will flow up, so that EVERY
-	-- worker has an "exception_handler" action.  We use rawget to
-	-- make sure that only controller defined actions are used.
+	-- controller.worker.action will flow up, so that all children have
+	-- actions of all parents.  We sue rawget to make sure that only
+	-- controller defined actions are used on dispatch
 	-- If the controller or action are missing, raise an error
 	if ( type(rawget(controller.worker, action)) ~= "function") then
 			self.conf.type = "dispatch"
 			error (self.conf)
 	end
 
-	-- run the pre_exec code
----	if  type(rawget(controller.worker.mvc, "pre_exec")) == "function" then
+	-- run the (first found) pre_exec code, starting at the controller 
+	-- and moving up the parents
 	if  type(controller.worker.mvc.pre_exec) == "function" then
 		controller.worker.mvc.pre_exec ( controller )
 	end
@@ -123,7 +123,6 @@ dispatch = function (self)
 
 	-- run the post_exec code
 	if  type(controller.worker.mvc.post_exec) == "function" then
-	-- if  type(controller.worker.mvc, "post_exec") == "function" then
 		controller.worker.mvc.post_exec ( controller )
 	end
 	
@@ -234,10 +233,10 @@ parse_path_info = function( self, string )
 	 
 end
 
--- The View resolver of last resort.
+-- The view resolver of last resort.
 view_resolver = function(self)
 	return function()
-		if ENV["PATH_INFO"] then 
+		if ENV["REQUEST_METHOD"] then 
 			io.write ("Content-type: text/plain\n\n")
 		end
 		io.write ("Your controller and application did not specify a view resolver.\n")
@@ -257,8 +256,8 @@ end
 
 -- The exception hander of last resort
 exception_handler = function (self, message )
-	if ENV["PATH_INFO"] then
-		print ("Content-Type: text/html\n\n<pre>")
+	if ENV["REQUEST_METHOD"] then
+		print ("Content-Type: text/plain\n\n")
 	end
 	print ("The following unhandled application error occured:\n\n")
 
@@ -271,8 +270,5 @@ exception_handler = function (self, message )
 		end
 	else
 		print (tostring(message))
-	end
-	if ENV["PATH_INFO"] then
-		print ("</pre>")
 	end
 end
