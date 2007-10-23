@@ -85,12 +85,19 @@ new = function (self, modname)
 end
 
 -- This is a sample front controller/dispatch.   
-dispatch = function (self) 
+dispatch = function (self, prefix, controller, action) 
 	local controller
 	local success, err = xpcall ( function () 
 
-	self:parse_path_info(ENV["PATH_INFO"])
-
+	if prefix == nil then
+		self.conf.prefix, self.conf.controller, self.conf.action =
+			self:parse_path_info(ENV["PATH_INFO"])
+	else
+		self.conf.prefix = prefix
+		self.conf.controller = controller or ""
+		self.conf.action = action or ""
+	end
+	
 	-- If they didn't provide a controller, and a default was specified
 	-- use it
 	if self.conf.controller == "" and self.conf.default_controller then
@@ -154,9 +161,10 @@ soft_require = function (self, name )
 	if file then
 		file:close()
 		local PATH=package.path
-		-- FIXME - this should really try to open the lua file, and if it doesnt exist-
-		-- then silently fail -- This version allows things from /usr/local/lua/5.1 to
-		-- be loaded - but that's because a module might require another module
+		-- FIXME - this should really try to open the lua file, 
+		-- and if it doesnt exist silently fail.
+		-- This version allows things from /usr/local/lua/5.1 to
+		-- be loaded
 		package.path = self.conf.appdir .. "?" .. ".lua;" .. package.path
 		local t = require(name)
 		package.path = PATH
@@ -190,10 +198,12 @@ read_config = function( self, appname )
 	appname = appname or self.conf.appname
 	self.conf.appname = self.conf.appname or appname
 	
-	local confs = { (ENV["HOME"] or ENV["PWD"] or "") .. "/." .. appname .. "/" .. appname .. ".conf",
-			( ENV["HOME"] or ENV["PWD"] or "") .. "/" .. appname .. ".conf",
-			-- dirname(ENV["SCRIPT_FILENAME"] or "") .. appname .. ".conf",
-			ENV["ROOT"] or "" .. "/etc/" .. appname .. "/" .. appname .. ".conf",
+	local confs = { (ENV["HOME"] or ENV["PWD"] or "") .. "/." ..
+				appname .. "/" .. appname .. ".conf",
+			( ENV["HOME"] or ENV["PWD"] or "") .. "/" .. 
+				appname .. ".conf",
+			ENV["ROOT"] or "" .. "/etc/" .. appname .. "/" .. 
+				appname .. ".conf",
 			ENV["ROOT"] or "" .. "/etc/" .. appname .. ".conf"
 	}
 	for i, filename in ipairs (confs) do
@@ -217,20 +227,19 @@ read_config = function( self, appname )
 end
 
 -- parse a "URI" like string into a prefix, controller and action
--- store them (or blanks) in self.conf
-parse_path_info = function( self, string )
+-- return them (or blank strings)
+parse_path_info = function( string )
 	string = string or "" 
 	-- If it ends in a /, then add another to force
 	-- a blank action (the user gave a controller without action)
 	if  string.match (string, "[^/]/$" ) then 
 		string = string .. "/"
 	end
-	self.conf.action = basename(string)
+	local action = basename(string)
 	local temp = dirname(string)
-	self.conf.controller = basename(temp)
-	self.conf.prefix = dirname(temp) .. "/"
-	return self.conf.prefix, self.conf.controller, self.conf.action 
-	 
+	local controller = basename(temp)
+	local prefix = dirname(temp) .. "/"
+	return prefix, controller, action
 end
 
 -- The view resolver of last resort.
