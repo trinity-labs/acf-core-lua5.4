@@ -228,15 +228,15 @@ end
 
 -- parse a "URI" like string into a prefix, controller and action
 -- return them (or blank strings)
-parse_path_info = function( string )
-	string = string or "" 
+parse_path_info = function( str )
+	str = str or "" 
 	-- If it ends in a /, then add another to force
 	-- a blank action (the user gave a controller without action)
-	if  string.match (string, "[^/]/$" ) then 
-		string = string .. "/"
+	if  string.match (str, "[^/]/$" ) then 
+		str = str .. "/"
 	end
-	local action = basename(string)
-	local temp = dirname(string)
+	local action = basename(str)
+	local temp = dirname(str)
 	local controller = basename(temp)
 	local prefix = dirname(temp) .. "/"
 	return prefix, controller, action
