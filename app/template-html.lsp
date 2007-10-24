@@ -19,21 +19,23 @@ Content-Type: text/html
 <body>
 
 <div id=head>
-<h1>Alpine</h1>
 <p>Host: <em><?= pageinfo.hostname ?></em></p>
-<? -- a quick hack
-   local ctlr = pageinfo.script .. "/acf-util/logon/"
-?>
-<? if session.id == nil then 
-   io.write ( html.link( { label = "Log in", value = ctlr .. "logon" } ) )
- else
-  io.write (html.link( { label = "Logout as " .. ( session.name or "unkown") , value = ctlr .. "logout" } ) )
- end ?></p>
+</div>
+
+<div id=logo>
 </div>
 
 <div id="mainmenu">
 <? 
  -- FIXME: This needs to go in a library function somewhere (menubuilder?)
+
+local ctlr = pageinfo.script .. "/acf-util/logon/"
+if session.id == nil then 
+   io.write ( html.link( { label = "Log in", value = ctlr .. "logon" } ) )
+else
+  io.write (html.link( { label = "Logout as " .. ( session.name or "unkown") , value = ctlr .. "logout" } ) )
+end
+
   local cat, group
   local liston=false
   local selected
@@ -67,7 +69,6 @@ Content-Type: text/html
 </ul>
 </div>
 
-
 <div id="submenu">
 <h2><?= pageinfo.prefix ?> > <?= pageinfo.controller .. " > " .. pageinfo.action ?></h2>
 <ul>
@@ -89,11 +90,12 @@ Content-Type: text/html
 <div id="content">
 <? local func = haserl.loadfile(pageinfo.viewfile)
    func (viewtable) ?>
+      <div id="footer">
+      <p><center>Made with care by acf</center></p>
+      </div>
 </div>
 
 
-<div id="footer">
-<p><center>Made with care by acf</center></p>
-</div>
+
 </body>
 </html>
