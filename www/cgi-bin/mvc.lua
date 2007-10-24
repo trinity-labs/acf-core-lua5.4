@@ -91,7 +91,7 @@ dispatch = function (self, prefix, controller, action)
 
 	if prefix == nil then
 		self.conf.prefix, self.conf.controller, self.conf.action =
-			self:parse_path_info(ENV["PATH_INFO"])
+			parse_path_info(ENV["PATH_INFO"])
 	else
 		self.conf.prefix = prefix
 		self.conf.controller = controller or ""
