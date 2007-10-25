@@ -85,7 +85,8 @@ new = function (self, modname)
 end
 
 -- This is a sample front controller/dispatch.   
-dispatch = function (self, prefix, controller, action) 
+dispatch = function (self, prefix, userctlr, action) 
+	local controller
 	local success, err = xpcall ( function () 
 
 	if prefix == nil then
@@ -93,10 +94,10 @@ dispatch = function (self, prefix, controller, action)
 			parse_path_info(ENV["PATH_INFO"])
 	else
 		self.conf.prefix = prefix
-		self.conf.controller = controller or ""
+		self.conf.controller = userctlr or ""
 		self.conf.action = action or ""
 	end
-	
+
 	-- If they didn't provide a controller, and a default was specified
 	-- use it
 	if self.conf.controller == "" and self.conf.default_controller then
@@ -133,7 +134,7 @@ dispatch = function (self, prefix, controller, action)
 	end
 	
 
-	local viewfunc  = controller:view_resolver(viewtable)
+	local viewfunc  = controller.worker:view_resolver(viewtable)
 
 	viewfunc (viewtable)
 	end, 
