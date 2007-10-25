@@ -86,7 +86,6 @@ end
 
 -- This is a sample front controller/dispatch.   
 dispatch = function (self, prefix, controller, action) 
-	local controller
 	local success, err = xpcall ( function () 
 
 	if prefix == nil then
