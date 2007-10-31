@@ -15,6 +15,10 @@ APP_DIST= acf-util/logon-controller.lua\
 	welcome-controller.lua\
 	welcome-html.lsp\
 	welcome.menu\
+	logfiles/logfiles-controller.lua\
+	logfiles/logfiles-model.lua\
+	logfiles/logfiles-read-html.lsp\
+	logfiles/logfiles.menu\
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(APP_DIST) $(EXTRA_DIST)

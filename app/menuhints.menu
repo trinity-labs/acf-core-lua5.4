@@ -4,5 +4,13 @@
 # That number will override the defaults set here.
 # (i.e. Lowest specifically set priority wins)
 10Home
-80Setup
-100Test
+
+20Networking
+30Proxies
+40Connectivity
+50Backup/Packages
+60General
+
+100Setup
+110Test
+
