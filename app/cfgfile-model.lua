@@ -17,7 +17,6 @@ local function loadCfg()
     if files ~= nil then return end
     files = {}
     for fname in fs.find(".*%.cfg", cfgdir) do
-    print ("LOADING FILE ", fname)
         f = io.open(fname, 'r')
         if f then
 	    s = f:read("*a")
@@ -34,9 +33,24 @@ local function loadCfg()
     end
 end
 
+local function getLbuStatus()
+    local ret = {}
+    local f = io.popen("/sbin/lbu status -v", "r")
+    if not f then return ret end
+    for line in f:lines() do
+	local status, name = string.match(line, "^(%S+)%s+(.+)$")
+	if status and name then
+            ret[string.gsub('/' .. name, "/+", "/")] = status
+	end
+    end
+    f:close()
+    return ret
+end
+
 function list(self, app)
     loadCfg()
-    ret = {}
+    local ret = {}
+    local lbuStatus = getLbuStatus()
     for k,v in pairs(files) do
         if v.app == app then
             ret[#ret+1] = {
@@ -45,6 +59,7 @@ function list(self, app)
                 section=v.section,
                 name=v.name,
                 descr=v.descr,
+		status=lbuStatus[v.filename]
             }
 	end
     end
