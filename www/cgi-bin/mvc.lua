@@ -1,5 +1,6 @@
 --[[ Basic MVC framework 
-     Written for Alpine Configuration Framework (ACF) -- see www.alpinelinux.org
+     Written for Alpine Configuration Framework (ACF)
+     see www.alpinelinux.org for more information
      Copyright (C) 2007  Nathan Angelacos
      Licensed under the terms of GPL2
   ]]--
@@ -18,13 +19,16 @@ module(..., package.seeall)
 	]]
 
 new = function (self, modname)
+	local model_loaded = true
+	local worker_loaded = true
 	local c = {}
 	c.worker = {}
 	c.model = {}
 	
 	-- make defaults if the parent doesn't have them
 	if self.conf == nil then
-		c.conf = { appdir = "", confdir = "", tempdir = "", appname = "" }
+		c.conf = { appdir = "", confdir = "", 
+				tempdir = "", appname = "" }
 	end
 
 	-- If no clientdata, then clientdata is a null table
@@ -39,8 +43,16 @@ new = function (self, modname)
 
 	-- load the module code here
 	if (modname) then
-		c.worker = self:soft_require( modname .. "-controller") or {}
-		c.model = self:soft_require( modname ..  "-model" ) or {}
+		c.worker = self:soft_require( modname .. "-controller") 
+		if c.worker == nil then
+			c.worker = {}
+			worker_loaded = false
+		end
+		c.model = self:soft_require( modname ..  "-model" ) 
+		if c.model == nil then
+			c.model =  {}
+			model_loaded = false
+		end
 	end
 
 	-- The magic that makes all the metatables point in the correct 
@@ -81,7 +93,7 @@ new = function (self, modname)
 		c.worker.mvc.on_load = nil
 	end
 
-	return c
+	return c worker_loaded model_loaded
 end
 
 -- This is a sample front controller/dispatch.   

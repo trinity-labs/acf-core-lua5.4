@@ -119,12 +119,24 @@ view_resolver = function(self)
 		-- with conf, and other "missing" parts pointing back
 		-- to APP or self
 		-- ***************************************************
-		local m = self:new("alpine-baselayout/hostname")
-		local h = m.worker.read(m)
+		local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
+		
+		-- FIXME - this is ugly, but it puts the hostname the expected
+		-- format if the controller doesn't load correctly 
+		local h = {}
+		
+		-- If the worker and model loaded correctly, then
+		-- use the sub-controller
+		if worker_loaded && model_loaded then
+			h = m.worker.read(m)
+		else
+			h.hostname = { value = "unknown" }
+		end
 		
 		local pageinfo =  { viewfile = viewname,
 					controller = m.conf.controller,
 					--          ^^^ see.. m.conf doesnt exist - but it works
+					-- the inheritance means self.conf is used instead
 					action = self.conf.action,
 					hostname = h.hostname.value,
 					prefix = self.conf.prefix,
