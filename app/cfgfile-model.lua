@@ -47,12 +47,15 @@ local function getLbuStatus()
     return ret
 end
 
-function list(self, app)
+--TODO this 'filter' breaks model isolation by requring caller to know
+--keys in files[] items. But this way the breakage is at least very obvious,
+--unlike passing these values as an argument to this function.
+function list(self, filter)
     loadCfg()
     local ret = {}
     local lbuStatus = getLbuStatus()
     for k,v in pairs(files) do
-        if v.app == app then
+        if not filter or filter(v) then
             ret[#ret+1] = {
                 id=k,
                 app=v.app,
