@@ -1,0 +1,22 @@
+require("mvc")
+-- this is to get around having to store
+-- -- the config file in /etc/helloworld/helloworld.conf
+ENV={}
+ENV.HOME="."
+FRAMEWORK=mvc:new()
+FRAMEWORK:read_config("acf") 
+APP=FRAMEWORK:new("acf_cli")
+APP.clientdata = {}
+local cmd={}
+for i = 2, #arg do
+   a,v = string.match(arg[i], "([^=]-)=(.*)")
+   if v then
+       APP.clientdata[a] = v
+   else 
+       cmd[#cmd + 1] = a
+   end
+end
+APP:dispatch("", cmd[1], cmd[2] or "")
+
+-- vim: set filetype=lua :
+
