@@ -9,6 +9,7 @@ APP_DIST= acf-util/logon-controller.lua\
 	acf_www-controller.lua\
 	foo-controller.lua\
 	cfgfile-model.lua\
+	service-model.lua\
 	foo-html.lsp\
 	foo.menu\
 	menuhints.menu\
