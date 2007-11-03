@@ -93,7 +93,7 @@ new = function (self, modname)
 		c.worker.mvc.on_load = nil
 	end
 
-	return c worker_loaded model_loaded
+	return c, worker_loaded, model_loaded
 end
 
 -- This is a sample front controller/dispatch.   
