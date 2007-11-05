@@ -127,7 +127,7 @@ view_resolver = function(self)
 		
 		-- If the worker and model loaded correctly, then
 		-- use the sub-controller
-		if worker_loaded && model_loaded then
+		if worker_loaded and model_loaded then
 			h = m.worker.read(m)
 		else
 			h.hostname = { value = "unknown" }
