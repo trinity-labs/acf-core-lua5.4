@@ -23,6 +23,7 @@ Content-Type: text/html
 </div>
 
 <div id=logo>
+<h2><?= pageinfo.prefix ?> > <?= pageinfo.controller .. " > " .. pageinfo.action ?></h2>
 </div>
 
 <div id="mainmenu">
@@ -70,7 +71,6 @@ end
 </div>
 
 <div id="submenu">
-<h2><?= pageinfo.prefix ?> > <?= pageinfo.controller .. " > " .. pageinfo.action ?></h2>
 <ul>
 <? for k,v in pairs(submenu)  do
 	if v == pageinfo.action then
