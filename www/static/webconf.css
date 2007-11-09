@@ -47,19 +47,22 @@ pre.code {
 #logo {
 	/*background: transparent;*/
 	z-index: 15;
-	/*margin: 25px 0px 0px 194px;
-	padding: 0px 0px 0px 0px;*/
-	width: 300px;
-	height: 76px;
+	/*margin: 25px 0px 0px 194px;*/
+	padding: 50px 0px 0px 0px;
+	width: 680px;
+	height: 40px;
 	position: absolute;
 	left: 200px;
-	top: 75px;
-	/*background: transparent url("/static/alpine.png") no-repeat top left;*/
+	top: 25px;
+	vertical-align: bottom;
+	text-align: left;
+	background: transparent url("/static/alpine.png") no-repeat top left;
 }
 #logo h2 {
 	font-weight: normal;
 	font-size: 10pt;
 	color: #228;
+	text-align: left;
 	vertical-align: bottom;
 	}
 
