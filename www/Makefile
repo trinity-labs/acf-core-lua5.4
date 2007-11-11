@@ -1,7 +1,7 @@
 include ../config.mk
 
 WWW_DIST=cgi-bin/acf\
-	static/header_body.png\
+	static/header_body.jpg\
 	static/alpine_logo.png\
 	cgi-bin/mvc.lua\
 	static/alpine.gif\
