@@ -1,7 +1,6 @@
 include ../config.mk
 
-LIB_DIST=ed.lua\
-	fs.lua\
+LIB_DIST=fs.lua\
 	html.lua\
 	join.lua\
 	log_view.lua\

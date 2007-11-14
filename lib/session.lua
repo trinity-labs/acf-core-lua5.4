@@ -3,6 +3,8 @@
 
 module (..., package.seeall)
 
+require "posix"
+
 local b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
 -- Return a sessionid of at least size bits length
@@ -17,6 +19,8 @@ random_hash = function (size)
 	end
 	return str
 end
+
+-- FIXME: only hashes ipv4
 
 hash_ip_addr = function (string)
 	local str = ""
@@ -74,7 +78,7 @@ function serialize (name, value, saved )
 end
 
 save_session = function( sessionpath, session, sessiontable)
-	local file = io.open(sessionpath .. "/" .. session , "w")
+	local file = io.open(sessionpath .. "/session." .. session , "w")
 	if file then
 		file:write ( "-- This is an ACF session table.\nlocal timestamp=" .. os.time() ) 
 		file:write ( "\nlocal " )
@@ -88,20 +92,6 @@ save_session = function( sessionpath, session, sessiontable)
 end
 
 
---- FIXME:  This is really a generic "test if file exists" thing.
-
--- Tests if a session is valid
--- Returns true if valid, false if not
-session_is_valid = function (session)
-	local file = io.open(session)
-	if file then
-		file:close()
-		return true
-	else
-		return false
-	end
-end
-
 -- Loads a session
 -- Returns a timestamp (when the session data was saved) and the session table.
 load_session = function ( sessionpath, session )
@@ -110,9 +100,9 @@ load_session = function ( sessionpath, session )
 	if #session == 0 then
 		return nil, {}
 	end
-	session = sessionpath .. "/" .. session
-	if (session_is_valid(session)) then
-	local file = io.open(session)
+	session = sessionpath .. "/session." .. session
+	if (posix.stat(session)) then
+		local file = io.open(session)
 		return dofile(session)
 	else
 		return nil, {}
@@ -120,24 +110,14 @@ load_session = function ( sessionpath, session )
 end
 
 -- unlinks a session
-invalidate_session = function (sessionpath, session)
+unlink_session = function (sessionpath, session)
 	if type(session)  ~= "string" then return nil end
 	local s = string.gsub (session, "[^" .. b64 .. "]", "")
 	if s ~= session then
 		return nil
 	end
-	session = sessionpath .. "/" .. s
+	session = sessionpath .. "/session." .. s
 	os.remove (session)
 	return nil
 end
 
-
-expire_old_sessions = function ( sessiondir )
-	file = io.popen("ls " .. sessiondir )
-	x = file:read("*a")
-	file:close()
-	for a in string.gmatch(x, "[^%c]+")  do
-	                timestamp, foo = load_session ( sessiondir .. "/" .. a )
-			print ( a .. " is " .. os.time()  - timestamp .. " seconds old")
-			end
-end

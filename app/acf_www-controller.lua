@@ -1,5 +1,5 @@
 --[[ Code for the Alpine Configuration WEB framework 
-      Written for Alpine Configuration Framework (ACF) -- see www.alpinelinux.org
+      see http://wiki.alpinelinux.org
       Copyright (C) 2007  Nathan Angelacos
       Licensed under the terms of GPL2
    ]]--
@@ -28,20 +28,12 @@ mvc.on_load = function (self, parent)
 	local x=require("session")
 	if FORM.sessionid then
 		local timestamp
-		timestamp , self.session = x.load_session(self.conf.sessiondir , FORM.sessionid)
+		timestamp , self.session = x.load_session(self.conf.sessiondir,
+			 FORM.sessionid)
 		self.session.id = FORM.sessionid
 	else
 		self.session.id = nil
 	end
-	logit ("acf_www-controller mvc.on_load activated" )
-end
-
-mvc.pre_exec = function ()
-	logit ("acf_www-controller mvc.pre_exec activated")
-end
-
-mvc.post_exec = function ()
-	logit ("acf_www-controller mvc.post_exec activated")
 end
 
 
@@ -207,8 +199,3 @@ cfe = function ( optiontable )
 	return me
 end
 
-
--- syslog something
-logit = function ( ... )
-	os.execute ( "logger \"" .. ... .. "\"" )
-end
