@@ -96,7 +96,7 @@ end
 -- Returns a timestamp (when the session data was saved) and the session table.
 load_session = function ( sessionpath, session )
 	-- session can only have b64 characters in it
-	session = string.gsub ( session, "[^" .. b64 .. "]", "")
+	session = string.gsub ( session or "", "[^" .. b64 .. "]", "")
 	if #session == 0 then
 		return nil, {}
 	end

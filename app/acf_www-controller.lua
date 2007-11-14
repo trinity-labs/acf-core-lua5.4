@@ -3,7 +3,14 @@
       Copyright (C) 2007  Nathan Angelacos
       Licensed under the terms of GPL2
    ]]--
+-- Required global libraries
+
 module(..., package.seeall)
+
+-- This is not in the global namespace, but future
+-- require statements shouldn't need to go to the disk lib
+require "posix"
+
 
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
@@ -23,16 +30,32 @@ mvc.on_load = function (self, parent)
 	
 	-- this sets the package path for us and our children
 	package.path=  self.conf.libdir .. "?.lua;" .. package.path
-
+	
+	local session=require ("session")
 	self.session = {}
-	local x=require("session")
-	if FORM.sessionid then
-		local timestamp
-		timestamp , self.session = x.load_session(self.conf.sessiondir,
-			 FORM.sessionid)
-		self.session.id = FORM.sessionid
+	if self.clientdata.sessionid == nil then
+		self.session.id = session.random_hash(512) 
+		end
+	local timestamp
+	timestamp, self.session = session.load_session(self.conf.sessiondir,
+		self.clientdata.sessionid)
+	if timestamp == nil then 
+		-- FIXME ... need to add this function
+		-- record an invalid sessionid event
 	else
-		self.session.id = nil
+		--[[
+		FIXME --- need to write this function
+		if too many bad events for this ip invaidate the session
+		
+		if (timestamp is > 10 minutes old)	
+		session.unlink.session (self.conf.sessiondir,
+			self.session.id)
+		self.session = {}
+		self.session.id = session.random_hash(512)
+		generate flash message "Inactivity logout"
+		end
+		]]--
+				
 	end
 end
 
