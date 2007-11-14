@@ -33,28 +33,34 @@ mvc.on_load = function (self, parent)
 	
 	local session=require ("session")
 	self.session = {}
+	local tempid = ""
 	if self.clientdata.sessionid == nil then
-		self.session.id = session.random_hash(512) 
-		end
-	local timestamp
-	timestamp, self.session = session.load_session(self.conf.sessiondir,
-		self.clientdata.sessionid)
-	if timestamp == nil then 
-		-- FIXME ... need to add this function
-		-- record an invalid sessionid event
+		self.session.id  = session.random_hash(512) 
+		tempid = self.session.id
 	else
-		--[[
-		FIXME --- need to write this function
-		if too many bad events for this ip invaidate the session
+		tempid = self.session.id
+	
+		local timestamp
+		timestamp, self.session = session.load_session(self.conf.sessiondir,
+			self.clientdata.sessionid)
+		if timestamp == nil then 
+			-- FIXME ... need to add this function
+			-- record an invalid sessionid event
+			self.session.id = tempid
+		else
+			--[[
+			FIXME --- need to write this function
+			if too many bad events for this ip invaidate the session
 		
-		if (timestamp is > 10 minutes old)	
-		session.unlink.session (self.conf.sessiondir,
-			self.session.id)
-		self.session = {}
-		self.session.id = session.random_hash(512)
-		generate flash message "Inactivity logout"
+			if (timestamp is > 10 minutes old)	
+			session.unlink.session (self.conf.sessiondir,
+				self.session.id)
+			self.session = {}
+			self.session.id = session.random_hash(512)
+			generate flash message "Inactivity logout"
+			end
+			]]--
 		end
-		]]--
 				
 	end
 end
