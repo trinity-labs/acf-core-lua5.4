@@ -2,21 +2,27 @@
 	module for generic filesystem funcs
 
 	Copyright (c) Natanael Copa 2006
-
+        MM edited to use "posix"
 ]]--
 
 module (..., package.seeall)
 
-require ("lfs")
+require ("posix")
 
 -- generic wrapper funcs
 function is_dir ( pathstr )
-	return lfs.attributes ( pathstr, "mode" ) == "directory"
+	return posix.stat ( pathstr, "type" ) == "directory"
 end
 
 function is_file ( pathstr )
-	return lfs.attributes ( pathstr, "mode" ) == "file"
+	return posix.stat ( pathstr, "type" ) == "regular"
 end
+
+function is_link ( pathstr )
+	return posix.stat ( pathstr, "type" ) == "link"
+end
+
+
 	
 -- Returns the contents of a file as a string
 function read_file ( path )
@@ -64,10 +70,10 @@ end
 function find ( what, where )
 	-- returns an array of files under "where" that match what "f"
 	local function find_files_as_array ( f, where, t )
-		where = where or lfs.currentdir()
+		where = where or posix.getcwd()
 		f = f or ".*"
 		t =  t or {}
-		for d in lfs.dir ( where ) do
+		for d in posix.files ( where ) do
 			if fs.is_dir ( where .. "/" ..  d ) and (d ~= ".") and ( d ~= "..") then
 				find_files_as_array (f, where .. "/" .. d, t )
 			end

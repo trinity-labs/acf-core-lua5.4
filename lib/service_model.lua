@@ -5,7 +5,7 @@ function create_service_model(cfglist, loglist, servlist, notepath)
 	local me = {}
 
 	local function get_any_pid(pname)
-		for e in lfs.dir("/proc") do
+		for e in posix.files("/proc") do
 			if e == string.match(e, "^%d*$") then
 				for line in io.lines("/proc/" .. e .. "/status") do
 					tag, val = string.match(line, "^([^:]*):%s*(%S*)$");
