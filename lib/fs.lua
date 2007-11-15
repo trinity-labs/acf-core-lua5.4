@@ -51,15 +51,49 @@ function read_file_as_array ( path )
 	return f
 end
 
+-- find all return characters and removes them, may get this from a browser
+-- that is why didn't do file specific
+ 
+function dostounix ( a )
+local data = string.gsub(a, "\r", "")
+return data
+
+end
+
+-- read a file without blank lines and commented lines
+
+function remove_blanks_comments ( path )
+local f = io.open(path)
+local lines = {}
+for line in f:lines() do
+local c = string.match(line, "^$") or string.match(line, "^%#")
+if c == nil then lines[#lines + 1] = line end
+end
+-- returns a table to iterate over without the blank or commented lines
+return lines
+end
 	
-	
-	
--- write a string to a file
+-- write a string to a file !! MM-will replace file contents
+
 function write_file ( path, str )
 	local file = io.open(path, "w")
 	if ( file ) then
 		file:write(str)
 		file:close()
+	end
+end
+
+-- this could do more than a line 
+-- fs.write_line_file ("filename", "Line1 \nLines2 \nLines3")
+
+function write_line_file ( path, str )
+	local file = io.open(path)
+	if ( file) then
+	local c = file:read("*a")
+	file:close()
+	local d = (c .. "\n" .. str .. "\n")
+	-- include a friendly newline for EOF
+	fs.write_file(path,d)
 	end
 end
 
