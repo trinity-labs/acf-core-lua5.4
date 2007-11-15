@@ -1,4 +1,4 @@
---[[ code for the Alpine Configuration WEB framework 
+--[[ Code for the Alpine Configuration WEB framework 
       see http://wiki.alpinelinux.org
       Copyright (C) 2007  Nathan Angelacos
       Licensed under the terms of GPL2
@@ -24,7 +24,7 @@ mvc.on_load = function (self, parent)
 	self.conf.appuri = "http://" .. ENV.HTTP_HOST .. ENV.SCRIPT_NAME
 	self.conf.default_controller = "welcome"	
 	self.clientdata = FORM
-
+	self.conf.clientip = ENV.REMOTE_ADDR
 
 	parent_exception_handler = parent.exception_handler
 	
@@ -33,21 +33,21 @@ mvc.on_load = function (self, parent)
 	
 	sessionlib=require ("session")
 	
-	self.session = {}
+	self.sessiondata = {}
 	local tempid = ""
 	if self.clientdata.sessionid == nil then
-		self.session.id  = sessionlib.random_hash(512) 
-		tempid = self.session.id
+		self.sessiondata.id  = sessionlib.random_hash(512) 
+		tempid = self.sessiondata.id
 	else
-		tempid = self.clientdata.sessionid
-	
 		local timestamp
-		timestamp, self.session = sessionlib.load_session(self.conf.sessiondir,
-			self.clientdata.sessionid)
+		tempid = self.clientdata.sessionid
+		timestamp, self.sessiondata = 
+			sessionlib.load_session(self.conf.sessiondir,
+				self.clientdata.sessionid)
 		if timestamp == nil then 
-			-- FIXME ... need to add this function
-			-- record an invalid sessionid event
-			self.session.id = tempid
+			self.sessiondata.id = tempid
+			sessionlib.record_event(self.conf.sessiondir,
+				sessionlib.hash_ip_addr(self.conf.clientip))
 		else
 			--[[
 			FIXME --- need to write this function
@@ -55,9 +55,9 @@ mvc.on_load = function (self, parent)
 		
 			if (timestamp is > 10 minutes old)	
 			sessionlib.unlink.session (self.conf.sessiondir,
-				self.session.id)
-			self.session = {}
-			self.session.id = sessionlib.random_hash(512)
+				self.sessiondata.id)
+			self.sessiondata = {}
+			self.sessiondata.id = sessionlib.random_hash(512)
 			generate flash message "Inactivity logout"
 			end
 			]]--
@@ -67,18 +67,9 @@ end
 
 
 mvc.post_exec = function (self)
-	if session.id then -- save the session table; however
-		-- if its just an empty session, don't save it;
-		-- Doing so could cause a D.O.S. where someone fills
-		-- disk with invalid sessionid tables
-		local c = 0
-		for k,v in pairs(session) do
-			c = c + 1
-		end
-		if c > 1 then
-			 sessionlib.save_session(conf.sessiondir, 
-        			session.id, session)     
-        	end
+	if sessiondata.id then
+		sessionlib.save_session(conf.sessiondir, 
+        			sessiondata.id, sessiondata)     
         end
 end
 
@@ -186,7 +177,7 @@ view_resolver = function(self)
 
 		return function (viewtable)
 			local template = haserl.loadfile (template)
-			return template ( pageinfo, menu, submenu, viewtable, self.session )
+			return template ( pageinfo, menu, submenu, viewtable, self.sessiondata )
 		end
 	end
 
@@ -207,8 +198,8 @@ exception_handler = function (self, message )
 				  	message.prefix .. message.controller ..
 					"/" .. message.action .. 
 					(message.extra or "" ) .. "\n")
-				if self.session.id then
-					io.write (html.cookie.set("sessionid", self.session.id))
+				if self.sessiondata.id then
+					io.write (html.cookie.set("sessionid", self.sessiondata.id))
 				else
 					io.write (html.cookie.unset("sessionid"))
 				end

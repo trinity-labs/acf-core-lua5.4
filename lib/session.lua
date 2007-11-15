@@ -1,6 +1,15 @@
 -- Session handling routines - written for acf
 -- Copyright (C) 2007 N. Angelacos - GPL2 License
 
+
+--[[ Note that in this library, we use empty (0 byte) files 
+-- everwhere we can, as they only take up dir entries, not inodes
+-- as the tmpfs blocksize is 4K, and under denial of service 
+-- attacks hundreds or thousands of events can come in each 
+-- second, we could end up in a disk full condition if we did
+-- not take this precaution.
+-- ]]--
+
 module (..., package.seeall)
 
 require "posix"
@@ -79,31 +88,48 @@ end
 
 save_session = function( sessionpath, session, sessiontable)
 	local file = io.open(sessionpath .. "/session." .. session , "w")
-	if file then
-		file:write ( "-- This is an ACF session table.\nlocal timestamp=" .. os.time() ) 
-		file:write ( "\nlocal " )
-		file:write ( serialize("s", sessiontable) )
-		file:write ( "return timestamp, s\n")
-		file:close()
-		return true
-	else
+	if file == nil then 
 		return false
 	end
+
+	local id = sessiontable.id	
+	
+	-- clear the id key
+	sessiontable.id = nil
+	-- count the keys
+	local count = 0
+	for k,v in pairs (sessiontable) do
+		count = count + 1 
+	end
+	-- If the table only has an "id" field, then don't save it
+	if count > 0 and file then 
+		file:write ( "-- This is an ACF session table.\n")
+		file:write ( "\nlocal " )
+		file:write ( serialize("s", sessiontable) )
+		file:write ( "return s\n")
+	end
+	file:close()
+	sessiontable.id=id
+	return true
 end
 
 
 -- Loads a session
 -- Returns a timestamp (when the session data was saved) and the session table.
+-- We insert a "id" field from the "session"
 load_session = function ( sessionpath, session )
+	local s = {}
 	-- session can only have b64 characters in it
 	session = string.gsub ( session or "", "[^" .. b64 .. "]", "")
 	if #session == 0 then
 		return nil, {}
 	end
-	session = sessionpath .. "/session." .. session
-	if (posix.stat(session)) then
-		local file = io.open(session)
-		return dofile(session)
+	local spath = sessionpath .. "/session." .. session
+	local ts = posix.stat(spath, "ctime")
+	if (ts) then
+		s = dofile(spath) or {}
+		s.id = session 
+		return ts, s
 	else
 		return nil, {}
 	end
@@ -121,3 +147,14 @@ unlink_session = function (sessionpath, session)
 	return nil
 end
 
+
+-- Record an invalid login event 
+-- ID would typically be an ip address or username
+-- the format is lockevent.id.datetime.processid
+record_event = function( sessionpath, id )
+	local x = io.open (string.format ("%s/lockevent.%s.%s.%s",
+		 sessionpath or "/", id or "", os.time(), 
+		 (posix.getpid("pid")) or "" ), "w")
+	io.close(x)
+end
+	
