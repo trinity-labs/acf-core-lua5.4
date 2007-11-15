@@ -1,4 +1,4 @@
---[[ Code for the Alpine Configuration WEB framework 
+--[[ code for the Alpine Configuration WEB framework 
       see http://wiki.alpinelinux.org
       Copyright (C) 2007  Nathan Angelacos
       Licensed under the terms of GPL2
@@ -31,17 +31,18 @@ mvc.on_load = function (self, parent)
 	-- this sets the package path for us and our children
 	package.path=  self.conf.libdir .. "?.lua;" .. package.path
 	
-	local session=require ("session")
+	sessionlib=require ("session")
+	
 	self.session = {}
 	local tempid = ""
 	if self.clientdata.sessionid == nil then
-		self.session.id  = session.random_hash(512) 
+		self.session.id  = sessionlib.random_hash(512) 
 		tempid = self.session.id
 	else
-		tempid = self.session.id
+		tempid = self.clientdata.sessionid
 	
 		local timestamp
-		timestamp, self.session = session.load_session(self.conf.sessiondir,
+		timestamp, self.session = sessionlib.load_session(self.conf.sessiondir,
 			self.clientdata.sessionid)
 		if timestamp == nil then 
 			-- FIXME ... need to add this function
@@ -53,16 +54,32 @@ mvc.on_load = function (self, parent)
 			if too many bad events for this ip invaidate the session
 		
 			if (timestamp is > 10 minutes old)	
-			session.unlink.session (self.conf.sessiondir,
+			sessionlib.unlink.session (self.conf.sessiondir,
 				self.session.id)
 			self.session = {}
-			self.session.id = session.random_hash(512)
+			self.session.id = sessionlib.random_hash(512)
 			generate flash message "Inactivity logout"
 			end
 			]]--
 		end
-				
 	end
+end
+
+
+mvc.post_exec = function (self)
+	if session.id then -- save the session table; however
+		-- if its just an empty session, don't save it;
+		-- Doing so could cause a D.O.S. where someone fills
+		-- disk with invalid sessionid tables
+		local c = 0
+		for k,v in pairs(session) do
+			c = c + 1
+		end
+		if c > 1 then
+			 sessionlib.save_session(conf.sessiondir, 
+        			session.id, session)     
+        	end
+        end
 end
 
 
@@ -108,15 +125,6 @@ view_resolver = function(self)
 			self.conf.appdir .. self.conf.prefix .. self.conf.controller ..
 				"-" .. viewtype .. ".lsp" }
 
-
-	-- FIXME:  MVC doesn't have a way to call a function after the controller is run
-	-- so we serialize the session in the view resolver.  MVC probably should have 
-	-- a postinit or postrun method...
-	if self.session.id then 
-		local x = require("session")
-		x.save_session(self.conf.sessiondir, self.session.id, self.session)
-		x=nil
-	end
 
 	-- search for template
 	local template = find_template ( self.conf.appdir, self.conf.prefix,
