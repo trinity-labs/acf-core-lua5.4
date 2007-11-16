@@ -5,6 +5,7 @@ LIB_DIST=fs.lua\
 	join.lua\
 	log_view.lua\
 	menubuilder.lua\
+	privsep.lua\
 	service_controller.lua\
 	service_model.lua\
 	session.lua\
