@@ -3,15 +3,9 @@ include ../config.mk
 APP_DIST= acf-util/logon-controller.lua\
 	acf-util/logon-html.lsp\
 	acf-util/logon-model.lua\
-	dummy/bar-controller.lua\
-	dummy/bar-html.lsp\
-	dummy/bar.menu\
 	acf_www-controller.lua\
-	foo-controller.lua\
 	cfgfile-model.lua\
 	service-model.lua\
-	foo-html.lsp\
-	foo.menu\
 	menuhints.menu\
 	template-html.lsp\
 	welcome-controller.lua\
