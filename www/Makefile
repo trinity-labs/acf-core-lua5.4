@@ -13,7 +13,8 @@ WWW_DIST=cgi-bin/acf\
 	static/submenu.css\
 	static/unselected.gif\
 	static/webconf-purple.css\
-	static/webconf.css\
+	static/static.css\
+	simple/simple.css\
 	index.html\
 	sample.html
 
