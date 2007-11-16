@@ -161,7 +161,7 @@ view_resolver = function(self)
 					hostname = h.hostname.value,
 					prefix = self.conf.prefix,
 					script = self.conf.appuri, 
-					skin = self.conf.skin
+					skin = self.conf.skin or ""
 					}
 
 		-- Build the menu table
