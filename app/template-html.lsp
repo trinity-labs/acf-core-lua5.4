@@ -69,6 +69,9 @@ end
   end
 ?>
 </ul>
+<div id="footer">
+  <p><center>Made with care by acf</center></p>
+</div>
 </div>
 
 <div id="submenu">
@@ -91,9 +94,6 @@ end
 <div id="content">
 <? local func = haserl.loadfile(pageinfo.viewfile)
    func (viewtable) ?>
-      <div id="footer">
-      <p><center>Made with care by acf</center></p>
-      </div>
 </div>
 
 
