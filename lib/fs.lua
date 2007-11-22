@@ -46,6 +46,7 @@ function read_file_as_array ( path )
 	local f = {}
 	for line in file:lines() do 
 		table.insert ( f , line )
+		--sometimes you will see it like f[#f+1] = line
 	end
 	file:close()
 	return f
@@ -72,6 +73,18 @@ end
 -- returns a table to iterate over without the blank or commented lines
 return lines
 end
+
+--will search and replace through the whole of the file and return a table
+
+function search_replace (path , find, replace)
+local f = fs.read_file_as_array(path)
+local lines = {}
+for a,b in ipairs(f) do 
+local c = string.gsub(b, find, replace)
+lines[#lines + 1] = c end
+return lines
+end
+
 	
 -- write a string to a file !! MM-will replace file contents
 
@@ -83,7 +96,7 @@ function write_file ( path, str )
 	end
 end
 
--- this could do more than a line 
+-- this could do more than a line. This will append
 -- fs.write_line_file ("filename", "Line1 \nLines2 \nLines3")
 
 function write_line_file ( path, str )
