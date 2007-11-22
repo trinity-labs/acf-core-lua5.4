@@ -85,6 +85,19 @@ lines[#lines + 1] = c end
 return lines
 end
 
+--will interate over a ipairs(table) and make it into a string to be used by write_file
+function ipairs_string ( t )
+	for a,b in ipairs(t) do 
+	if a == 1 then 
+	c = b
+	else
+	c = c .. "\n" .. b
+	end
+	end
+	--add a friendly \n for EOF
+	c = c .. "\n"
+	return c
+end
 	
 -- write a string to a file !! MM-will replace file contents
 
@@ -109,6 +122,8 @@ function write_line_file ( path, str )
 	fs.write_file(path,d)
 	end
 end
+
+
 
 
 -- iterator function for finding dir entries matching filespec (what)
