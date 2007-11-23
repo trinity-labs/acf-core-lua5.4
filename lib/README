@@ -1,3 +1,18 @@
-In the process of cleaning up...
-shell libs are no longer used, just keeping them for historical reference at this point
-lua libs are being worked on.
+Brief discription of libs so far. For more info see
+http://wiki.alpinelinux.org/w/index.php?title=ACF_Libraries
+
+date.lua - Date and Time functions
+fs.lua - Many file type functions. May need to be renamed
+join.lua - Takes a table and given a delimeter makes it into a string
+pidof.lua - Process libraries not provided by LPOSIX
+split.lua - Take a delimeted string and makes it into a table
+date.lua - Date and Time lua functions
+
+validator.lua - Validate web input for ACF. 
+html.lua - Helps with form building in ACF
+menubuilder.lua -Helps create the menus on left window in ACF
+web_elements.lua - More web functionality for ACF
+privsep.lua - Helps with authorization with ACF
+session.lua -Helps with Session mangement in ACF
+
+These are currently being worked on. Also we use Lua Posix for the rest of the functionality.
