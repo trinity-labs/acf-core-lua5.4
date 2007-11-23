@@ -3,12 +3,9 @@ include ../config.mk
 LIB_DIST=fs.lua\
 	html.lua\
 	join.lua\
-	log_view.lua\
 	menubuilder.lua\
 	pidof.lua\
 	privsep.lua\
-	service_controller.lua\
-	service_model.lua\
 	session.lua\
 	split.lua\
 	validator.lua\
