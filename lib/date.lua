@@ -63,6 +63,8 @@ revdow = { ["Sunday"] = 1, ["Sun"] = 2,
 
 --give me a table
 --t = { {year=2007,month=1,day=2,hour=2}, {year=2006,month=1,day=5} }
+--will return a table sorted by oldest <-> newest 
+--to grab the largest and smallest a,b=g[1],g[table.maxn(g)]
 function date_to_seconds (t)
 	g = {}
 	count = table.maxn(t)
@@ -70,7 +72,6 @@ function date_to_seconds (t)
 	g[#g+1] = os.time(t[i])
 	end
 	table.sort(g)
-	--will return a table sorted by oldest <-> newest 
 	return g
 end
 
@@ -89,16 +90,33 @@ function seconds_to_date (t)
 end
 
 --give dates in seconds and gives the difference in years,months,days,...
---still working on this one. YEAR-1970 is what it needs
+--gives a table back with hour,min,month,sec,day,year to display something like
+--you have 10 years, 14 hours, 2 months and 10 days to renew you certificate
 function date_diff (d1, d2)
+	g = {}
+	temp = {}
 	sum = d1 - d2
-	if sum > 0 then 
-	t1,t2 = d1,d2
-	else
-	t1,t2 = d2,d1
+	if sum < 0 then 
+	sum = d2 - d1
 	end
-		
-	return t1,t2
+	temp = os.date("*t",sum)
+	for a,b in pairs(temp) do 
+	if a == "year" then
+	hold = b - 1970	
+	g[a] = hold
+	elseif a == "hour" then
+	g[a] = b
+	elseif a == "min" then
+	g[a] = b
+	elseif a == "month" then
+	g[a] = b
+	elseif a == "sec" then
+	g[a] = b
+	elseif a == "day" then
+	g[a] = b
+	end
+	end		
+	return g
 end
 
 --give a search number and return the month name
@@ -121,19 +139,19 @@ function abr_month_num (search)
 	return revmonths[search]
 end
 
-function num_dow_full (search)
+function num_dow_name (search)
 	return dow[search][1]
 end
 
-function num_dow_abr (search)
+function num_dow_name_abr (search)
 	return dow[search][2]
 end
 
-function name_dow_full (search)
+function name_dow_num (search)
 	return revdow[search]
 end
 
-function name_dow_abr (search)
+function abr_dow_num (search)
 	return revdow[search]
 end
 
