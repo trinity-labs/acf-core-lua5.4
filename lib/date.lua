@@ -1,9 +1,9 @@
 --date and time functions 
 
-
 module(..., package.seeall)
 
 require("posix")
+
 --global for date formating see below for more information
 --Mon Nov 26 19:56:10 UTC 2007 looks like most systems use this
 --print(os.date(date.format))
@@ -23,18 +23,18 @@ months ={ {"January","Jan"},
 	  {"December","Dec"}
 	   }
 
-revmonths = {["January"] = 1, ["Jan"] = 1, 
-	     ["February"] = 2, ["Feb"] = 2,
-	     ["March"] = 3, ["Mar"] = 3, 
-	     ["April"] = 4, ["Apr"] = 4, 
-	     ["May"] = 5,
-	     ["June"] = 6, ["Jun"] = 6,
-	     ["July"] = 7, ["Jul"] = 7,
-	     ["August"] = 8, ["Aug"] = 8,
-	     ["September"] = 9, ["Sep"] = 9,
-	     ["October"] = 10, ["Oct"] = 10,
-	     ["November"] = 11, ["Nov"] = 11,
-	     ["December"] = 12, ["Dec"] = 12 
+revmonths = {["january"] = 1, ["jan"] = 1, 
+	     ["february"] = 2, ["feb"] = 2,
+	     ["march"] = 3, ["mar"] = 3, 
+	     ["april"] = 4, ["apr"] = 4, 
+	     ["may"] = 5,
+	     ["june"] = 6, ["jun"] = 6,
+	     ["july"] = 7, ["jul"] = 7,
+	     ["august"] = 8, ["aug"] = 8,
+	     ["september"] = 9, ["sep"] = 9,
+	     ["october"] = 10, ["oct"] = 10,
+	     ["november"] = 11, ["nov"] = 11,
+	     ["december"] = 12, ["dec"] = 12 
 	     }
 
 dow = { {"Sunday","Sun"}, 
@@ -46,13 +46,13 @@ dow = { {"Sunday","Sun"},
 	{"Saturday","Sat"}
 	}
 	
-revdow = { ["Sunday"] = 1, ["Sun"] = 2,
-	   ["Monday"] = 2, ["Mon"] = 2,
-	   ["Tuesday"] = 3, ["Tue"] = 3,
-	   ["Wednesday"] = 4, ["Wed"] = 4,
-	   ["Thursday"] = 5, ["Thu"] = 5,
-	   ["Friday"] = 6, ["Fri"] = 6,
-	   ["Saturday"] = 7, ["Sat"] =7
+revdow = { ["sunday"] = 1, ["sun"] = 2,
+	   ["monday"] = 2, ["mon"] = 2,
+	   ["tuesday"] = 3, ["tue"] = 3,
+	   ["wednesday"] = 4, ["wed"] = 4,
+	   ["thursday"] = 5, ["thu"] = 5,
+	   ["friday"] = 6, ["fri"] = 6,
+	   ["saturday"] = 7, ["sat"] =7
 	   }
 
 
@@ -91,31 +91,25 @@ end
 
 --give dates in seconds and gives the difference in years,months,days,...
 --gives a table back with hour,min,month,sec,day,year to display something like
---you have 10 years, 14 hours, 2 months and 10 days to renew you certificate
+--you have 10 years, 14 hours, 10 days to renew you certificate
+-- in secs - year,  day, hour,min,sec
+t_time = { field_names = {"years","days","hours","minutes","seconds"},
+	                   31556926,86400,3600,60,1
+	                   }
+
 function date_diff (d1, d2)
-	g = {}
-	temp = {}
-	sum = d1 - d2
-	if sum < 0 then 
-	sum = d2 - d1
+	g = {}	
+	if d2 == nil then d2 = os.time() end 
+	--first sum of seconds
+	sum = math.abs(os.difftime(d1,d2))
+	--going to go through and get it smaller with each pass through the table
+	for a,b in ipairs(t_time) do
+	print(sum)
+	hold = math.modf(sum/b)
+	g[t_time.field_names[a]] = hold
+	sum = (sum - (hold*b))
 	end
-	temp = os.date("*t",sum)
-	for a,b in pairs(temp) do 
-	if a == "year" then
-	hold = b - 1970	
-	g[a] = hold
-	elseif a == "hour" then
-	g[a] = b
-	elseif a == "min" then
-	g[a] = b
-	elseif a == "month" then
-	g[a] = b
-	elseif a == "sec" then
-	g[a] = b
-	elseif a == "day" then
-	g[a] = b
-	end
-	end		
+	
 	return g
 end
 
@@ -132,11 +126,11 @@ function num_month_name_abr (search)
 end
 
 function name_month_num (search)
-	return revmonths[search]
+	return revmonths[string.lower(search)]
 end
 
 function abr_month_num (search)
-	return revmonths[search]
+	return revmonths[string.lower(search)]
 end
 
 function num_dow_name (search)
@@ -148,10 +142,10 @@ function num_dow_name_abr (search)
 end
 
 function name_dow_num (search)
-	return revdow[search]
+	return revdow[string.lower(search)]
 end
 
 function abr_dow_num (search)
-	return revdow[search]
+	return revdow[string.lower(search)]
 end
 
