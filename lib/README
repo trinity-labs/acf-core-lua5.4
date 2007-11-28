@@ -1,12 +1,13 @@
 Brief discription of libs so far. For more info see
 http://wiki.alpinelinux.org/w/index.php?title=ACF_Libraries
+Also we use Lua Posix for the rest of the functionality.
+
+*** These are currently being worked on.  ***
 
 date.lua - Date and Time functions
-fs.lua - Many file,string,and table type functions. May need to be renamed
-join.lua - Takes a table and given a delimeter makes it into a string
+fs.lua - File and filesystem library
 pidof.lua - Process libraries not provided by LPOSIX
-split.lua - Take a delimeted string and makes it into a table
-date.lua - Date and Time lua functions
+format.lua - Library to help reformat string,tables,files or any input. Good place for split and join
 
 validator.lua - Validate web input for ACF. 
 html.lua - Helps with form building in ACF
@@ -15,4 +16,10 @@ web_elements.lua - More web functionality for ACF
 privsep.lua - Helps with authorization with ACF
 session.lua -Helps with Session mangement in ACF
 
-These are currently being worked on. Also we use Lua Posix for the rest of the functionality.
+*** THESE MAY GO AWAY. PUT IN format.lua ***
+
+join.lua - Takes a table and given a delimeter makes it into a string 
+*** Added to format.lua as format.table_to_string ***
+split.lua - Take a delimeted string and makes it into a table 
+*** Added to format.lua as format.string_to_table ***
+

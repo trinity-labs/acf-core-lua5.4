@@ -51,53 +51,6 @@ function read_file_as_array ( path )
 	file:close()
 	return f
 end
-
--- find all return characters and removes them, may get this from a browser
--- that is why didn't do file specific
- 
-function dostounix ( a )
-local data = string.gsub(a, "\r", "")
-return data
-
-end
-
--- read a file without blank lines and commented lines
-
-function remove_blanks_comments ( path )
-local f = io.open(path)
-local lines = {}
-for line in f:lines() do
-local c = string.match(line, "^$") or string.match(line, "^%#")
-if c == nil then lines[#lines + 1] = line end
-end
--- returns a table to iterate over without the blank or commented lines
-return lines
-end
-
---will search and replace through the whole of the file and return a table
-
-function search_replace (path , find, replace)
-local f = fs.read_file_as_array(path)
-local lines = {}
-for a,b in ipairs(f) do 
-local c = string.gsub(b, find, replace)
-lines[#lines + 1] = c end
-return lines
-end
-
---will interate over a ipairs(table) and make it into a string to be used by write_file
-function ipairs_string ( t )
-	for a,b in ipairs(t) do 
-	if a == 1 then 
-	c = b
-	else
-	c = c .. "\n" .. b
-	end
-	end
-	--add a friendly \n for EOF
-	c = c .. "\n"
-	return c
-end
 	
 -- write a string to a file !! MM-will replace file contents
 
@@ -153,41 +106,5 @@ function find ( what, where )
 		idx = idx + 1
 		return t[idx]
 	end
-end
-
--- This code comes from http://lua-users.org/wiki/SplitJoin
--- -- example: strjoin(", ", {"Anna", "Bob", "Charlie", "Dolores"})
-function table_to_string (delimiter, list)
-	local len = getn(list)
-	if len == 0 then 
-		return "" 
-	end
-	local string = list[1]
-	for i = 2, len do 
-		string = string .. delimiter .. list[i] 
-	end
-	return string
-end
-
--- This code comes from http://lua-users.org/wiki/SplitJoin
--- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
-function string_to_table (delimiter, text)
-	local list = {}
-	local pos = 1
-	-- this would result in endless loops
-	if string.find("", delimiter, 1) then 
-		error("delimiter matches empty string!")
-	end
-	while 1 do
-		local first, last = string.find(text, delimiter, pos)
-		if first then -- found?
-			table.insert(list, string.sub(text, pos, first-1))
-			pos = last+1
-		else
-			table.insert(list, string.sub(text, pos))
-			break
-		end
-	end
-	return list
 end
 

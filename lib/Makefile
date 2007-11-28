@@ -4,6 +4,7 @@ LIB_DIST=fs.lua\
 	html.lua\
 	join.lua\
 	date.lua\
+	format.lua\
 	menubuilder.lua\
 	pidof.lua\
 	privsep.lua\

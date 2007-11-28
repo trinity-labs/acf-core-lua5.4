@@ -3,7 +3,7 @@
 module(..., package.seeall)
 
 require("posix")
-require("fs")
+require("format")
 
 --global for date formating see below for more information
 --Mon Nov 26 19:56:10 UTC 2007 looks like most systems use this
@@ -96,7 +96,7 @@ end
 function string_to_table (str)
 	if str == nil then str = os.date(format) end
 	g = {}
-	temp = fs.string_to_table("%s",str)
+	temp = format.string_to_table("%s",str)
 	month = abr_month_num(temp[2])
 	g["month"] = month
 	day = temp[3]
@@ -105,7 +105,7 @@ function string_to_table (str)
 	tz = temp[5]
 	year = temp[6]
 	g["year"] = year
-	temp2 = fs.string_to_table(":",temp[4])
+	temp2 = format.string_to_table(":",temp[4])
  	hour = temp2[1] 
  	g["hour"] = hour
  	min = temp2[2]
