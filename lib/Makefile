@@ -3,6 +3,7 @@ include ../config.mk
 LIB_DIST=fs.lua\
 	html.lua\
 	join.lua\
+	date.lua\
 	menubuilder.lua\
 	pidof.lua\
 	privsep.lua\
