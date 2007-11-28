@@ -3,6 +3,7 @@
 module(..., package.seeall)
 
 require("posix")
+require("fs")
 
 --global for date formating see below for more information
 --Mon Nov 26 19:56:10 UTC 2007 looks like most systems use this
@@ -88,6 +89,33 @@ function seconds_to_date (t)
 	
 	return g	
 end
+
+--Wed Nov 28 14:01:23 UTC 2007
+--os.date(date.format) put into a table
+--year,month,day,hour,min,sec,isdst- may need a dst table to set this automatically
+function string_to_table (str)
+	if str == nil then str = os.date(format) end
+	g = {}
+	temp = fs.string_to_table("%s",str)
+	month = abr_month_num(temp[2])
+	g["month"] = month
+	day = temp[3]
+	g["day"] = day
+	--may do something with this if have a tz table ??
+	tz = temp[5]
+	year = temp[6]
+	g["year"] = year
+	temp2 = fs.string_to_table(":",temp[4])
+ 	hour = temp2[1] 
+ 	g["hour"] = hour
+ 	min = temp2[2]
+ 	g["min"] = min
+ 	sec = temp2[3]
+ 	g["sec"] = sec
+ 	return g
+
+end
+
 
 --give dates in seconds and gives the difference in years,months,days,...
 --gives a table back with hour,min,month,sec,day,year to display something like

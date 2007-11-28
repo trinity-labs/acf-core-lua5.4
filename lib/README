@@ -2,7 +2,7 @@ Brief discription of libs so far. For more info see
 http://wiki.alpinelinux.org/w/index.php?title=ACF_Libraries
 
 date.lua - Date and Time functions
-fs.lua - Many file type functions. May need to be renamed
+fs.lua - Many file,string,and table type functions. May need to be renamed
 join.lua - Takes a table and given a delimeter makes it into a string
 pidof.lua - Process libraries not provided by LPOSIX
 split.lua - Take a delimeted string and makes it into a table

@@ -155,3 +155,39 @@ function find ( what, where )
 	end
 end
 
+-- This code comes from http://lua-users.org/wiki/SplitJoin
+-- -- example: strjoin(", ", {"Anna", "Bob", "Charlie", "Dolores"})
+function table_to_string (delimiter, list)
+	local len = getn(list)
+	if len == 0 then 
+		return "" 
+	end
+	local string = list[1]
+	for i = 2, len do 
+		string = string .. delimiter .. list[i] 
+	end
+	return string
+end
+
+-- This code comes from http://lua-users.org/wiki/SplitJoin
+-- example: strsplit(",%s*", "Anna, Bob, Charlie,Dolores")
+function string_to_table (delimiter, text)
+	local list = {}
+	local pos = 1
+	-- this would result in endless loops
+	if string.find("", delimiter, 1) then 
+		error("delimiter matches empty string!")
+	end
+	while 1 do
+		local first, last = string.find(text, delimiter, pos)
+		if first then -- found?
+			table.insert(list, string.sub(text, pos, first-1))
+			pos = last+1
+		else
+			table.insert(list, string.sub(text, pos))
+			break
+		end
+	end
+	return list
+end
+
