@@ -82,38 +82,9 @@ end
 function cfe_unpack ( a )
 	if type(a) == "table" then 
 	value = session.serialize("cfe", a)
+	value = "<pre>" .. value .. "</pre>"
 	return value
 	end
 
 end
 
--- going to build more cfe to html functions below is just seeing what needed to be
--- done for a test
-
---give a lua table and unpack as html table
---t = { {row1}, {row2} ,options= {border = 2,align="left" } }
--- row one could technically be a title for the table ??? or t.title 
-function table_unpack_html ( t )
-	--first need the options
-	if t.options ~= nil then
-	for a,b in pairs(t.options) do
-	if opt == nil then opt = a .. "=" .. "\"" .. b .. "\""  else
-	opt = opt .. " " .. a .. "=" .. "\"" .. b .. "\"" end
-	
-	end
-	html_table = "<table " .. opt .. ">"
-	else
-	html_table = "<table>"
-	end
-	
-	for i = 1,table.maxn(t) do
-	html_table = html_table .. "<tr>"
-	for a,b in ipairs(t[i]) do 
-	html_table = html_table .. "<td>" .. b .. "</td>"
-	end
-	html_table = html_table .. "</tr>"
-		
-	end
-	html_table = html_table .. "</table>"
-	return html_table
-end
