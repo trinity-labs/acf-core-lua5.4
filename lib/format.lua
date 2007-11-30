@@ -76,15 +76,3 @@ function string_to_table (delimiter, text)
 	return list
 end
 
---these maybe moved to html or something like that
-
--- give a cfe and get back a string of what is inside
-function cfe_unpack ( a )
-	if type(a) == "table" then 
-	value = session.serialize("cfe", a)
-	value = "<pre>" .. value .. "</pre>"
-	return value
-	end
-
-end
-

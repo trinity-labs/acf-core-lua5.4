@@ -243,3 +243,15 @@ function link ( v )
 	return ( "<a " .. str .. ">" .. (v.label or "" ) .. "</a>" )
 end
 
+
+-- give a cfe and get back a string of what is inside
+-- great for troubleshotting and seeing what is really being passed to the view
+function cfe_unpack ( a )
+	if type(a) == "table" then
+	value = session.serialize("cfe", a)
+	value = "<pre>" .. value .. "</pre>"
+	return value
+	end
+
+end
+
