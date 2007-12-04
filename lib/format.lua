@@ -39,6 +39,15 @@ function cap_begin_word ( a )
 	return data
 end
 
+function search_replace (path , find, replace)
+	local f = fs.read_file_as_array(path)
+	local lines = {}
+	for a,b in ipairs(f) do
+		local c = string.gsub(b, find, replace)
+		lines[#lines + 1] = c end
+	return lines
+end
+
 
 -- This code comes from http://lua-users.org/wiki/SplitJoin
 -- -- example: format.table_to_string(", ", {"Anna", "Bob", "Charlie", "Dolores"})
