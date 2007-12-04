@@ -338,10 +338,10 @@ pre.code {
 	font-size: 110%;
 	height: 20px;
 	width: 200px;
-	margin: 5px 0px 0px 0px;
-	padding: 0px;
+	margin: 0px 0px 0px 0px;
+	padding: 5px 0px 0px 0px;
 	float: left;
-	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
 	/*border-top: 1px solid #ccc;*/
 	clear: both;
 	font-weight: bold;
@@ -352,8 +352,8 @@ pre.code {
 #content dd {
 	color: #444;
 	float: left;
-	margin: 5px 0px 0px 5px;
-	padding: 0px;
+	margin: 0px 0px 0px 5px;
+	padding: 5px 0px 0px 0px;
 	font-weight: light;
 	}
 	
