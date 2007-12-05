@@ -15,12 +15,11 @@ local sess = require ("session")
 
 local pvt={}
 
+pvt.parse_authfile = function(filename) 
+	local row = {}
 
-pvt.read_authfile = function(id) 
-	id = id or ""
-	
 	-- open our password file
-	local f = io.open (self.conf.confdir .. "/passwd" )
+	local f = io.open (filename)
 	if f then
 		local m = f:read("*all") .. "\n"
 		f:close()
@@ -28,25 +27,32 @@ pvt.read_authfile = function(id)
 		for l in string.gmatch(m, "(%C*)\n") do
 			local userid, password, username, roles =
 				string.match(l, "([^:]*):([^:]*):([^:]*):(.*)")
-			if userid == id then
-				local r = {}
-				for x in string.gmatch(roles, "([^,]*),?") do
-					table.insert (r, x )
-				end
-				
-				local a = {} 
-				a.userid = userid
-				a.password = password
-				a.username = username
-				a.roles = r
-				return (a)
+			local r = {}
+			for x in string.gmatch(roles, "([^,]*),?") do
+				table.insert (r, x )
 			end
+				
+			local a = {} 
+			a.userid = userid
+			a.password = password
+			a.username = username
+			a.roles = r
+			table.insert (row, a)
 		end
+		return row
 	else	
 		return false
 	end
 end
 
+pvt.get_id = function(userid, authstruct)
+	if authstruct == nil then return false end
+	for x = 1,#authstruct do
+		if authstruct[x].userid == userid then
+			return authstruct[x]
+		end
+	end
+end
 
 --- public methods
 	
@@ -54,28 +60,33 @@ end
 -- if false:  the reason for failure
 authenticate = function ( userid, password )
 	password = password or ""
-	
-	local t = pvt.read_authfile(userid)
+	userid = userid or ""
+
+	local t = pvt.parse_authfile(conf.confdir .. "/passwd")
 
 	if t == false then
-		return false, "Userid not found"
-	elseif t.password ~= password then
-		return  false, "Invalid password" 
+		return false, "password file is missing"
 	else
-		return true
+		local id = pvt.get_id (userid, t)
+		if id == false then
+			return false, "Userid not found"
+		end
+		if id.password ~= password then
+			return false, "Invalid password"
+		end
 	end
-end
-
+	return true
+	end
 
 
 -- This function returns the username and roles 
 -- or false on an error 
 userinfo = function ( userid )
-	local t = pvt.read_authfile(userid)
+	local t = pvt.parse_authfile(conf.confdir .. "/passwd")
 	if t == false then 
 		return false
 	else
-		return t
+		pvt.get_id (userid, t)
 	end
 end
 
