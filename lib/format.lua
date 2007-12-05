@@ -31,6 +31,7 @@ end
 return lines
 end
 
+--string format function to cap the beginging of each word. 
 function cap_begin_word ( a )
 	--first need to do the first word
 	local data = string.gsub(a, "^%l", string.upper)

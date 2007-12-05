@@ -9,6 +9,7 @@ fs.lua - File and filesystem library
 pidof.lua - Process libraries not provided by LPOSIX
 format.lua - Library to help reformat string,tables,files or any input. Good place for split and join
 
+authenticator-plaintext.lua - Used to parse through the username:password file and for permission help 
 validator.lua - Validate web input for ACF. 
 html.lua - Helps with form building in ACF
 menubuilder.lua -Helps create the menus on left window in ACF

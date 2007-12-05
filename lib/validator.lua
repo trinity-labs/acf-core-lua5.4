@@ -1,6 +1,7 @@
 --------------------------------------------------
 -- Validation Functions for Alpine Linux' Webconf
 --------------------------------------------------
+module (..., package.seeall)
 
 -- setup the 'language' table
 lang = {}
@@ -34,11 +35,35 @@ validator.msg.err.OutOfRange = {}
 validator.msg.err.OutOfRange[lang.English]     = "Value out of range!"
 validator.msg.err.OutOfRange[lang.German]      = "Wert ausserhalb des Bereichs!"
 
+function is_string ( str )
+	if type(str) == "string" then
+	return true, str, "Is a string."
+	else
+	return false, str, "Is not a string."
+	end
+end
+
+function is_boolean ( str )
+	if type(str) == "boolean" then
+	return true, str, "Is a boolean."
+	else
+	return false, str, "Is not a boolean."
+	end
+end
+
+function is_number ( str )
+	if type(str) == "number" then
+	return true, str, "Is a number."
+	else
+	return false, str, "Is not a number."
+	end
+end
+
 --
 -- This function validates an ipv4 address.
 -- On success it returns 1 otherwise a negative value
 --
-function validator.is_ipv4(ipv4)
+function is_ipv4(ipv4)
 	local retval = false;
 	local nums = { "", "", "", ""};
 	local iplen = string.len(ipv4);
@@ -77,7 +102,7 @@ function validator.is_ipv4(ipv4)
 	return true, validator.msg.err.Success[lang.Current]
 end
 
-function validator.is_mac(mac)
+function is_mac(mac)
 
 	local tmpmac = string.upper(mac)
 
@@ -125,7 +150,7 @@ end
 -- consists of number-chars between 0..9 only
 -- and eventually a leading '-'
 --
-function validator.is_integer(numstr)
+function is_integer(numstr)
 	-- ^   beginning of string
 	-- -?  one or zero ot the char '-'
 	-- %d+ one or more digits
@@ -139,7 +164,7 @@ end
 -- consists of number-chars between 0..9 only
 -- and if it is within a given range.
 --
-function validator.is_integer_in_range(numstr, min, max)
+function is_integer_in_range(numstr, min, max)
 	return  validator.is_integer(numstr) 
 		and numstr >= min
 		and numstr <= max
@@ -150,7 +175,7 @@ end
 -- This function checks if the given number is an integer
 -- and wheter it is between 1 .. 65535
 --
-function validator.is_port(numstr)
+function is_port(numstr)
 	return  validator.is_integer_in_range(numstr, 1, 65535)
 end
 
