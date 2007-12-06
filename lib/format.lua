@@ -15,38 +15,83 @@ require ("session")
 function dostounix ( a )
 	local data = string.gsub(a, "\r", "")
 	return data
-
 end
 
--- search and remove all blank lines and commented lines in a file
+-- search and remove all blank lines and commented lines in a file or table
 
 function remove_blanks_comments ( path )
-f = fs.read_file_as_array(path)
-local lines = {}
-for _,line in pairs(f) do
-local c = string.match(line, "^$") or string.match(line, "^%#")
-if c == nil then lines[#lines + 1] = line end
-end
+	if type(path) == "string" then
+		if fs.is_file == "false" then 
+		error("Invalid file!") 
+		else
+		f = fs.read_file_as_array(path)
+		end
+	elseif type(path) == "table" then
+		f = path
+	end	
+	local lines = {}
+	for a,b in ipairs(f) do
+	local c = string.match(b, "^$") or string.match(b, "^%#")
+	if c == nil then lines[#lines + 1] = b end
+	end
 -- returns a table to iterate over without the blank or commented lines
 return lines
 end
 
+--great for search and replace through a file or table.
+--string is easy string.gsub(string, find, replace)
+--path can be either a file or a table
+
+function search_replace (path, find, replace)
+	--would be a string if is a path to a file
+	if type(path) == "string" then
+		if fs.is_file == "false" then 
+		error("Invalid file!") 
+		else
+		f = fs.read_file_as_array(path)
+		end
+	elseif type(path) == "table" then
+		f = path
+	end	
+		local lines = {}
+		for a,b in ipairs(f) do
+		local c = string.gsub(b, find, replace)
+		lines[#lines + 1] = c end
+		return lines
+end
+
+--great for line searches through a file. /etc/conf.d/ ???
+--might be looking for more than one thing so will return a table
+--will likely want to match whole line entries
+--so we change find to include the rest of the line
+-- say want all the _OPTS from a file format.search_for_lines ("/etc/conf.d/cron", "OPT")
+
+function search_for_lines (path, find )
+	find = "^.*" .. find .. ".*$"
+	if type(path) == "string" then
+		if fs.is_file == "false" then 
+		error("Invalid file!") 
+		else
+		f = format.remove_blanks_comments(path)
+		end
+	elseif type(path) == "table" then
+		f = path
+	end	
+	--don't want to match commented out lines
+	local lines = {}
+	for a,b in ipairs(f) do 
+		local c = string.match(b, find)
+		lines[#lines +1 ] = c end
+	return lines
+end
+
 --string format function to cap the beginging of each word. 
-function cap_begin_word ( a )
+function cap_begin_word ( str )
 	--first need to do the first word
-	local data = string.gsub(a, "^%l", string.upper)
+	local data = string.gsub(str, "^%l", string.upper)
 	--word is any space cause no <> regex
 	data = string.gsub(data, " %l", string.upper)
 	return data
-end
-
-function search_replace (path , find, replace)
-	local f = fs.read_file_as_array(path)
-	local lines = {}
-	for a,b in ipairs(f) do
-		local c = string.gsub(b, find, replace)
-		lines[#lines + 1] = c end
-	return lines
 end
 
 
@@ -63,6 +108,10 @@ function table_to_string (delimiter, list)
 	end
 	return string
 end
+
+--for cut functionality do something like
+--print(format.string_to_table(" ", "This is a test")[2])
+--gives you the second field which is .... is
 
 -- This code comes from http://lua-users.org/wiki/SplitJoin
 -- example: format.string_to_table(",%s*", "Anna, Bob, Charlie,Dolores")
@@ -85,4 +134,5 @@ function string_to_table (delimiter, text)
 	end
 	return list
 end
+
 
