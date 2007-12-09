@@ -42,7 +42,7 @@ pvt.parse_authfile = function(filename)
 		end
 		return row
 	else	
-		return false
+		return nil
 	end
 end
 
@@ -82,10 +82,10 @@ authenticate = function ( self, userid, password )
 
 -- This function returns the username and roles 
 -- or false on an error 
-userinfo = function ( self, userid )
+get_userinfo = function ( self, userid )
 	local t = pvt.parse_authfile(self.conf.confdir .. "/passwd")
 	if t == false then 
-		return false
+		return nil
 	else
 		pvt.get_id (userid, t)
 	end

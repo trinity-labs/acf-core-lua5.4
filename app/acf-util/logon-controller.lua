@@ -24,17 +24,19 @@ logon = function(self)
 	-- FIXME - if they are already logged in, log out first
 	
 	if clientdata.userid and clientdata.password then
-		if self.model.logon(self, clientdata.userid, clientdata.password) == false then
+		local t = self.model.logon(self,clientdata.userid,clientdata.password)
+		
+		if t == nil then
 			userid.value = self.clientdata.userid
 			userid.errtxt = "There was a problem logging in"
 		else
 		-- the login was successful - give them a new session, and redir to logged in
 			session.id = session.random_hash ( 512)
-			session.userinfo = self.model.get_userinfo (userid)
+			session.userinfo = t or {}
 			self.conf.controller="welcome"
 			self.conf.action = ""
 			self.conf.type = "redir"
-			logevent ("Logon was successful for " .. session.userinfo.username)
+			logevent ("Logon was successful for " .. session.userinfo.username or "" )
 			error (self.conf)
 		end
 	else
