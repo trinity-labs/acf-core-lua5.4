@@ -21,13 +21,14 @@ pvt.parse_authfile = function(filename)
 	-- open our password file
 	local f = io.open (filename)
 	if f then
-		local m = f:read("*all") .. "\n"
+		local m = (f:read("*all")  or "" ).. "\n"
 		f:close()
-	
+
 		for l in string.gmatch(m, "(%C*)\n") do
 			local userid, password, username, roles =
 				string.match(l, "([^:]*):([^:]*):([^:]*):(.*)")
 			local r = {}
+			roles=roles or ""
 			for x in string.gmatch(roles, "([^,]*),?") do
 				table.insert (r, x )
 			end
@@ -58,11 +59,11 @@ end
 	
 -- This function returns true or false, and
 -- if false:  the reason for failure
-authenticate = function ( userid, password )
+authenticate = function ( self, userid, password )
 	password = password or ""
 	userid = userid or ""
 
-	local t = pvt.parse_authfile(conf.confdir .. "/passwd")
+	local t = pvt.parse_authfile(self.conf.confdir .. "/passwd")
 
 	if t == false then
 		return false, "password file is missing"
@@ -81,8 +82,8 @@ authenticate = function ( userid, password )
 
 -- This function returns the username and roles 
 -- or false on an error 
-userinfo = function ( userid )
-	local t = pvt.parse_authfile(conf.confdir .. "/passwd")
+userinfo = function ( self, userid )
+	local t = pvt.parse_authfile(self.conf.confdir .. "/passwd")
 	if t == false then 
 		return false
 	else

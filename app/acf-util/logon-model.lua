@@ -26,7 +26,7 @@ logon = function (self, id, password )
 	--	record event and ignore the attempt
 	-- All ok?
 	--	look up their role, issue new session
-	return auth.authenticate (id, password)
+	return auth.authenticate (self, id, password)
 end
 
 logoff = function (self, sessionid)

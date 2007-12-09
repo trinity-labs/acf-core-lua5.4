@@ -17,7 +17,9 @@ local parent_exception_handler
 
 mvc = {}
 mvc.on_load = function (self, parent)
-	
+	-- open the log file
+	self.conf.logfile = io.open ("/var/log/acf.log", "a+")
+
 	-- Make sure we have some kind of sane defaults for libdir and sessiondir
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
@@ -71,6 +73,8 @@ mvc.post_exec = function (self)
 		sessionlib.save_session(conf.sessiondir, 
         			sessiondata.id, sessiondata)     
         end
+        -- Close the logfile
+        conf.logfile:close()
 end
 
 
@@ -227,4 +231,10 @@ cfe = function ( optiontable )
 	end
 	return me
 end
+
+-- FIXME - need to think more about this..
+logevent = function ( message )
+	conf.logfile:write (string.format("%s: %s\n", os.date(), message)) 
+end
+
 

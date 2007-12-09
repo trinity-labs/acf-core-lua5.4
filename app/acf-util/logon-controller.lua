@@ -29,27 +29,23 @@ logon = function(self)
 			userid.errtxt = "There was a problem logging in"
 		else
 		-- the login was successful - give them a new session, and redir to logged in
-		session.id = session.random_hash ( 512)
-		session.userinfo = self.model.get_userinfo (userid)
-		self.conf.controller="welcome"
-		self.conf.action = ""
-		self.conf.type = "redir"
-		error (self.conf)
+			session.id = session.random_hash ( 512)
+			session.userinfo = self.model.get_userinfo (userid)
+			self.conf.controller="welcome"
+			self.conf.action = ""
+			self.conf.type = "redir"
+			logevent ("Logon was successful for " .. session.userinfo.username)
+			error (self.conf)
 		end
 	else
-		self.conf.controller = ""
-		self.conf.action = ""
-		self.conf.prefix = ""
-		self.conf.type = "redir"
-		error(self.conf)
-	end
 	-- If we reach this point, just give them the login page
-        return ( cfe ({type="form",
-	option={ script=ENV["SCRIPT_NAME"],
-	prefix=self.conf.prefix,
-	controller = self.conf.controller,
-	action = "logon" },
-	value = { userid, password, logon } }))
+        	return ( cfe ({type="form",
+		option={ script=ENV["SCRIPT_NAME"],
+		prefix=self.conf.prefix,
+		controller = self.conf.controller,
+		action = "logon" },
+		value = { userid, password, logon } }))
+	end
 end
 
 
