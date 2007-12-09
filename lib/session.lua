@@ -157,4 +157,16 @@ record_event = function( sessionpath, id )
 		 (posix.getpid("pid")) or "" ), "w")
 	io.close(x)
 end
-	
+
+-- Check how many invalid login events
+-- have happened for this id in the last n minutes
+count_events =	function ( sessionpath, id, minutes)
+	-- FIXME
+	return 0
+end
+
+-- Clear events that are older than n minutes
+expire_events = function (sessionpath, minutes)
+	-- FIXME
+	return 0
+end

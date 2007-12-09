@@ -16,18 +16,25 @@ end
 
 logon = function(self)
 	
-	local username=cfe({ name="username" })
+	local userid=cfe({ name="userid" })
 	local password=cfe({ name="password" })
 	local logon=cfe({ name="Logon", type="submit"})
 	local s = ""
 
-	if self.clientdata.username and self.clientdata.password then
-	if self.model.logon(self, self.clientdata.username, self.clientdata.password) == false then
-		username.value = self.clientdata.username
-		if self.session.id then
-			username.errtxt = "You are already logged in. Logout first."
+	-- FIXME - if they are already logged in, log out first
+	
+	if clientdata.userid and clientdata.password then
+		if self.model.logon(self, clientdata.userid, clientdata.password) == false then
+			userid.value = self.clientdata.userid
+			userid.errtxt = "There was a problem logging in"
 		else
-			username.errtxt = "There was a problem logging in"
+		-- the login was successful - give them a new session, and redir to logged in
+		session.id = session.random_hash ( 512)
+		session.userinfo = self.model.get_userinfo (userid)
+		self.conf.controller="welcome"
+		self.conf.action = ""
+		self.conf.type = "redir"
+		error (self.conf)
 		end
 	else
 		self.conf.controller = ""
@@ -36,14 +43,13 @@ logon = function(self)
 		self.conf.type = "redir"
 		error(self.conf)
 	end
-	end
 	-- If we reach this point, just give them the login page
         return ( cfe ({type="form",
 	option={ script=ENV["SCRIPT_NAME"],
 	prefix=self.conf.prefix,
 	controller = self.conf.controller,
 	action = "logon" },
-	value = { username, password, logon } }))
+	value = { userid, password, logon } }))
 end
 
 
