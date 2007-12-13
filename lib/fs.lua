@@ -79,6 +79,14 @@ function write_line_file ( path, str )
 end
 
 
+--will return a string with md5sum and filename
+function md5sum_file ( path )
+	cmd = "/usr/bin/md5sum " .. path
+	f = io.popen(cmd)
+	checksum = f:read("*a")
+	f:close()
+	return checksum
+end
 
 
 -- iterator function for finding dir entries matching filespec (what)
