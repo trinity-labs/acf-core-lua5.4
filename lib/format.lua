@@ -94,6 +94,19 @@ function cap_begin_word ( str )
 	return data
 end
 
+--give a table of ipairs and turn it into a string
+
+function ipairs_to_string ( t )
+	for a,b in ipairs(t) do 
+		if a == 1 then
+		d = b
+		else
+		d = d .. "\n" .. b
+		end
+	end
+	return d
+end
+
 
 -- This code comes from http://lua-users.org/wiki/SplitJoin
 -- -- example: format.table_to_string(", ", {"Anna", "Bob", "Charlie", "Dolores"})
