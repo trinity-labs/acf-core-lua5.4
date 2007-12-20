@@ -19,83 +19,75 @@ Content-Type: text/html
 </head>
 <body>
 
-<div id=head>
-<p>Host: <em><?= pageinfo.hostname ?></em></p>
-</div>
+<div id="page">
+	<div id="header">
+		<div id="logo">
+			<?= pageinfo.hostname ?>
+		</div>	<? --logo ?>
+		<div id="version">
+			<?= pageinfo.alpineversion ?>
+		</div>	<? --version ?>
+		<ul id="metanav">
+			<? local class="" ?>
+			<? for k,v in pairs(submenu)  do
+				if v == pageinfo.action then
+					class="current"
+				else
+					class="noselect"
+				end
+				io.write (string.format('<li class="%s"><a href="%s">%s</a></li>\n',class,v, v ))
 
-<div id=logo>
-<h2><?= pageinfo.prefix ?> > <?= pageinfo.controller .. " > " .. pageinfo.action ?></h2>
-</div>
+			end
+			?>
+		</ul>
+	</div>	<? --header ?>
 
-<div id="mainmenu">
-<? 
- -- FIXME: This needs to go in a library function somewhere (menubuilder?)
 
-local ctlr = pageinfo.script .. "/acf-util/logon/"
-if session.id == nil then 
-   io.write ( html.link( { label = "Log in", value = ctlr .. "logon" } ) )
-else
-  io.write (html.link( { label = "Logout as " .. ( session.name or "unkown") , value = ctlr .. "logout" } ) )
-end
-
-  local cat, group
-  local liston=false
-  local selected
-  for k,v in ipairs(mainmenu) do
-	if v.cat ~= cat then
-		if liston == true then 
-			io.write ("</ul>\n")
-			liston=false
-		end
-		cat = v.cat
-		io.write (string.format("<h3>%s</h3>\n", cat))
-		group = ""
-	end
-	if v.group ~= group then
-		group = v.group
-		if liston == false then
-			io.write ("<ul>")
-			liston=true
-		end
-		if      pageinfo.prefix  == v.prefix .. "/"  and 
-			pageinfo.controller == v.controller then
-				selected=" id=\"selected\""
+	<div id="content">
+		<div id="nav"><ul>
+			<? 
+			 -- FIXME: This needs to go in a library function somewhere (menubuilder?)
+			io.write ( "<li class=category>Log in/out</li>\n")
+			local ctlr = pageinfo.script .. "/acf-util/logon/"
+			if session.id == nil then 
+			   io.write ( string.format("<li class=menuitem><a href=\"%s\">Log in</a></li>", ctlr .. "logon" ) )
 			else
-				selected=""
-		end
-		io.write (string.format("<li%s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
-				selected, ENV.SCRIPT_NAME,v.prefix, v.controller, v.action, v.group))
-	end
-  end
-?>
-</ul>
-<div id="footer">
-  <p><center>Made with care by acf</center></p>
-</div>
-</div>
+			   sess = session.name or "unknown"
+			   io.write ( string.format("<li class=menuitem><a href=\"%s\">Log out as '" .. sess .. "'</a></li>", ctlr .. "logout" ) )
+			end
 
-<div id="submenu">
-<ul>
-<? for k,v in pairs(submenu)  do
-	if v == pageinfo.action then
-		io.write (string.format('<li id="selected">%s</li>\n',
-			v, v ))
-    	else
-		io.write (string.format('<li><a href="%s">%s</a></li>\n',
-			v, v ))
-    	end
-  end
-?>
-</ul>
-</div>
+			  local cat, group
+			  local class
+			  for k,v in ipairs(mainmenu) do
+				if v.cat ~= cat then
+					cat = v.cat
+					io.write (string.format("<li class=category>%s</li>\n", cat))	--start row
+					group = ""
+				end
+				if v.group ~= group then
+					group = v.group
+					if      pageinfo.prefix  == v.prefix .. "/"  and 
+						pageinfo.controller == v.controller then
+						class="current"
+					else
+						class="menuitem"
+					end
+					io.write (string.format("<li class=\"%s\"><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
+						class,ENV.SCRIPT_NAME,v.prefix, v.controller, v.action, v.group ))
+				end
+			  end ?>
+		<li class="last"></li>
+		</ul></div>	<? --nav ?>
 
-
-
-<div id="content">
-<? local func = haserl.loadfile(pageinfo.viewfile)
-   func (viewtable) ?>
-</div>
-
+		<div id="wrapper"><div id="background-wrapper">
+				<? local func = haserl.loadfile(pageinfo.viewfile)
+				func (viewtable) ?>
+			<div id="footer">
+				<center>Made with care by acf</center>
+			</div>	<? --footer ?>
+		</div></div>	<? --wrapper ?>
+	</div>	<? --content ?>
+</div>	<? --page ?>
 
 
 </body>
