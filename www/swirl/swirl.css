@@ -1,0 +1,342 @@
+/* webconf.css - For Alpine webconf
+ */
+
+/* Default definitions */
+body {
+	position: 	absolute;
+	font-family: 	Geneva, Arial, Helvetica, San-Serif;
+	margin: 		0px;
+	padding: 		0px;
+	font-size: 	small;
+	width:		100%;
+	}
+
+p {
+	margin: 		0px 0px0px 0empx
+	}
+
+a {
+	text-decoration: 	none;
+	color: 		#333;
+	}
+
+a:link { color: 		#226;
+	}
+
+a:visited {	
+	color: 		#226;
+	}
+
+a:hover {
+	color: 		#44C;
+	}
+
+a:active {
+	}
+
+pre.code {
+	border: 		1px solid #666;
+	background: 	#f8f8f8;
+	padding: 		.5em;
+}
+
+/* -----------------------------------------------------------------------------------------------
+   PAGE
+   -----------------------------------------------------------------------------------------------*/
+#page { 
+	width:		100%;
+}
+
+/*----------------------------------------------------------------------------------
+ * Header
+ *----------------------------------------------------------------------------------
+ */
+#header {
+	margin: 		0px;
+	padding:		0px;
+	width:		100%;
+	height:		143px;
+	background: 	transparent url("header_body.jpg") no-repeat 5px 5px;
+}
+
+#header p {
+	margin: 0px;
+	padding: 0px;
+	}
+#header #version {
+	position:	absolute;
+	left: 		200px;
+	top:		108px;
+}
+#header #logo {
+	position:		absolute;
+	top:		5px;
+	left: 		200px;
+	margin-right:	2px;
+	font-size:	40px;
+}
+/*----------------------------------------------------------------------------------
+ * Submenu ( Horizontal Tabs)
+ *----------------------------------------------------------------------------------
+ */
+#metanav {
+	float:		right;
+	top:		0px;
+	margin: 		73px 20px 0px 0px;
+	padding: 		0px;
+
+	}
+	
+#metanav p {
+	display: 		none;
+	}
+
+#metanav ul {
+	list-style: 	none;
+	}
+
+#metanav li {
+	color: 		#33A;
+	background: 	#eee;
+	display: 		block;
+	font-size: 	10pt;
+	float: 		left;
+	margin: 		0px;
+	padding:		7px 7px;
+	height: 		15px;
+	border: 		1px #57b solid;
+	}
+
+#metanav .current {
+	background: 	#fff;
+	display: 		block;
+	float: 		left;
+	font-weight: 	Bold;
+	font-size: 	10pt;
+	color: 		#24a;
+	margin: 		0px;
+	height: 		15px;
+	padding: 		7px 7px;
+	border: 		3px #57b solid;
+	border-bottom: 	1px #fff solid;
+	}
+
+
+#metanav a {
+	display: 		block;
+	float:		 left;
+	margin: 		0px;
+	padding: 		0px 0px;
+	} 
+
+#metanav a:hover {
+	text-decoration: 	underline;
+	}
+
+
+/*----------------------------------------------------------------------------------
+ * Left (Main) Menu
+ *----------------------------------------------------------------------------------
+ */
+#nav {
+	float: 		left;
+	background: 	#eee;
+	width: 		180px;
+	padding: 		5px 0px 5px 10px;
+	border: 		1px #57b solid;
+	border-right: 	none;
+	}
+
+#nav .category {
+	color: 		#448;
+	padding: 		10px 0px 0px 0px;
+	font-weight: 	normal;
+	font-size: 	138%;
+	margin: 		0px 0px 2px 0px;
+	}
+
+#nav ul {
+	padding: 		0px 0px 0px 0px;
+	margin: 		0px;
+	list-style-type: 	none;
+	}
+#nav li {
+	background-color: 	inherit;
+	padding: 		2px 2px 2px 10px;
+	}
+
+#nav a:hover {
+	display: 		block;
+	text-decoration: 	underline;
+	}
+	 
+#nav .current {
+	background-color:	#fff;
+	border: 		1px #57b solid;
+	border-right: 	none;
+	font-weight: 	Bold;
+	color: 		#24a;
+	}
+	
+
+
+/*----------------------------------------------------------------------------------
+ * Content
+ *----------------------------------------------------------------------------------
+ */
+#background-wrapper {
+	}
+
+#wrapper {
+	width: 		600px;
+	float:		left;
+	color: 		#333;
+	padding: 		0px 10px 0px 10px;
+	}
+
+#wrapper h1 {
+	font-size: 	120%;
+	text-align: 	left;
+	margin: 		0px 0px 0px 0px;
+	padding: 		0px 0px 0px 0px;
+	background-color: 	#e0e0e0;
+	border-bottom: 	2px solid #aaa;
+	}
+ 
+#wrapper h2 {
+	font-size: 	100%;
+	margin: 		10px 0px 0px 0px;
+	padding: 		0px 0px 0px 0px;
+	background-color: 	#e0e0e0;
+	border-bottom: 	1px solid #aaa;
+	clear: 		both;
+	}
+
+#wrapper h3 {
+	font-size: 	85%;
+	margin: 		10px 0px 0px 0px;
+	padding: 		0px 0px 0px 0px;
+	background-color:	#e6e6ff;
+	border-bottom:	1px solid #aaa;
+	clear:		both;
+	}	
+
+#wrapper p {
+	clear:		both;
+	}
+
+#wrapper p.error {
+	font-size:	120%;
+	font-weight:	bold;
+	background-color:	#eee;
+	color:		#f44;
+	}
+
+#wrapper p.warn {
+	background-color:	#cc4;
+        }
+
+#wrapper p.ok {
+	font-size:	120%;
+	font-weight:	bold;
+	color:		#090;
+        }
+                                                 
+                                        
+#wrapper input.error {
+	background-color:	#ffa;
+	}	
+
+#wrapper th {
+	font-weight:	inherit;
+	color:		#228;
+	background:	#eef;
+	}
+	
+#wrapper a {
+	text-decoration:	underline;
+	color:		#449;
+	}
+	
+#wrapper dl {
+	margin:		0px;
+	}
+#wrapper dt {
+	background-color:	none;
+	font-size:	110%;
+	height:		20px;
+	width:		200px;
+	margin:		0px 0px 0px 0px;
+	padding:		5px 0px 0px 0px;
+	float:		left;
+	border-top:	1px solid #ddd;
+	/*border-top:	1px solid #ccc;*/
+	clear:		both;
+	font-weight:	bold;
+	color:		#000;
+	font-size:	10pt;
+	}
+
+#wrapper dd {
+
+	color:		#444;
+	float:		left;
+	margin:		0px 0px 0px 5px;
+	padding:		5px 0px 0px 0px;
+	font-weight: 	light;
+	}
+	
+#wrapper .grey {
+	background-color: 	#eee;
+	}
+
+
+#wrapper textarea {
+	width: 		99%;
+	height: 		300px;
+	border-right: 	1px solid #cacaca;
+	border-bottom: 	1px solid #cacaca;
+}
+#wrapper form {
+	display:		inline;
+}
+
+#wrapper dd select {
+	width: 		247px;
+	border-right:	1px solid #cacaca;
+	border-bottom:	1px solid #cacaca;
+}
+
+#wrapper .submit {
+	width: 		100px;
+	border-right:	1px solid #cacaca;
+	border-bottom:	1px solid #cacaca;
+	background:	#eee;
+}
+#wrapper dd .text {
+	width: 		245px;
+	border-right:	1px solid #cacaca;
+	border-bottom:	1px solid #cacaca;
+	background:	white;
+}
+#wrapper table {
+	width: 		99%;
+}
+
+/*----------------------------------------------------------------------------------
+ * footer
+ *----------------------------------------------------------------------------------
+ */
+
+#footer {
+	clear: 		both;
+	border-top:	1px solid #d6d6d6;
+	position:		relative;
+	width: 		100%;
+	padding-top:	5px;
+	margin-top:	15px;
+	margin-bottom:	10px;
+	font-size:	10px;
+	text-align:	left;
+	color: 		#aaa;
+}
