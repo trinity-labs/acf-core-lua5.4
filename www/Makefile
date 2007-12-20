@@ -1,22 +1,24 @@
 include ../config.mk
 
 WWW_DIST=cgi-bin/acf\
-	static/header_body.jpg\
-	static/alpine_logo.png\
 	cgi-bin/mvc.lua\
-	static/alpine.gif\
-	static/alpine.png\
-	static/arctic-back.png\
-	static/arctic-upleft.png\
-	static/greypx.gif\
-	static/selected.gif\
-	static/submenu.css\
-	static/unselected.gif\
-	static/webconf-purple.css\
-	static/static.css\
-	simple/simple.css\
 	index.html\
-	sample.html
+	sample.html\
+	static/alpine.jpg\
+	static/h1.png\
+	static/h2.png\
+	static/h3.png\
+	static/menu_item.png\
+	static/menu_item_hover.png\
+	static/shadow-side.png\
+	static/shadow-top.png\
+	static/static.css\
+	static/watermark.jpg\
+	simple/simple.css\
+	swirl/header_body.jpg\
+	swirl/selected.gif\
+	swirl/swirl.css\
+	swirl/unselected.gif
 
 EXTRA_DIST=Makefile
 DISTFILES=$(WWW_DIST) $(EXTRA_DIST)
