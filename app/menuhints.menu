@@ -3,14 +3,13 @@
 # Note, however, that if ANY individual menu sets Setup to less than 80, then
 # That number will override the defaults set here.
 # (i.e. Lowest specifically set priority wins)
-10Home
+00Home
+10General
 
 20Networking
-30Proxies
+#30Proxies
 40Connectivity
-50Backup/Packages
-60General
+#50Backup/Packages
 
 100Setup
-110Test
-
+#110Test
