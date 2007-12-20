@@ -144,6 +144,7 @@ view_resolver = function(self)
 		-- to APP or self
 		-- ***************************************************
 		local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
+		local alpineversion  = self:new("alpine-baselayout/alpineversion")
 		
 		-- FIXME - this is ugly, but it puts the hostname the expected
 		-- format if the controller doesn't load correctly 
@@ -163,6 +164,7 @@ view_resolver = function(self)
 					-- the inheritance means self.conf is used instead
 					action = self.conf.action,
 					hostname = h.hostname.value,
+					alpineversion = alpineversion.worker.read(alpineversion),
 					prefix = self.conf.prefix,
 					script = self.conf.appuri, 
 					skin = self.conf.skin or ""
