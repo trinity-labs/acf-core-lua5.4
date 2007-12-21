@@ -39,7 +39,7 @@ logon = function(self)
 			logevent ("Logon was successful for " .. session.userinfo.username or "" )
 			error (self.conf)
 		end
-	else
+	end
 	-- If we reach this point, just give them the login page
         	return ( cfe ({type="form",
 		option={ script=ENV["SCRIPT_NAME"],
@@ -47,7 +47,6 @@ logon = function(self)
 		controller = self.conf.controller,
 		action = "logon" },
 		value = { userid, password, logon } }))
-	end
 end
 
 

@@ -29,7 +29,7 @@ logon = function (self, id, password )
 	if auth.authenticate (self, id, password) then
 		return auth.get_userinfo (self, id)
 	else
-		return false
+		return nil
 	end
 end
 
