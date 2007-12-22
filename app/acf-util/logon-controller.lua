@@ -25,18 +25,19 @@ logon = function(self)
 	
 	if clientdata.userid and clientdata.password then
 		local t = self.model.logon(self,clientdata.userid,clientdata.password)
-		
+	
 		if t == nil then
 			userid.value = self.clientdata.userid
 			userid.errtxt = "There was a problem logging in"
 		else
 		-- the login was successful - give them a new session, and redir to logged in
-			session.id = session.random_hash ( 512)
-			session.userinfo = t or {}
+			self.sessiondata.id = session.random_hash ( 512)
+			self.sessiondata.userinfo = t or {}
+			self.conf.prefix="/"
 			self.conf.controller="welcome"
-			self.conf.action = ""
+			self.conf.action = "read"
 			self.conf.type = "redir"
-			logevent ("Logon was successful for " .. session.userinfo.username or "" )
+			logevent ("Logon was successful for " .. self.sessiondata.userinfo.username or "" )
 			error (self.conf)
 		end
 	end

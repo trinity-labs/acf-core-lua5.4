@@ -89,7 +89,7 @@ end
 save_session = function( sessionpath, session, sessiontable)
 	local file = io.open(sessionpath .. "/session." .. session , "w")
 	if file == nil then 
-		return false
+		return nil
 	end
 
 	local id = sessiontable.id	

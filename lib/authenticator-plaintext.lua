@@ -47,7 +47,7 @@ pvt.parse_authfile = function(filename)
 end
 
 pvt.get_id = function(userid, authstruct)
-	if authstruct == nil then return false end
+	if authstruct == nil then return nil end
 	for x = 1,#authstruct do
 		if authstruct[x].userid == userid then
 			return authstruct[x]
@@ -87,7 +87,7 @@ get_userinfo = function ( self, userid )
 	if t == false then 
 		return nil
 	else
-		pvt.get_id (userid, t)
+		return pvt.get_id (userid, t)
 	end
 end
 
