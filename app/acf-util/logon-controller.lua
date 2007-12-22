@@ -31,13 +31,12 @@ logon = function(self)
 			userid.errtxt = "There was a problem logging in"
 		else
 		-- the login was successful - give them a new session, and redir to logged in
-			self.sessiondata.id = session.random_hash ( 512)
-			self.sessiondata.userinfo = t or {}
+			sessiondata.id = session.random_hash ( 512)
+			sessiondata.userinfo = t or {}
 			self.conf.prefix="/"
 			self.conf.controller="welcome"
 			self.conf.action = "read"
 			self.conf.type = "redir"
-			logevent ("Logon was successful for " .. self.sessiondata.userinfo.username or "" )
 			error (self.conf)
 		end
 	end

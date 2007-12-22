@@ -34,8 +34,10 @@ mvc.on_load = function (self, parent)
 	package.path=  self.conf.libdir .. "?.lua;" .. package.path
 	
 	sessionlib=require ("session")
-	
+
+
 	self.sessiondata = {}
+	
 	local tempid = ""
 	if self.clientdata.sessionid == nil then
 		self.sessiondata.id  = sessionlib.random_hash(512) 
@@ -69,11 +71,13 @@ end
 
 
 mvc.post_exec = function (self)
+	sessionlib=require ("session")
+	-- sessionlib.serialize("s", sessiondata))
 	if sessiondata.id then
 		sessionlib.save_session(conf.sessiondir, 
         			sessiondata.id, sessiondata)     
         end
-        -- Close the logfile
+	-- Close the logfile
         conf.logfile:close()
 end
 
@@ -143,6 +147,7 @@ view_resolver = function(self)
 		-- with conf, and other "missing" parts pointing back
 		-- to APP or self
 		-- ***************************************************
+		
 		local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
 		local alpineversion  = self:new("alpine-baselayout/alpineversion")
 		
@@ -198,6 +203,7 @@ end
 
 exception_handler = function (self, message )
 	local html = require ("html")
+	mvc.post_exec (self)
 	if type(message) == "table" then
 		if message.type == "redir" then
 			io.write ("Status: 302 Moved\n")
