@@ -3,17 +3,14 @@
 
 <form action="<?= form.option.script  .. form.option.prefix ..
 		form.option.controller .. "/" .. form.option.action ?>" method="POST">
-<table>
 <? local myform = form.value 
  for k,v in pairs(myform) do ?>
-<tr><td><?= v.name ?></td><td>
-<? if v.type == "submit" then ?>
-	<input type="submit" name="<?= v.name ?>" value="Logon">
-<? else ?>
-	<input type="text" name="<?= v.name ?>">
-	<font color=red><?= v.errtxt ?></font>
+	<DT><?= v.name ?></DT>
+	<? if v.type == "submit" then ?>
+		<DD><input class="submit" type="submit" name="<?= v.name ?>" value="Logon"></DD>
+	<? else ?>
+		<DD><input class="text" type="text" name="<?= v.name ?>">
+		<font color=red><?= v.errtxt ?></font></DD>
+	<? end ?>
 <? end ?>
-</td></tr>
-<? end ?>
-</table>
 </form>

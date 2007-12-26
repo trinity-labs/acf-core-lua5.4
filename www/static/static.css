@@ -337,7 +337,7 @@ hr {
 	border-bottom:	1px solid #cacaca;
 	background:	#eee;
 }
-#wrapper dd .text {
+#wrapper .text {
 	width: 		245px;
 	border-right:	1px solid #cacaca;
 	border-bottom:	1px solid #cacaca;
