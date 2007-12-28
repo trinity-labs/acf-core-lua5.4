@@ -1,16 +1,16 @@
 APP_NAME=core
 PACKAGE=acf-$(APP_NAME)
-VERSION=2.0_alpha1
+VERSION=2.0_alpha3
 
 P=$(PACKAGE)-$(VERSION)
-DISTDIR:=$(PWD)/$(P)
+DISTDIR:=$(shell pwd)/$(P)
 DISTPKG=$(P).tar.bz2
 
 SUBDIRS=app lib www
-EXTRA_DIST=ChangeLog Makefile README TODO
+EXTRA_DIST=ChangeLog config.mk Makefile README TODO
 CONF_FILES=acf.conf
 
-DISTFILES=$(EXTRA_DIST)
+DISTFILES=$(EXTRA_DIST) $(CONF_FILES)
 
 CP=cp
 TAR=tar
