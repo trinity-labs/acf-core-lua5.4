@@ -3,13 +3,39 @@
 # Note, however, that if ANY individual menu sets Setup to less than 80, then
 # That number will override the defaults set here.
 # (i.e. Lowest specifically set priority wins)
-00Home
-#10General
 
-#20Networking
-#30Proxies
-#40Connectivity
-#50Backup/Packages
+05Home
+# Welcome
 
-#100Setup
-#110Test
+10Networking
+# Interfaces
+# Routing
+# DHCP
+# DNS
+# Firewall
+
+30Proxies
+# Web Proxies
+# Web Filtering
+# Mail
+
+#40?
+#50?
+60Connectivity
+# VPN
+# Dialup
+# Dialup/PPPoE
+
+70Backup/Packages
+# Backup
+# Source Manager
+# Package Manager
+
+75General
+# Password Manager
+# Logfiles
+# Diagnostic
+
+80Setup
+# Hostname
+
