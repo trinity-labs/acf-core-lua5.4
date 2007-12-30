@@ -18,7 +18,8 @@ WWW_DIST=cgi-bin/acf\
 	swirl/header_body.jpg\
 	swirl/selected.gif\
 	swirl/swirl.css\
-	swirl/unselected.gif
+	swirl/unselected.gif \
+	snow/*
 
 EXTRA_DIST=Makefile
 DISTFILES=$(WWW_DIST) $(EXTRA_DIST)

@@ -1,0 +1,377 @@
+/* "Snow" - a css for Alpine Configuration Framework - N. Angelacos 2007 - GPL2 */
+
+
+/* Default definitions */
+body { 
+	margin: 		0px 0px 0px 0px;
+	padding: 		0px 0px 0px 0px;
+	background:		url("alpine.jpg") no-repeat;
+ 	background-position:	top center;
+	font-family: 		Helvetica, Geneva, Arial, SunSans-Regular, 
+					sans-serif, Verdana, "Trebuchet MS";
+}
+
+.hide {
+	display:		none;
+	}
+	
+#page { 
+	position:		relative;
+	left:		0px;
+	top:		0px;
+}
+
+a {
+	text-decoration:none;
+	color:		#072966;
+}
+a:visited {
+	color:		#072966;
+}
+a:hover {
+	color:		red;
+}
+input {
+	border:		1px solid #ccc;
+}
+hr {
+	background-color:	#ff9933;
+	height: 		3px;
+}
+.error {
+	height:		0px;
+	font-size: 	11pt;
+	font-weight: 	bold;
+	color: 		#f33;
+}
+
+/*----------------------------------------------------------------------------------
+ * Header, h-leader, h-nav, h-trailer
+ *----------------------------------------------------------------------------------
+ */
+#header {
+	position: 	relative;
+	margin: 		0px 0px 0px 0px;
+	padding: 		0px 0px 0px 0px;
+	// height: 		75px;
+	// background: 		url("alpine.jpg") no-repeat;
+	// background-position: 	top center;
+	border: 		1px solid #f00;
+}
+
+#header .logo {
+	float:		left;
+	width:		30%;
+	background-color:	#0c0;
+	display:	inline;
+	}
+	
+#header h1 {
+	font-size:	100%;
+	display:	inline;
+	}
+	
+#header .leader {
+	padding:		0.5em;
+	font-size:		60%;
+	float:			right;
+	display:		inline;
+	}
+
+
+/*----------------------------------------------------------------------------------
+ * Content and main menu
+ *----------------------------------------------------------------------------------
+ */
+
+/* DEFAULT DEFINITIONS */
+#main { /* 'content' is both the wrapper and the navmenu */
+	 position:		relative;
+	padding: 		0px 0px 0px 0px;
+	margin: 		0px 0px 0px 0px;
+	// margin:	0% 10% 0% 10%;
+	// clear:			both;
+	border:			1px solid #00c;
+}
+
+/* The .nav class is taken from suckerfish css dropdowns 
+   see http://www.alistapart.com/articles/dropdowns/  */
+#nav {
+	height:			auto;
+	float:			right;
+	width:			70%;
+	display:		inline;
+	background-color:	#ccc;
+	font-size:		75%;
+	font-weight:		bold;
+	}	
+	
+#nav ul { /* all lists */
+	padding: 0;
+        margin: 0;
+        list-style: none;
+        line-height: 1;
+}
+
+#nav a {
+        display: block;
+	padding: .25em;
+	width: 19em;
+}
+
+#nav li { /* all list items */
+        float: left;
+        border-left: 2px solid #fff;
+        border-right: 2px solid #fff;
+	padding:		0em 1em 0em 0.25em;
+	// width: 10em; /* width needed or else Opera goes nuts */
+}
+
+#nav  li ul { /* second-level lists */
+	position: absolute;
+        // background-image: url("blutop.png");
+	background: transparent;
+	border:	none;
+        width: 20em;
+	left: -999em; /* using left instead of display to hide menus because display: none isn't read by screen readers */
+}
+
+#nav li ul ul { /* third-and-above-level lists */
+       margin: -1em 0 0 20em;
+}
+#nav li ul li {
+	border: none;
+	}
+
+#nav li:hover ul ul, #c-nav li:hover ul ul ul, #c-nav li.sfhover ul ul, #c-nav li.sfhover ul ul ul {
+        left: -999em;
+}
+#nav  li:hover ul, #c-nav li li:hover ul, #c-nav li li li:hover ul, #c-nav li.sfhover ul, #c-nav li li.sfhover ul, #c-nav li li li.sfhover ul { /* lists nested under hovered list items */
+        left: auto;
+        background: url("y-left.png") no-repeat #fff;
+	border-left: 1px solid #ccf;
+	border-top: 1px solid #aaa;
+	border-bottom: 1px solid #ccf;
+	}
+
+#nav a:hover {
+        background: url("blutop.png") repeat-x #ccf;
+	// color: #222;
+	}
+/* End suckerfish */
+
+#main .leader {
+	display: 	block;
+	clear:		both;
+	width:		100%;
+	}
+	
+#main .postnav {
+	clear:		both;
+	margin:		0% 10% 0% 10%;
+	padding:	0;
+	// padding: 	.5em .5em;
+	display:	block;
+	font-size:	75%;
+	background:	url("blutop.png") repeat-x;
+	}	
+
+#main .postnav h2 {
+	padding: 	.5em 0em 0em .5em;
+	color: #ccd;
+	display: inline;
+	clear: both;
+	}
+
+#content {
+	margin:	0% 10% 0% 10%;
+	padding: 0em .5em;
+	border: 1px solid #ccc;
+	clear: both;
+	}
+
+
+#main h1 {
+	display: block;
+	clear:	both;
+	width:	100%;
+	}
+
+#subnav {
+	width:	100%;
+	margin:	0% 10% 0% 10%;
+	//font-size: 60%;
+	font-weight: bold;
+	clear:both;
+	line-height: 1;
+	}
+
+#subnav a {
+	display: inline;
+	padding: .25em .25em 0 .25em;
+	border: 1px solid #ccccff;
+	border-bottom: none;
+	background: url("blutop.png") repeat-x top;
+	color: #fff;
+	background-color: #aaa;
+	}
+#subnav a:hover {
+	color: #666;
+	background-color: #ddd;
+	}
+
+#subnav .selected {
+	background: #fff;
+	}
+
+#subnav strong {
+	background: #fff;
+	border: 1px solid #ccccff;
+	padding: .25em .25em 0 .25em;
+	border-bottom:none;
+	color: #446;
+	}
+
+#subnav .selected a {
+	// background: url("sel-left.png") no-repeat top left;
+	}
+
+
+/* CONTENT/WRAPPER */
+#wrapper { /* 'wrapper' is the area where you display the interesting things */
+	position: 	absolute;
+	top: 		20px;
+	right:		0px;
+	width: 		560px;
+	font-size: 	12px;
+}
+
+#background-wrapper {
+	padding: 		0px 0px 0px 0px;
+	margin: 		0px 0px 0px 0px;
+	background-image: 	url(watermark.jpg);
+	background-repeat: 	no-repeat;
+	background-position:200px 50px;
+}
+
+#wrapper h1 { 
+	clear: 		both;
+	height: 		18px;
+	padding: 		2px 0px 0px 5px;
+	margin: 		0px 0px 2px -20px;
+	text-decoration:	none;
+	font-size: 	14px;
+	font-weight: 	bold;
+	white-space: 	nowrap;
+	overflow: 	hidden;
+	border-bottom: 	1px solid #cacaca;
+	border-top: 	px solid #ccc;
+	background-image: 	url(h1.png);
+	color: 		#5c7b99;
+}
+
+#wrapper h2 { 
+	clear: 		both;
+	height: 		18px;
+	padding: 		2px 0px 0px 10px;
+	margin:		0px 0px 2px -20px;
+	text-decoration:	none;
+	font-size:	14px;
+	font-weight:	bold;
+	white-space:	nowrap;
+	overflow:		hidden;
+	border-bottom:	1px solid #cacaca;
+	border-top:	1px solid #ccc;
+	background-image:	url(h2.png);
+	color:		#5c7b99;
+}
+#wrapper h3 { 
+	clear: 		both;
+	height:		14px;
+	padding:		0px 0px 0px 15px;
+	margin:		0px 0px 2px -20px;
+	text-decoration:	none;
+	font-size:	12px;
+	font-weight:	thin;
+	white-space:	nowrap;
+	overflow:		hidden;
+	border-bottom:	1px solid #cacaca;
+	border-top:	1px solid #ccc;
+	background-image:	url(h3.png);
+	color:		#5c7b99;
+}
+
+#wrapper p {
+	clear:		both;
+}
+
+#wrapper dt {
+	float: 		left;
+	clear: 		both;
+	width: 		200px;
+	color: 		#000;
+	font-size: 	12px;
+	text-align:	left;
+	margin:		0px 5px 0px 0px;
+	padding:		5px 0px 5px 0px;
+	border-top:	1px solid #ddd;
+	font-weight:	bold;
+}
+
+#wrapper dd {
+	float: 		left;
+	width: 		350px;
+
+	color: 		#444;
+	font-size: 	12px;
+	margin: 		0px 0px 0px 5px;
+	padding: 		5px 0px 0px 0px;
+	font-weight: light;
+}
+
+#wrapper textarea {
+	width: 		99%;
+	height: 		300px;
+	border-right: 	1px solid #cacaca;
+	border-bottom: 	1px solid #cacaca;
+}
+#wrapper form {
+	display:		inline;
+}
+
+#wrapper dd select {
+	width: 		247px;
+	border-right:	1px solid #cacaca;
+	border-bottom:	1px solid #cacaca;
+}
+
+#wrapper .submit {
+	width: 		100px;
+	border-right:	1px solid #cacaca;
+	border-bottom:	1px solid #cacaca;
+	background:	#eee;
+}
+#wrapper .text {
+	width: 		245px;
+	border-right:	1px solid #cacaca;
+	border-bottom:	1px solid #cacaca;
+	background:	white;
+}
+#wrapper table {
+	width: 		99%;
+}
+
+/* FOOTER */
+#footer {
+	clear: 		both;
+	border-top:	1px solid #d6d6d6;
+	position:		relative;
+	width: 		100%;
+	padding-top:	5px;
+	margin-top:	15px;
+	margin-bottom:	10px;
+	font-size:	10px;
+	text-align:	left;
+	color: 		#aaa;
+}
+

@@ -3,57 +3,66 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Alpine</title>
-<link rel="stylesheet" type="text/css" href="static/webconf.css">
-<meta http-equiv="Refresh" content="5; url=sample.html">
+<link rel="stylesheet" type="text/css" href="snow/snow.css">
 </head>
+
+
 <body>
-
-
-
-
-<div id=head>
-<h1>Alpine</h1>
-<p>Host: <em>Inside</em></p>
+<div id=header>
+	<a href="#Content" class="hide">[Skip to main content]</a>
+	<h1 class="logo">AlpineLinux</h1>
+	<div class="leader">[ this is h-leader div text <a href="#Content">Goto content</a>]</div>
+	<p>This is plain old Head div text</p>
 </div>
 
+<div id="main">
+	<div id="nav">
+		<ul><li>Networking
+			<ul><a href=""><li>Interfaces</li></a>
+			    <a href=""><li>Firewall</li></a>
+			    <a href=""><li>BGP</li></a>
+			    <a href=""><li>DHCP Server</li></a>
+			    <a href=""><li>Ipsec VPN</li></a>
+		    </ul></li>
+		    <li>Applications
+		    	<ul><li><a href="">Web Proxy</a></li>
+		    		<li><a href="">Content Filter</a></li>
+		    		<li><a href="">Fetchmail</a></li>
+		    		<li><a href="">Certificate Authority</a></li>
+		    	</ul></li>
+		    <li>System
+		    	<ul><li><a href="">Backup</a></li>
+		    	<li><a href="">Package Management</a></li>
+		    	<li><a href="">General Health</a></li>
+	    		<li><a href="">System Logs</a></li>
+	    		<li><a href="">SNMP</a></li>
+		    	</ul></li>
+		    </ul>
+		    </div>
 
-<div id="mainmenu">
-<h3>Networking</h3>
-<ul><a href="foo"><li>Interfaces</li></a>
-<li id="selected"><a href="bar">Routes</a></li>
-<li><a href="bar">DNS Cache</a></li>
-<li><a href="bar">DNS Server</a></li>
-<li><a href="bar">Firewall</a></li>
-</ul>
-<h3>VPN</h3>
-<ul>
-<li><a href="foo">IPSec</a></li>
-<li><a href="bar">OpenVPN</a></li>
-<li><a href="bar">Tinc</a></li>
-</ul>
-<h3>Application Proxy</h3>
-<ul>
-<li><a href="foo">DNS Proxy</a></li>
-<li><a href="bar">Fetchmail</a></li>
-<li><a href="bar">Squid</a></li>
-</ul>
-</div>
+	<div class="postnav">
+	<h2>Networking : Interfaces</h2>
+	<p>[ welcome ] > [ login ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
+	</div>
+	<a name="Content"></a>
+	<div id="subnav">
+		<a href="">Nav 1</a>
+		<strong class=selected>Nav 2</strong>
+		<a href="">Nav 3</a>
+	</div>
+	
+	<div id="content">
+	
+	
+	
+	<p>
+This is plain old content
+</p>
 
 
-<div id="submenu">
-<h2>Networking > Routes</h2>
-<ul><li><a href="foo">Status</a></li>
-<li id="selected">Interfaces</li>
-<li><a href="fee">Expert</a></li>
-</ul>
-</div>
-
-
-
-<div id="content">
 <h1>Errors</h1>
 <p class="error">This is error text.  As if you didn't know that.  Just check the errors below.</p>
-
+<p class="hide">This is some plain content level hide text</p>
 <p>This is a page with a <a href="foo">link</a> in it.</p>
 
 <h1>Networking - Status</h1>
@@ -94,9 +103,15 @@ the page you want.  Evenutally, you'll see the page you want.  But not quite yet
 <p>Bring Service Down</p>
 <p>Bring Service Up</p>
 </div>
+</div>
+
+<div id=c-trailer>This is c-trailer</div>
 
 <div id="footer">
-<p><center>Made with care by webconf</center></p>
+	<div id="f-leader">F leader</div>
+	<p>Made with care by webconf</p>
+	<div id="f-nav">F nav</div>
+	<div id="f-trailer">F trailer</div>
 </div>
 </body>
 </html>
