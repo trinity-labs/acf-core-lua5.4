@@ -39,6 +39,9 @@ pre.code {
 	background: 	#f8f8f8;
 	padding: 		.5em;
 }
+.hide {
+	display:			none;
+}
 
 /* -----------------------------------------------------------------------------------------------
    PAGE
@@ -60,13 +63,16 @@ pre.code {
 }
 
 #header p {
+	position:	absolute;
+	right: 		10px;
+	top:		110px;
 	margin: 0px;
 	padding: 0px;
 	}
-#header #version {
+#header h1 {
 	position:	absolute;
 	left: 		200px;
-	top:		108px;
+	top:		55px;
 }
 #header #logo {
 	position:		absolute;
@@ -75,40 +81,56 @@ pre.code {
 	margin-right:	2px;
 	font-size:	40px;
 }
+
+/*----------------------------------------------------------------------------------
+ * Crumbs (Historylinks)
+ *----------------------------------------------------------------------------------
+ */
+
+#main .postnav h2 {
+	position: 		absolute;
+	top:			110px;
+	left:			200px;
+	color: 			black;
+	font-size: 		16px;
+	font-weight: 		bold;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	padding: 			0px;
+	margin: 			0px;
+}
+#main .postnav p {
+	position: 		absolute;
+	top:			80px;
+	left:			0px;
+	width:			755px;
+	color: 			#999;
+	font-size: 		11px;
+	font-weight:		verdana, arial;
+	font-weight: 		bold;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	background:		transparent;
+	padding: 			0px 5px 0px 10px;
+	margin: 			0px 0px 0px 0px;
+/*	background:	blue;	*/
+}
+
+
 /*----------------------------------------------------------------------------------
  * Submenu ( Horizontal Tabs)
  *----------------------------------------------------------------------------------
  */
-#metanav {
-	float:		right;
-	top:		0px;
-	margin: 		73px 20px 0px 0px;
+#subnav {
+	position:		absolute;
+	top:		74px;
+	right:		50px;
+	margin: 		0px 20px 0px 0px;
 	padding: 		0px;
 
-	}
-	
-#metanav p {
-	display: 		none;
-	}
-
-#metanav ul {
-	list-style: 	none;
-	}
-
-#metanav li {
-	color: 		#33A;
-	background: 	#eee;
-	display: 		block;
-	font-size: 	10pt;
-	float: 		left;
-	margin: 		0px;
-	padding:		7px 7px;
-	height: 		15px;
-	border: 		1px #57b solid;
-	}
-
-#metanav .current {
-	background: 	#fff;
+}
+#subnav a {
+	background: 	transparent;
 	display: 		block;
 	float: 		left;
 	font-weight: 	Bold;
@@ -118,18 +140,15 @@ pre.code {
 	height: 		15px;
 	padding: 		7px 7px;
 	border: 		3px #57b solid;
-	border-bottom: 	1px #fff solid;
+	border-bottom: 	none;
 	}
-
-
-#metanav a {
-	display: 		block;
-	float:		 left;
+#subnav a.selected {
+	background: 	white;
 	margin: 		0px;
-	padding: 		0px 0px;
-	} 
-
-#metanav a:hover {
+	padding: 		7px 7px;
+	border-bottom: 	none;
+	}
+#subnav a:hover {
 	text-decoration: 	underline;
 	}
 
@@ -147,30 +166,39 @@ pre.code {
 	border-right: 	none;
 	}
 
-#nav .category {
-	color: 		#448;
-	padding: 		10px 0px 0px 0px;
-	font-weight: 	normal;
-	font-size: 	138%;
-	margin: 		0px 0px 2px 0px;
-	}
-
 #nav ul {
-	padding: 		0px 0px 0px 0px;
-	margin: 		0px;
-	list-style-type: 	none;
+	padding: 		2px;
+	margin: 		2px 0px 0px 0px;
 	}
 #nav li {
-	background-color: 	inherit;
-	padding: 		2px 2px 2px 10px;
+	padding: 		5px 0px 0px 0px;
+	margin: 		5px 0px 0px 0px;
 	}
 
+#nav ul li {
+	color: 		#448;
+	font-weight: 	normal;
+	font-size: 	138%;
+	margin: 		0px 0px 0px 0px;
+	padding: 		0px 0px 0px 0px;
+	list-style-type: 	none;
+	}
+
+
+#nav a {
+	margin:		0px 0px 0px 0px;
+	padding:		0px 0px 0px 0px;
+	font-size:	12px;	
+	display: 		block;
+	text-decoration: 	underline;
+	}
 #nav a:hover {
 	display: 		block;
 	text-decoration: 	underline;
 	}
+
 	 
-#nav .current {
+#nav .selected {
 	background-color:	#fff;
 	border: 		1px #57b solid;
 	border-right: 	none;
@@ -184,17 +212,15 @@ pre.code {
  * Content
  *----------------------------------------------------------------------------------
  */
-#background-wrapper {
-	}
 
-#wrapper {
+#content {
 	width: 		600px;
 	float:		left;
 	color: 		#333;
 	padding: 		0px 10px 0px 10px;
 	}
 
-#wrapper h1 {
+#content h1 {
 	font-size: 	120%;
 	text-align: 	left;
 	margin: 		0px 0px 0px 0px;
@@ -203,7 +229,7 @@ pre.code {
 	border-bottom: 	2px solid #aaa;
 	}
  
-#wrapper h2 {
+#content h2 {
 	font-size: 	100%;
 	margin: 		10px 0px 0px 0px;
 	padding: 		0px 0px 0px 0px;
@@ -212,7 +238,7 @@ pre.code {
 	clear: 		both;
 	}
 
-#wrapper h3 {
+#content h3 {
 	font-size: 	85%;
 	margin: 		10px 0px 0px 0px;
 	padding: 		0px 0px 0px 0px;
@@ -221,47 +247,47 @@ pre.code {
 	clear:		both;
 	}	
 
-#wrapper p {
+#content p {
 	clear:		both;
 	}
 
-#wrapper p.error {
+#content p.error {
 	font-size:	120%;
 	font-weight:	bold;
 	background-color:	#eee;
 	color:		#f44;
 	}
 
-#wrapper p.warn {
+#content p.warn {
 	background-color:	#cc4;
         }
 
-#wrapper p.ok {
+#content p.ok {
 	font-size:	120%;
 	font-weight:	bold;
 	color:		#090;
         }
                                                  
                                         
-#wrapper input.error {
+#content input.error {
 	background-color:	#ffa;
 	}	
 
-#wrapper th {
+#content th {
 	font-weight:	inherit;
 	color:		#228;
 	background:	#eef;
 	}
 	
-#wrapper a {
+#content a {
 	text-decoration:	underline;
 	color:		#449;
 	}
 	
-#wrapper dl {
+#content dl {
 	margin:		0px;
 	}
-#wrapper dt {
+#content dt {
 	background-color:	none;
 	font-size:	110%;
 	height:		20px;
@@ -277,7 +303,7 @@ pre.code {
 	font-size:	10pt;
 	}
 
-#wrapper dd {
+#content dd {
 
 	color:		#444;
 	float:		left;
@@ -286,40 +312,40 @@ pre.code {
 	font-weight: 	light;
 	}
 	
-#wrapper .grey {
+#content .grey {
 	background-color: 	#eee;
 	}
 
 
-#wrapper textarea {
+#content textarea {
 	width: 		99%;
 	height: 		300px;
 	border-right: 	1px solid #cacaca;
 	border-bottom: 	1px solid #cacaca;
 }
-#wrapper form {
+#content form {
 	display:		inline;
 }
 
-#wrapper dd select {
+#content dd select {
 	width: 		247px;
 	border-right:	1px solid #cacaca;
 	border-bottom:	1px solid #cacaca;
 }
 
-#wrapper .submit {
+#content .submit {
 	width: 		100px;
 	border-right:	1px solid #cacaca;
 	border-bottom:	1px solid #cacaca;
 	background:	#eee;
 }
-#wrapper dd .text {
+#content dd .text {
 	width: 		245px;
 	border-right:	1px solid #cacaca;
 	border-bottom:	1px solid #cacaca;
 	background:	white;
 }
-#wrapper table {
+#content table {
 	width: 		99%;
 }
 
@@ -337,6 +363,6 @@ pre.code {
 	margin-top:	15px;
 	margin-bottom:	10px;
 	font-size:	10px;
-	text-align:	left;
+	text-align:	center;
 	color: 		#aaa;
 }
