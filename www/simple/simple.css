@@ -61,7 +61,7 @@ body {
 /* -----------------------------------------------------------------------------------------------
    CONTENT (and its components)
    -----------------------------------------------------------------------------------------------*/
-#content { /* 'content' is both the wrapper and the navmenu */
+#main { /* 'content' is both the wrapper and the navmenu */
 	background:	#445;
 }
 
@@ -88,7 +88,7 @@ body {
 #nav ul li.last {
 	list-style-type: 	none;
 }
-#wrapper { /* 'wrapper' is the area where you display the interesting things */
+#content { /* 'wrapper' is the area where you display the interesting things */
 	float: 		left;
 	width:		800px;
 	background: 	#676;
