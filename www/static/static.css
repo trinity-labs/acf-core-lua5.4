@@ -1,5 +1,10 @@
 /* .css - Alpine ACF */
 
+/*----------------------------------------------------------------------------------
+ * DEBUGGING SECTION
+ *----------------------------------------------------------------------------------
+ */
+
 /* DEBUG INFORMATION
    "#wrapper input" makes things red and ugly. This is to search for things that needs to be added/removed in this css.
    If you find that some button/input turns red, pleace see what needs to be changed in your code or in this css.
@@ -7,357 +12,403 @@
    When manually wringing a <input... or something like that, see if you need to add class='whatever' or something like it.
 */
 
-#wrapper input { /* DEBUG: Search for uncategorized buttons/inputs */
+#content input { /* DEBUG: Search for uncategorized buttons/inputs */
 	background:	red;
 }
-
-
-/* Default definitions */
-body { 
-	margin: 		0px 0px 0px 0px;
-	padding: 		0px 0px 0px 0px;
-	font-family: 	Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
-	font-size:	12pt;
-	/* Also change #wrapper min-width by the same absolute amount */
-	width: 		770px;
+.leader {
+	border:		0px solid yellow;
 }
-#page { 
-	position:		relative;
-	left:		0px;
-	top:		0px;
+
+.tailer {
+	border:		0px solid magenta;
 }
+
+/*----------------------------------------------------------------------------------
+ * General settings
+ *----------------------------------------------------------------------------------
+ */
+
+.hide {
+	display:			none;
+	}
 
 a {
-	text-decoration:none;
-	color:		#072966;
+	text-decoration:		none;
+	color:			#072966;
 }
 a:visited {
-	color:		#072966;
+	color:			#072966;
 }
 a:hover {
-	color:		red;
+	color:			red;
 }
 input {
-	border:		1px solid #ccc;
+	border:			1px solid #ccc;
 }
 hr {
-	background-color:	#ff9933;
-	height: 		3px;
+	background-color:		#ff9933;
+	height: 			3px;
 }
 .error {
-	height:		0px;
-	font-size: 	11pt;
-	font-weight: 	bold;
-	color: 		#f33;
+	height:			0px;
+	font-size: 		11pt;
+	font-weight: 		bold;
+	color: 			#f33;
+}
+/*----------------------------------------------------------------------------------
+ * Positioning DIV's
+ *----------------------------------------------------------------------------------
+ */
+body {
+	margin: 			0px 0px 0px 0px;
+	padding: 			0px 0px 0px 0px;
+	font-family: 		Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
+	font-size:	12pt;
+	background-image: 		url(watermark.jpg);
+	background-repeat: 		no-repeat;
+	background-position:	400px 140px;
+
+}
+
+#header {
+	width: 			770px;
+	height: 			75px;
+	margin: 			0px 0px 0px 0px;
+	padding: 			0px 0px 0px 0px;
+}
+
+#main {
+	left: 			0px;
+	top: 			0px;
+	width: 			770px;
+	padding: 			0px 0px 0px 0px;
+	margin: 			17px 0px 0px 0px;
+/*	background:	green; */
+}
+#nav {
+	width: 			180px;
+	margin: 			0px 0px 0px 9px;
+	background:		white;
+	/*background:	blue;	*/
+}
+
+#subnav {
+	position:			absolute;
+	top:			56px;
+	height:			40px;
+	left:			200px;
+	width: 			570px;	/* totalwidth - left (see above */
+	padding: 			0px 0px 0px 0px;
+	margin: 			0px 0px 0px 0px;
+
+/*	background:	blue; */
+}
+#content {
+	position: 		absolute;
+	top: 			117px;
+	left:			200px;
+	width: 			570px;
+/*	background:	yellow; */
 }
 
 /*----------------------------------------------------------------------------------
  * Header, Logotypes and icons
  *----------------------------------------------------------------------------------
  */
-
-
-/* DEFAULT DEFINITIONS */
 #header {
-	position: 	relative;
-	margin: 		0px 0px 0px 0px;
-	padding: 		0px 0px 0px 0px;
-	height: 		75px;
-	background-image: 	url(alpine.jpg);
-	background-repeat: 	repeat-x;
-	border: 		1px solid #ddd;
+	background-image: 		url(alpine.jpg);
+	background-repeat: 		repeat-x;
+	border: 			1px solid #ddd;
+	padding: 			0px 0px 0px 0px;
+	margin: 			0px 0px 0px 0px;
 }
 
-#header #version {
-	position:	absolute;
-	top:		54px;
-	left: 		10px;
-	height:		16px;
-	padding: 		3px 0px 0px 0px;
-	text-align:	left;
-	color: 		#777;
-	font-size:	12px;
+#header h1 {
+	font-size:		40px;
+	padding: 			0px 0px 0px 10px;
+	margin: 			0px 0px 0px 0px;
+}
+#header p {
+	position:			absolute;
+	top:			60px;
+	left:			10px;
+	color: 			#777;
+	font-size:		12px;
+	padding: 			0px 0px 0px 0px;
+	margin: 			0px 0px 0px 0px;
 }
 
-/* TOP MENU */
-#header ul#metanav {
-	position: 	absolute;
-	top: 		57px;
-	left: 		195px;
-	margin: 		0px 0px 0px 0px;
-	padding: 		0px 0px 0px 0px;
-	z-index:		10;
-	list-style-type: 	none;
-	font-size:	14px;
+#header .tailer {
+	position:			absolute;
+	background-image: 		url(shadow-top.png);
+	background-repeat: 		repeat-x;
+	top:			76px;
+	height:			10px;
+	width:			770px;
+	margin: 			0px 0px 0px 0px;
+	padding: 			0px 0px 0px 0px;
 }
-#header ul#metanav li {
-	display: 		inline;
-	margin: 		0px 0px 5px 0px;
-	padding: 		3px 5px 2px 5px;
-	background-image: 	url(menu_item.png);
-	border: 		1px solid #bbb;
-	border-bottom: 	none;
+
+/*----------------------------------------------------------------------------------
+ * Navigation
+ *----------------------------------------------------------------------------------
+ */
+#nav { /* 'nav' is only the main menu */
+	padding: 			0px 10px 0px 0px;
+	background-image: 		url(shadow-side.png);
+	background-repeat: 		repeat-y;
+	background-position: 	right;
 }
-#header ul#metanav li.current  {
-	font-weight:	bold;
-	margin: 		20px 0px 0px 0px;
-	padding: 		3px 5px 10px 5px;
-	background:	white;
+#nav ul {
+	list-style-type: 		none;
+	padding: 			0px 0px 0px 0px;
+	margin: 			0px 0px 0px 0px;
 }
-#header .current a {
-	color: 		red;
+#nav ul li {
+	color: 			white;
+	font-size: 		16px;
+	font-weight: 		bold;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	background:		#6688AA;
+	padding: 			1px 0px 0px 4px;
+	margin: 			0px 0px 0px 0px;
+	border-top: 		1px solid #7799BB;
 }
-#header ul#metanav li.current a:hover {
-	text-decoration: 	underline;
-	background:	white;
-	color: 		red;
+#nav ul li ul {
+	padding: 			2px 0px 0px 0px;
+	margin: 			0px 0px 0px -4px;
 }
-#header ul#metanav li a:hover {
-	display: 		inline;
-	margin: 		-3px -5px 0px -5px;
-	padding: 		3px 5px 0px 5px;
-	border: 		none;
+#nav ul li ul li {
+	font-weight: 		normal;
+	font-size:		10pt;
+	height: 			21px;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	border-bottom: 		1px solid #cacaca;
+	border-top: 		1px solid #ccc;
+	border-left: 		1px solid #ddd;
+	background-image: 		url(menu_item.png);
+	padding:			0px 0px 0px 0px;
+	margin:			0px 0px 0px 0px;
+}
+#nav ul li ul li.selected {
+	background: 		#dff;
+	font-weight:		bold;
+}
+#nav ul li ul li a {
+	display: 			block;
+	height:			19px;
+	padding:			2px 0px 0px 5px;
+}
+#nav ul li ul li a:hover {
 	background-image: 	url(menu_item_hover.png);
-	color: 		black;
+}
+#nav ul li ul li.selected a:hover {
+	background-image: 		none;
 }
 
-#header #logo {
-	position:		absolute;
-	left: 		5px;
-	top:		5px;
-	margin-right:	2px;
-	font-size:	40px;
+/*----------------------------------------------------------------------------------
+ * Crumbs (Historylinks)
+ *----------------------------------------------------------------------------------
+ */
+
+#main .postnav h2 {
+	position: 		absolute;
+	top:			95px;
+	left:			200px;
+	width:			565px;
+	color: 			white;
+	font-size: 		16px;
+	font-weight: 		bold;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	background:		#6688AA;
+	padding: 			2px 0px 2px 5px;
+	margin: 			0px 0px 0px 0px;
+}
+#main .postnav p {
+	position: 		absolute;
+	top:			80px;
+	left:			0px;
+	width:			755px;
+	color: 			#999;
+	font-size: 		11px;
+	font-weight:		verdana, arial;
+	font-weight: 		bold;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	background:		transparent;
+	padding: 			0px 5px 0px 10px;
+	margin: 			0px 0px 0px 0px;
+/*	background:	blue;	*/
 }
 
 
 /*----------------------------------------------------------------------------------
- * Content and main menu
+ * Submenu
+ *----------------------------------------------------------------------------------
+ */
+#subnav a {
+	height:			40px;
+	margin: 			0px 0px 5px 0px;
+	padding: 			3px 5px 2px 5px;
+	font-size:		12px;
+	background-image: 		url(menu_item.png);
+	border: 			1px solid #bbb;
+	border-bottom: 		none;
+}
+
+#subnav a.selected {
+	background:		#dff;
+}
+
+/*----------------------------------------------------------------------------------
+ * Main content
+ *----------------------------------------------------------------------------------
+ */
+#content {
+	background-image: 		url(shadow-side.png);
+	background-repeat: 		repeat-y;
+	background-position: 	right;
+	font-size:		12px;
+	width:			563px;
+	border-left:		1px solid #cacaca;
+	margin: 			0px 0px 0px 0px;
+	padding: 			0px 10px 0px 5px;
+}
+#content .tailer {
+	clear:			both;
+/*	background-image: 		url(shadow-top.png);
+	background-repeat: 		repeat-x;
+	background-position: 	bottom;*/
+	border-bottom:		1px solid #cacaca;
+	height:			10px;
+	width:			575px;
+	margin: 			0px 0px 0px -5px;
+	padding: 			0px 0px 0px 0px;
+}
+
+
+#content h1 { 
+	clear: 			both;
+	height: 			18px;
+	padding: 			2px 0px 0px 5px;
+	margin: 			0px 0px 2px -5px;
+	text-decoration:		none;
+	font-size: 		14px;
+	font-weight: 		bold;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	border-bottom: 		1px solid #cacaca;
+	border-top: 		1px solid #ccc;
+	background-image: 		url(h1.png);
+	color: 			#5c7b99;
+}
+
+#content h2 { 
+	clear: 			both;
+	height: 			18px;
+	padding: 			2px 0px 0px 10px;
+	margin:			0px 0px 2px -5px;
+	text-decoration:		none;
+	font-size:		14px;
+	font-weight:		bold;
+	white-space:		nowrap;
+	overflow:			hidden;
+	border-bottom:		1px solid #cacaca;
+	border-top:		1px solid #ccc;
+	background-image:		url(h2.png);
+	color:			#5c7b99;
+}
+#content h3 { 
+	clear: 			both;
+	height:			14px;
+	padding:			0px 0px 0px 15px;
+	margin:			0px 0px 2px -5px;
+	text-decoration:		none;
+	font-size:		12px;
+	font-weight:		thin;
+	white-space:		nowrap;
+	overflow:			hidden;
+	border-bottom:		1px solid #cacaca;
+	border-top:		1px solid #ccc;
+	background-image:		url(h3.png);
+	color:			#5c7b99;
+}
+
+#content p {
+	clear:			both;
+}
+
+#content dt {
+	float: 			left;
+	clear: 			both;
+	width: 			200px;
+	color: 			#000;
+	font-size: 		12px;
+	text-align:		left;
+	margin:			0px 5px 0px 0px;
+	padding:			5px 0px 5px 0px;
+	border-top:		1px solid #ddd;
+	font-weight:		bold;
+}
+
+#content dd {
+	float: 			left;
+	width: 			350px;
+	color: 			#444;
+	font-size: 		12px;
+	margin: 			0px 0px 0px 5px;
+	padding: 			5px 0px 0px 0px;
+	font-weight:		 light;
+}
+
+#content textarea {
+	width: 			99%;
+	height: 			300px;
+	border-right: 		1px solid #cacaca;
+	border-bottom: 		1px solid #cacaca;
+}
+#content form {
+	display:			inline;
+}
+
+#content dd select {
+	width: 			247px;
+	border-right:		1px solid #cacaca;
+	border-bottom:		1px solid #cacaca;
+}
+
+#content .submit {
+	width: 			100px;
+	border-right:		1px solid #cacaca;
+	border-bottom:		1px solid #cacaca;
+	background:		#eee;
+}
+#content .text {
+	width: 			245px;
+	border-right:		1px solid #cacaca;
+	border-bottom:		1px solid #cacaca;
+	background:		white;
+}
+#content table {
+	width: 			99%;
+}
+
+/*----------------------------------------------------------------------------------
+ * Footer
  *----------------------------------------------------------------------------------
  */
 
-/* DEFAULT DEFINITIONS */
-#content { /* 'content' is both the wrapper and the navmenu */
-	background-image: 	url(shadow-top.png);
-	background-repeat: 	repeat-x;
-	position:		relative;
-	top: 		0px;
-	right:		0px;
-	left:		0px;
-	padding: 		10px 0px 0px 0px;
-	margin: 		0px 0px 0px 0px;
-}
-/* MAIN MENU */
-#nav { /* 'nav' is only the main menu */
-	position: 	absolute;
-	left: 		10px;
-	top: 		20px;
-	width: 		180px;
-	padding: 		0px 0px 0px 0px;
-	margin: 		0px 0px 0px 0px;
-	background-image: 	url(shadow-side.png);
-	background-repeat: 	repeat-y;
-	background-position: right;
-}
-#nav ul {
-	list-style-type: 	none;
-	padding: 		0px 0px 0px 0px;
-	margin: 		0px 0px 0px 0px;
-}
-#nav li {
-	padding-right: 	10px;
-	margin-right: 	10px;
-	border-left: 	1px solid #ddd;
-}
-#nav ul li.category {
-	color: 		white;
-	font-size: 	16px;
-	font-weight: 	bold;
-	white-space: 	nowrap;
-	overflow: 	hidden;
-	background:	#6688AA;
-}
-#nav ul li.menuitem {
-	height: 		21px;
-	text-decoration:	none;
-	font-size: 	14px;
-	font-weight: 	normal;
-	white-space: 	nowrap;
-	overflow: 	hidden;
-	border-bottom: 	1px solid #cacaca;
-	border-top: 	1px solid #ccc;
-	background-image: 	url(menu_item.png);
-}
-#nav ul li.last {
-	background-image: 	url(shadow-top.png);
-	background-repeat: 	repeat-x;
-	padding-bottom:	5px;
-}
-#nav ul li a {
-	display: 		block;
-	height:		21px;
-	padding:		3px 0px 0px 5px;
-}
-#nav ul li.menuitem a:hover {
-	color: 		#5c7b99;
-	color: 		black;
-	height: 		21px;
-	padding-right: 	-10px;
-	margin-right: 	-10px;
-	background-image: 	url(menu_item_hover.png);
-}
-#nav ul li.current a:hover {
-	text-decoration: 	underline;
-}
-#nav .current a {
-	color: 		red;
-}
-#nav li.current, #nav li.current a { /* active item */
-	height: 		21px;
-	text-decoration:	none;
-	font-size: 	14px;
-	font-weight: 	bold;
-	white-space: 	nowrap;
-	overflow: 	hidden;
-	background:	white;
-	padding-right: 	-10px;
-	margin-right: 	-10px;
-}
-
-/* CONTENT/WRAPPER */
-#wrapper { /* 'wrapper' is the area where you display the interesting things */
-	position: 	absolute;
-	top: 		20px;
-	right:		0px;
-	width: 		560px;
-	font-size: 	12px;
-}
-
-#background-wrapper {
-	padding: 		0px 0px 0px 0px;
-	margin: 		0px 0px 0px 0px;
-	background-image: 	url(watermark.jpg);
-	background-repeat: 	no-repeat;
-	background-position:200px 50px;
-}
-
-#wrapper h1 { 
-	clear: 		both;
-	height: 		18px;
-	padding: 		2px 0px 0px 5px;
-	margin: 		0px 0px 2px -20px;
-	text-decoration:	none;
-	font-size: 	14px;
-	font-weight: 	bold;
-	white-space: 	nowrap;
-	overflow: 	hidden;
-	border-bottom: 	1px solid #cacaca;
-	border-top: 	px solid #ccc;
-	background-image: 	url(h1.png);
-	color: 		#5c7b99;
-}
-
-#wrapper h2 { 
-	clear: 		both;
-	height: 		18px;
-	padding: 		2px 0px 0px 10px;
-	margin:		0px 0px 2px -20px;
-	text-decoration:	none;
-	font-size:	14px;
-	font-weight:	bold;
-	white-space:	nowrap;
-	overflow:		hidden;
-	border-bottom:	1px solid #cacaca;
-	border-top:	1px solid #ccc;
-	background-image:	url(h2.png);
-	color:		#5c7b99;
-}
-#wrapper h3 { 
-	clear: 		both;
-	height:		14px;
-	padding:		0px 0px 0px 15px;
-	margin:		0px 0px 2px -20px;
-	text-decoration:	none;
-	font-size:	12px;
-	font-weight:	thin;
-	white-space:	nowrap;
-	overflow:		hidden;
-	border-bottom:	1px solid #cacaca;
-	border-top:	1px solid #ccc;
-	background-image:	url(h3.png);
-	color:		#5c7b99;
-}
-
-#wrapper p {
-	clear:		both;
-}
-
-#wrapper dt {
-	float: 		left;
-	clear: 		both;
-	width: 		200px;
-	color: 		#000;
-	font-size: 	12px;
-	text-align:	left;
-	margin:		0px 5px 0px 0px;
-	padding:		5px 0px 5px 0px;
-	border-top:	1px solid #ddd;
-	font-weight:	bold;
-}
-
-#wrapper dd {
-	float: 		left;
-	width: 		350px;
-
-	color: 		#444;
-	font-size: 	12px;
-	margin: 		0px 0px 0px 5px;
-	padding: 		5px 0px 0px 0px;
-	font-weight: light;
-}
-
-#wrapper textarea {
-	width: 		99%;
-	height: 		300px;
-	border-right: 	1px solid #cacaca;
-	border-bottom: 	1px solid #cacaca;
-}
-#wrapper form {
-	display:		inline;
-}
-
-#wrapper dd select {
-	width: 		247px;
-	border-right:	1px solid #cacaca;
-	border-bottom:	1px solid #cacaca;
-}
-
-#wrapper .submit {
-	width: 		100px;
-	border-right:	1px solid #cacaca;
-	border-bottom:	1px solid #cacaca;
-	background:	#eee;
-}
-#wrapper .text {
-	width: 		245px;
-	border-right:	1px solid #cacaca;
-	border-bottom:	1px solid #cacaca;
-	background:	white;
-}
-#wrapper table {
-	width: 		99%;
-}
-
-/* FOOTER */
 #footer {
-	clear: 		both;
-	border-top:	1px solid #d6d6d6;
-	position:		relative;
-	width: 		100%;
-	padding-top:	5px;
-	margin-top:	15px;
-	margin-bottom:	10px;
-	font-size:	10px;
-	text-align:	left;
-	color: 		#aaa;
+	position:			relative;
+	clear: 			left;
+	border-top:		1px solid #d6d6d6;
+	width: 			180px;
+	padding:			5px 0px 5px 0px;
+	margin:			15px 0px 0px 10px;
+	font-size:		10px;
+	text-align:		center;
+	color: 			#aaa;
 }
-
