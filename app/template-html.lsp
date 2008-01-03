@@ -14,46 +14,40 @@ Content-Type: text/html
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><?= pageinfo.hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
-<link rel="stylesheet" type="text/css" 
-	href=<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?> ">
+<link rel="stylesheet" type="text/css" href=<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?> ">
 </head>
 <body>
 
 <div id="page">
 	<div id="header">
-		<div id="logo">
-			<?= pageinfo.hostname ?>
-		</div>	<? --logo ?>
-		<div id="version">
-			<?= pageinfo.alpineversion ?>
-		</div>	<? --version ?>
-		<ul id="metanav">
-			<? local class="" ?>
-			<? for k,v in pairs(submenu)  do
-				if v == pageinfo.action then
-					class="current"
-				else
-					class="noselect"
-				end
-				io.write (string.format('<li class="%s"><a href="%s">%s</a></li>\n',class,v, v ))
+		<div class="leader">
+			<a href="#Content" class="hide">[Skip to main content]</a>
+		</div>
+		<h1><?= pageinfo.hostname or "AlpineLinux" ?></h1>
+		<p><?= pageinfo.alpineversion or "Alpine version: unknown"?></p>
+		<div class="tailer">
+<!-- (Any use for this?)	<p class="hide">[ this is header-tailer div text <a href="#Content">Goto content</a>]</p> -->
+		</div>
+	</div>	<!-- header -->
 
-			end
-			?>
-		</ul>
-	</div>	<? --header ?>
+	<div id="main">
+		<div class="leader">
+		</div>
 
+		<div id="nav">
+			<div class="leader">
+				<h3 class="hide">[Main menu]</h3>
+			</div>
 
-	<div id="content">
-		<div id="nav"><ul>
 			<? 
 			 -- FIXME: This needs to go in a library function somewhere (menubuilder?)
-			io.write ( "<li class=category>Log in/out</li>\n")
+			io.write ( "<ul>\n\t\t\t\t<li>Log in/out\n\t\t\t\t\t<ul>\n")
 			local ctlr = pageinfo.script .. "/acf-util/logon/"
 			if session.id == nil then 
-			   io.write ( string.format("<li class=menuitem><a href=\"%s\">Log in</a></li>", ctlr .. "logon" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<li><a href=\"%s\">Log in</a></li>\n", ctlr .. "logon" ) )
 			else
 			   sess = session.name or "unknown"
-			   io.write ( string.format("<li class=menuitem><a href=\"%s\">Log out as '" .. sess .. "'</a></li>", ctlr .. "logout" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<li><a href=\"%s\">Log out as '" .. sess .. "'</a></li>\n", ctlr .. "logout" ) )
 			end
 
 			  local cat, group
@@ -61,34 +55,70 @@ Content-Type: text/html
 			  for k,v in ipairs(mainmenu) do
 				if v.cat ~= cat then
 					cat = v.cat
-					io.write (string.format("<li class=category>%s</li>\n", cat))	--start row
+					if (cat ~= "") then		-- Filter out empty categories
+						io.write (string.format("\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", cat))	--start row
+					end
 					group = ""
 				end
 				if v.group ~= group then
 					group = v.group
 					if      pageinfo.prefix  == v.prefix .. "/"  and 
 						pageinfo.controller == v.controller then
-						class="current"
+						class="class='selected'"
 					else
-						class="menuitem"
+						class=""
 					end
-					io.write (string.format("<li class=\"%s\"><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
+					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
 						class,ENV.SCRIPT_NAME,v.prefix, v.controller, v.action, v.group ))
 				end
 			  end ?>
-		<li class="last"></li>
-		</ul></div>	<? --nav ?>
+			</ul></li>
+			</ul>
+		</div>	<!-- nav -->
 
-		<div id="wrapper"><div id="background-wrapper">
-				<? local func = haserl.loadfile(pageinfo.viewfile)
-				func (viewtable) ?>
-			<div id="footer">
-				<center>Made with care by acf</center>
-			</div>	<? --footer ?>
-		</div></div>	<? --wrapper ?>
-	</div>	<? --content ?>
-</div>	<? --page ?>
 
+		<div class="postnav">
+			<h2><?= pageinfo.controller ?> : <?= pageinfo.action ?></h2>
+			<!-- FIXME: Next row is 'dead' data! Remove 'class=hide' when done! -->
+			<p class='hide'>[ welcome ] > [ login ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
+		</div>	<!-- postnav -->
+
+		<a name="Content"></a>
+
+		<div id="subnav">
+			<div class="leader">
+				<h3 class="hide">[Submenu]</h3>
+			</div>
+			<? local class="" ?>
+			<? for k,v in pairs(submenu)  do
+				if v == pageinfo.action then
+					class="class='selected'"
+				else
+					class=""
+				end
+				io.write (string.format('\t\t\t<a %s href="%s">%s</a>\n',class,v,v ))
+			end
+			?>
+		</div> <!-- subnav -->
+
+<div id="content">
+	<? local func = haserl.loadfile(pageinfo.viewfile) ?>
+	<? func (viewtable) ?>
+	<div class="tailer">
+	</div>
+
+</div>	<!-- content -->
+
+	</div> <!-- main -->
+
+	<div id="footer">
+		<div class="leader">
+		</div>
+		Made with care by webconf
+		<div class="tailer">
+		</div>
+	</div> <!-- footer -->
+</div> <!-- page -->
 
 </body>
 </html>
