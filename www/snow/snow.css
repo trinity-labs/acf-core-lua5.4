@@ -22,7 +22,8 @@ body {
 }
 
 a {
-	text-decoration:none;
+	text-decoration:	none;
+	border-bottom:	1px dotted #072966;
 	color:		#072966;
 }
 a:visited {
@@ -56,29 +57,68 @@ hr {
 	// height: 		75px;
 	// background: 		url("alpine.jpg") no-repeat;
 	// background-position: 	top center;
-	border: 		1px solid #f00;
+	// border: 		1px solid #f00;
 }
 
-#header .logo {
+#logo {
 	float:		left;
 	width:		30%;
-	background-color:	#0c0;
+	height:		70px;
 	display:	inline;
+	margin:		2px;
+	border:		0;
+	background:	url("logo-190x64.png") no-repeat;
+
 	}
-	
-#header h1 {
-	font-size:	100%;
+
+#logo h1 {
+	font-size:	200%;
 	display:	inline;
+	border:		0;
+	margin:		0;
+	display:	none;
 	}
-	
+
+#logo p {
+	position:	absolute;
+	border:		0;
+	margin:		0;
+	bottom:		0;
+	left:		64px;
+	font-size:	75%;
+
+	}
+
+
+#header .mute {
+	float: 		right;
+	font-size:      80%;
+	position:	absolute;
+	bottom:		0;
+	right:		1em;
+	font-weight:	bold;
+	}
+
 #header .leader {
 	padding:		0.5em;
 	font-size:		60%;
 	float:			right;
 	display:		inline;
 	}
+#header .tailer {
+	clear: both;
+	}
 
 
+.leader {
+	// clear: both;
+	// display: block;
+	}
+
+.tailer {
+	// clear:	both;
+	// display: block;
+	}
 /*----------------------------------------------------------------------------------
  * Content and main menu
  *----------------------------------------------------------------------------------
