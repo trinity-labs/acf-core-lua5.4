@@ -20,22 +20,21 @@ Content-Type: text/html
 
 <div id="page">
 	<div id="header">
-		<div class="leader">
+		<div class="leader">&nbsp;
 			<a href="#Content" class="hide">[Skip to main content]</a>
 		</div>
 		<h1><?= pageinfo.hostname or "AlpineLinux" ?></h1>
 		<p><?= pageinfo.alpineversion or "Alpine version: unknown"?></p>
-		<div class="tailer">
-<!-- (Any use for this?)	<p class="hide">[ this is header-tailer div text <a href="#Content">Goto content</a>]</p> -->
+		<div class="tailer">&nbsp;
 		</div>
 	</div>	<!-- header -->
 
 	<div id="main">
-		<div class="leader">
+		<div class="leader">&nbsp;
 		</div>
 
 		<div id="nav">
-			<div class="leader">
+			<div class="leader">&nbsp;
 				<h3 class="hide">[Main menu]</h3>
 			</div>
 
@@ -74,21 +73,29 @@ Content-Type: text/html
 			  end ?>
 			</ul></li>
 			</ul>
+
+			<div class="tailer">&nbsp;
+			</div>
 		</div>	<!-- nav -->
 
 
-		<div class="postnav">
+		<div id="postnav">
+			<div class="leader">&nbsp;
+			</div>
 			<h2><?= pageinfo.controller ?> : <?= pageinfo.action ?></h2>
 			<!-- FIXME: Next row is 'dead' data! Remove 'class=hide' when done! -->
 			<p class='hide'>[ welcome ] > [ login ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
+			<div class="tailer">&nbsp;
+			</div>
 		</div>	<!-- postnav -->
 
 		<a name="Content"></a>
 
 		<div id="subnav">
-			<div class="leader">
+			<div class="leader">&nbsp;
 				<h3 class="hide">[Submenu]</h3>
 			</div>
+
 			<? local class="" ?>
 			<? for k,v in pairs(submenu)  do
 				if v == pageinfo.action then
@@ -99,23 +106,29 @@ Content-Type: text/html
 				io.write (string.format('\t\t\t<a %s href="%s">%s</a>\n',class,v,v ))
 			end
 			?>
+
+			<div class="tailer">&nbsp;
+			</div>
 		</div> <!-- subnav -->
 
 <div id="content">
-	<? local func = haserl.loadfile(pageinfo.viewfile) ?>
-	<? func (viewtable) ?>
-	<div class="tailer">
+	<div class="leader">&nbsp;
 	</div>
 
+	<? local func = haserl.loadfile(pageinfo.viewfile) ?>
+	<? func (viewtable) ?>
+
+	<div class="tailer">&nbsp;
+	</div>
 </div>	<!-- content -->
 
 	</div> <!-- main -->
 
 	<div id="footer">
-		<div class="leader">
+		<div class="leader">&nbsp;
 		</div>
 		Made with care by webconf
-		<div class="tailer">
+		<div class="tailer">&nbsp;
 		</div>
 	</div> <!-- footer -->
 </div> <!-- page -->
