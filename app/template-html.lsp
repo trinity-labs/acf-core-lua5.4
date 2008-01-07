@@ -23,10 +23,12 @@ Content-Type: text/html
 		<div class="leader">
 			<a href="#Content" class="hide">[Skip to main content]</a>
 		</div>
-		<h1><?= pageinfo.hostname or "AlpineLinux" ?></h1>
-		<p><?= pageinfo.alpineversion or "Alpine version: unknown"?></p>
-		<div class="tailer">
+		<div id="logo">
+			<div class="leader"></div>
+			<h1><?= pageinfo.hostname or "AlpineLinux" ?></h1>
+			<div class="tailer"></div>
 		</div>
+		<div class="tailer"></div>
 	</div>	<!-- header -->
 
 	<div id="main">
