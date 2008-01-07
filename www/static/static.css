@@ -16,11 +16,13 @@
 	background:	red;
 }
 .leader {
-	border:		0px solid yellow;
+	border:		2px solid yellow;
+	height:		10px;
 }
 
 .tailer {
-	border:		0px solid magenta;
+	border:		2px solid magenta;
+	height:		10px;
 }
 
 /*----------------------------------------------------------------------------------
@@ -213,7 +215,7 @@ body {
  *----------------------------------------------------------------------------------
  */
 
-#main .postnav h2 {
+#postnav h2 {
 	position: 		absolute;
 	top:			95px;
 	left:			200px;
@@ -227,7 +229,7 @@ body {
 	padding: 			2px 0px 2px 5px;
 	margin: 			0px 0px 0px 0px;
 }
-#main .postnav p {
+#postnav p {
 	position: 		absolute;
 	top:			80px;
 	left:			0px;
