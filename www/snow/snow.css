@@ -57,7 +57,7 @@ hr {
 	// height: 		75px;
 	// background: 		url("alpine.jpg") no-repeat;
 	// background-position: 	top center;
-	// border: 		1px solid #f00;
+	//	border: 		1px solid #f00;
 }
 
 #logo {
@@ -69,6 +69,16 @@ hr {
 	border:		0;
 	background:	url("logo-190x64.png") no-repeat;
 
+	}
+
+#logo .leader {
+	display:	none;
+	height:	0px;
+	}
+
+#logo .tailer {
+	 display:	none;
+	 height: 0px;
 	}
 
 #logo h1 {
@@ -105,10 +115,16 @@ hr {
 	float:			right;
 	display:		inline;
 	}
+
+
+
 #header .tailer {
 	clear: both;
+	width: 100%;
+	background:	url("upleft.png") no-repeat;
+	background-position: top right;
+	height: 16px;
 	}
-
 
 .leader {
 	// clear: both;
@@ -116,9 +132,11 @@ hr {
 	}
 
 .tailer {
-	// clear:	both;
+	/// clear:	both;
 	// display: block;
+	height:	0;
 	}
+
 /*----------------------------------------------------------------------------------
  * Content and main menu
  *----------------------------------------------------------------------------------
@@ -126,24 +144,29 @@ hr {
 
 /* DEFAULT DEFINITIONS */
 #main { /* 'content' is both the wrapper and the navmenu */
-	 position:		relative;
+	// position:		relative;
 	padding: 		0px 0px 0px 0px;
 	margin: 		0px 0px 0px 0px;
 	// margin:	0% 10% 0% 10%;
 	// clear:			both;
-	border:			1px solid #00c;
+	// border:			1px solid #00c;
+	// background:		url("downright.png") no-repeat;
+	// background-position:	-20% top;
 }
+
 
 /* The .nav class is taken from suckerfish css dropdowns 
    see http://www.alistapart.com/articles/dropdowns/  */
 #nav {
 	height:			auto;
+	display:		block;
+	clear:			both;
 	float:			right;
 	width:			70%;
 	display:		inline;
-	background-color:	#ccc;
 	font-size:		75%;
 	font-weight:		bold;
+	//background-color:	#0c0;
 	}	
 	
 #nav ul { /* all lists */
@@ -154,7 +177,7 @@ hr {
 }
 
 #nav a {
-        display: block;
+         display: block;
 	padding: .25em;
 	width: 19em;
 }
@@ -204,6 +227,7 @@ hr {
 	display: 	block;
 	clear:		both;
 	width:		100%;
+	
 	}
 	
 #main .postnav {
@@ -406,7 +430,7 @@ hr {
 	clear: 		both;
 	border-top:	1px solid #d6d6d6;
 	position:		relative;
-	width: 		100%;
+	/width: 		100%;
 	padding-top:	5px;
 	margin-top:	15px;
 	margin-bottom:	10px;
