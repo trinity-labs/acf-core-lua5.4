@@ -20,21 +20,21 @@ Content-Type: text/html
 
 <div id="page">
 	<div id="header">
-		<div class="leader">&nbsp;
+		<div class="leader">
 			<a href="#Content" class="hide">[Skip to main content]</a>
 		</div>
 		<h1><?= pageinfo.hostname or "AlpineLinux" ?></h1>
 		<p><?= pageinfo.alpineversion or "Alpine version: unknown"?></p>
-		<div class="tailer">&nbsp;
+		<div class="tailer">
 		</div>
 	</div>	<!-- header -->
 
 	<div id="main">
-		<div class="leader">&nbsp;
+		<div class="leader">
 		</div>
 
 		<div id="nav">
-			<div class="leader">&nbsp;
+			<div class="leader">
 				<h3 class="hide">[Main menu]</h3>
 			</div>
 
@@ -74,25 +74,25 @@ Content-Type: text/html
 			</ul></li>
 			</ul>
 
-			<div class="tailer">&nbsp;
+			<div class="tailer">
 			</div>
 		</div>	<!-- nav -->
 
 
 		<div id="postnav">
-			<div class="leader">&nbsp;
+			<div class="leader">
 			</div>
 			<h2><?= pageinfo.controller ?> : <?= pageinfo.action ?></h2>
 			<!-- FIXME: Next row is 'dead' data! Remove 'class=hide' when done! -->
 			<p class='hide'>[ welcome ] > [ login ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
-			<div class="tailer">&nbsp;
+			<div class="tailer">
 			</div>
 		</div>	<!-- postnav -->
 
 		<a name="Content"></a>
 
 		<div id="subnav">
-			<div class="leader">&nbsp;
+			<div class="leader">
 				<h3 class="hide">[Submenu]</h3>
 			</div>
 
@@ -107,28 +107,28 @@ Content-Type: text/html
 			end
 			?>
 
-			<div class="tailer">&nbsp;
+			<div class="tailer">
 			</div>
 		</div> <!-- subnav -->
 
 <div id="content">
-	<div class="leader">&nbsp;
+	<div class="leader">
 	</div>
 
 	<? local func = haserl.loadfile(pageinfo.viewfile) ?>
 	<? func (viewtable) ?>
 
-	<div class="tailer">&nbsp;
+	<div class="tailer">
 	</div>
 </div>	<!-- content -->
 
 	</div> <!-- main -->
 
 	<div id="footer">
-		<div class="leader">&nbsp;
+		<div class="leader">
 		</div>
 		Made with care by webconf
-		<div class="tailer">&nbsp;
+		<div class="tailer">
 		</div>
 	</div> <!-- footer -->
 </div> <!-- page -->
