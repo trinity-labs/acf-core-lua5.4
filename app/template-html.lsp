@@ -25,9 +25,15 @@ Content-Type: text/html
 		</div>
 		<div id="logo">
 			<div class="leader"></div>
-			<h1><?= pageinfo.hostname or "AlpineLinux" ?></h1>
+			<h1>AlpineLinux</h1>
+			<p><?= pageinfo.hostname or "unknown hostname" ?></p>
 			<div class="tailer"></div>
 		</div>
+		<span class="mute">
+			<p>[ logon link will go here ] | 
+			<a href="/">home</a> | 
+			<a href="http://wiki.alpinelinux.org">about</a>
+			</p></span>
 		<div class="tailer"></div>
 	</div>	<!-- header -->
 
