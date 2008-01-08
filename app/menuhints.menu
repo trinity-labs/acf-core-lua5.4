@@ -4,9 +4,6 @@
 # That number will override the defaults set here.
 # (i.e. Lowest specifically set priority wins)
 
-05Home
-# Welcome
-
 10Networking
 # Interfaces
 # Routing
@@ -14,28 +11,11 @@
 # DNS
 # Firewall
 
-30Proxies
-# Web Proxies
-# Web Filtering
-# Mail
+40Applications
 
-#40?
-#50?
-60Connectivity
-# VPN
-# Dialup
-# Dialup/PPPoE
-
-70Backup/Packages
-# Backup
-# Source Manager
-# Package Manager
-
-75General
+80System
 # Password Manager
 # Logfiles
 # Diagnostic
 
-80Setup
-# Hostname
 
