@@ -24,13 +24,13 @@
 }
 
 /*----------------------------------------------------------------------------------
- * General settings
+ * GENERAL
  *----------------------------------------------------------------------------------
  */
 
 .hide {
 	display:			none;
-	}
+}
 
 a {
 	text-decoration:		none;
@@ -58,84 +58,41 @@ hr {
 .mute {
 	color: 			#777;
 }
+
 /*----------------------------------------------------------------------------------
- * Positioning DIV's
+ * BODY & PAGE
  *----------------------------------------------------------------------------------
  */
 body {
 	margin: 			0px 0px 0px 0px;
 	padding: 			0px 0px 0px 0px;
 	font-family: 		Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
-	font-size:	12pt;
+	font-size:		12pt;
 	background-image: 		url(watermark.jpg);
 	background-repeat: 		no-repeat;
 	background-position:	400px 140px;
-
 }
 #page { 
 	position:			relative;
 	left:			0px;
 	top:			0px;
 	margin:			10px 5% 0% 5%;
-
 }
+
+/*----------------------------------------------------------------------------------
+ * PAGE > HEADER
+ *----------------------------------------------------------------------------------
+ */
 #header {
 	width: 			100%;
 	height: 			75px;
 	margin: 			0px 0px 0px 0px;
 	padding: 			0px 0px 0px 0px;
-}
 
-#main {
-	left: 			0px;
-	top: 			0px;
-	width: 			100%;
-	padding: 			0px 0px 0px 0px;
-	margin: 			17px 0px 0px 0px;
-/*	background:	green; */
-}
-#nav {
-	width: 			180px;
-	margin: 			0px 0px 0px 9px;
-	background:		white;
-	/*background:	blue;	*/
-}
-
-#subnav {
-	position:			absolute;
-	top:			56px;
-	height:			40px;
-	left:			200px;
-	width: 			570px;	/* totalwidth - left (see above */
-	padding: 			0px 0px 0px 0px;
-	margin: 			0px 0px 0px 0px;
-
-/*	background:	blue; */
-}
-#content {
-	position: 		absolute;
-	top: 			117px;
-	left:			200px;
-	right:			0px;
-/*	width: 			670px; */
-/*	background:	yellow; */
-}
-
-/*----------------------------------------------------------------------------------
- * Header, Logotypes and icons
- *----------------------------------------------------------------------------------
- */
-#header {
 	background-image: 		url(alpine.jpg);
 	background-repeat: 		repeat-x;
 	border: 			1px solid #ddd;
 	padding: 			0px 0px 0px 0px;
-	margin: 			0px 0px 0px 0px;
-}
-
-#logo h1 {
-	font-size:		40px;
-	padding: 			0px 0px 0px 10px;
 	margin: 			0px 0px 0px 0px;
 }
 #header p {
@@ -146,15 +103,6 @@ body {
 	padding: 			0px 0px 0px 0px;
 	margin: 			0px 0px 0px 0px;
 }
-#logo p {
-	position:			absolute;
-	top:			60px;
-	left:			10px;
-	font-size:		14px;
-	padding: 			0px 0px 0px 0px;
-	margin: 			0px 0px 0px 0px;
-}
-
 #header .tailer {
 	position:			absolute;
 	background-image: 		url(shadow-top.png);
@@ -165,12 +113,47 @@ body {
 	margin: 			0px 0px 0px 0px;
 	padding: 			0px 0px 0px 0px;
 }
-
 /*----------------------------------------------------------------------------------
- * Navigation
+ * PAGE > HEADER > LOGO
  *----------------------------------------------------------------------------------
  */
-#nav { /* 'nav' is only the main menu */
+#logo h1 {
+	font-size:		40px;
+	padding: 			0px 0px 0px 10px;
+	margin: 			0px 0px 0px 0px; 
+}
+#logo p {
+	position:			absolute;
+	top:			60px;
+	left:			10px;
+	font-size:		14px;
+	padding: 			0px 0px 0px 0px;
+	margin: 			0px 0px 0px 0px; 
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > MAIN
+ *----------------------------------------------------------------------------------
+ */
+#main {
+	left: 			0px;
+	top: 			0px;
+	width: 			100%;
+	padding: 			0px 0px 0px 0px;
+	margin: 			17px 0px 0px 0px; 
+/*	background:	green; */
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > MAIN > NAV
+ *----------------------------------------------------------------------------------
+ */
+#nav {
+	width: 			180px;
+	margin: 			0px 0px 0px 9px;
+	background:		white;
+	/*background:	blue;	*/
+
 	padding: 			0px 10px 0px 0px;
 	background-image: 		url(shadow-side.png);
 	background-repeat: 		repeat-y;
@@ -219,23 +202,21 @@ body {
 	padding:			2px 0px 0px 5px;
 }
 #nav ul li ul li a:hover {
-	background-image: 	url(menu_item_hover.png);
+	background-image: 		url(menu_item_hover.png);
 }
 #nav ul li ul li.selected a:hover {
 	background-image: 		none;
 }
 
 /*----------------------------------------------------------------------------------
- * Crumbs (Historylinks)
+ * PAGE > MAIN > POSTNAV
  *----------------------------------------------------------------------------------
  */
-
 #postnav h2 {
 	position: 		absolute;
 	top:			95px;
 	left:			200px;
-	right:			9px;
-/*	width:			565px; */
+	right:			9px; 
 	color: 			white;
 	font-size: 		16px;
 	font-weight: 		bold;
@@ -262,11 +243,19 @@ body {
 /*	background:	blue;	*/
 }
 
-
 /*----------------------------------------------------------------------------------
- * Submenu
+ * PAGE > MAIN > SUBNAV
  *----------------------------------------------------------------------------------
  */
+#subnav {
+	position:			absolute;
+	top:			56px;
+	height:			40px;
+	left:			200px;
+	padding: 			0px 0px 0px 0px;
+	margin: 			0px 0px 0px 0px;
+/*	background:	blue; */
+}
 #subnav a {
 	height:			40px;
 	margin: 			0px 0px 5px 0px;
@@ -282,33 +271,24 @@ body {
 }
 
 /*----------------------------------------------------------------------------------
- * Main content
+ * PAGE > MAIN > CONTENT
  *----------------------------------------------------------------------------------
  */
 #content {
+	display:			block;
+	position: 		absolute;
+	top: 			117px;
+	left:			200px;
+	right:			0px;
+
 	background-image: 		url(shadow-side.png);
 	background-repeat: 		repeat-y;
 	background-position: 	right;
 	font-size:		12px;
-/*	width:			563px; */
 	border-left:		1px solid #cacaca;
 	margin: 			0px 0px 0px 0px;
 	padding: 			0px 10px 0px 5px;
 }
-#content .tailer {
-	clear:			both;
-/*	background-image: 		url(shadow-top.png);
-	background-repeat: 		repeat-x;
-	background-position: 	bottom;*/
-	border-bottom:		1px solid #cacaca;
-	height:			10px;
-	right:			0px;
-/*	width:			100%; */
-	margin: 			0px 0px 0px -5px;
-	padding: 			0px 0px 0px 0px;
-}
-
-
 #content h1 { 
 	clear: 			both;
 	height: 			18px;
@@ -382,8 +362,6 @@ body {
 	font-size: 		12px;
 	margin:			0px 5px 0px 0px;
 	padding:			5px 0px 5px 0px;
-/*	margin: 			0px 0px 0px 5px;
-	padding: 			5px 0px 0px 0px; */
 	font-weight:		 light;
 /*	background:	green; */
 }
@@ -394,12 +372,15 @@ body {
 	border-right: 		1px solid #cacaca;
 	border-bottom: 		1px solid #cacaca;
 }
+#content input.text {
+/*	background: 	cyan; */
+}
+
 #content form {
 	display:			inline;
 }
 
 #content dd select {
-/*	width: 			247px; */
 	width:			100%;
 	border-right:		1px solid #cacaca;
 	border-bottom:		1px solid #cacaca;
@@ -420,12 +401,16 @@ body {
 #content table {
 	width: 			99%;
 }
+#content .tailer {
+	clear: 			both;
+	border-bottom:		3px solid #cacaca;
+	margin-left: 		-5px;
+}
 
 /*----------------------------------------------------------------------------------
- * Footer
+ * PAGE > FOOTER
  *----------------------------------------------------------------------------------
  */
-
 #footer {
 	position:			relative;
 	clear: 			left;
@@ -434,6 +419,6 @@ body {
 	padding:			5px 0px 5px 0px;
 	margin:			15px 0px 0px 10px;
 	font-size:		10px;
-	text-align:		center;
+	text-align:		center; 
 	color: 			#aaa;
 }
