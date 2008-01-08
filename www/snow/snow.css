@@ -121,7 +121,7 @@ hr {
 #header .tailer {
 	clear: both;
 	width: 100%;
-	background:	url("upleft.png") no-repeat;
+	background:	url("snowcap.gif") repeat-x;
 	background-position: top right;
 	height: 16px;
 	}
@@ -150,8 +150,8 @@ hr {
 	// margin:	0% 10% 0% 10%;
 	// clear:			both;
 	// border:			1px solid #00c;
-	// background:		url("downright.png") no-repeat;
-	// background-position:	-20% top;
+	background:		url("icicles.gif") no-repeat;
+	// background-color:	#cce;
 }
 
 
@@ -162,11 +162,11 @@ hr {
 	display:		block;
 	clear:			both;
 	float:			right;
-	width:			70%;
+	// width:			100%;
 	display:		inline;
 	font-size:		75%;
 	font-weight:		bold;
-	//background-color:	#0c0;
+	background-color:	#ccc;
 	}	
 	
 #nav ul { /* all lists */
@@ -186,7 +186,7 @@ hr {
         float: left;
         border-left: 2px solid #fff;
         border-right: 2px solid #fff;
-	padding:		0em 1em 0em 0.25em;
+	padding: 0em 1em 0em 0.25em;
 	// width: 10em; /* width needed or else Opera goes nuts */
 }
 
