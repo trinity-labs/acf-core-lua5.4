@@ -13,6 +13,9 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<!--[if lt IE 8]>
+<script src="/static/IE8.js" type="text/javascript"></script>
+<![endif]-->
 <title><?= pageinfo.hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
 <link rel="stylesheet" type="text/css" href=<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?> ">
 </head>

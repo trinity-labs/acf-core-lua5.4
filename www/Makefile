@@ -5,6 +5,8 @@ WWW_DIST=cgi-bin/acf\
 	index.html\
 	sample.html\
 	static/alpine.jpg\
+	static/IE8.js\
+	static/blank.gif\
 	static/h1.png\
 	static/h2.png\
 	static/h3.png\
