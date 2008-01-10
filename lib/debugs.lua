@@ -2,6 +2,8 @@
 
 module(..., package.seeall)
 
+require("session")
+
 -- This will show all tables and their values as debug information
 --
 -- USAGE: <?
@@ -60,5 +62,9 @@ function variables ( view )
 	return debuginfo
 end
 
-
+function serialize(vars)
+	io.write("<pre>\n")
+	io.write(session.serialize("", vars))
+	io.write("\n</pre>")
+end
 
