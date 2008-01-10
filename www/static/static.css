@@ -54,6 +54,8 @@ hr {
 	font-size: 		11pt;
 	font-weight: 		bold;
 	color: 			#f33;
+	margin: 			0;
+	padding: 			0;
 }
 .mute {
 	color: 			#777;
@@ -327,7 +329,7 @@ body {
 	clear: 			both;
 	height:			14px;
 	padding:			0px 0px 0px 15px;
-	margin:			20px 0px 2px -5px;
+	margin:			0px 0px 2px -5px;
 	text-decoration:		none;
 	font-size:		12px;
 	font-weight:		thin;
@@ -374,6 +376,14 @@ body {
 	font-weight:		 light;
 /*	background:	green; */
 }
+#content dd p {
+	display: 		inline;
+	margin-left:	10px;
+	font-style:	italic;
+/*	background:	green;  */
+}
+
+
 #content dd.error {
 	color: 			red;
 }
