@@ -4,23 +4,7 @@ WWW_DIST=cgi-bin/acf\
 	cgi-bin/mvc.lua\
 	index.html\
 	sample.html\
-	static/alpine.jpg\
-	static/IE8.js\
-	static/blank.gif\
-	static/h1.png\
-	static/h2.png\
-	static/h3.png\
-	static/menu_item.png\
-	static/menu_item_hover.png\
-	static/shadow-side.png\
-	static/shadow-top.png\
-	static/static.css\
-	static/watermark.jpg\
-	simple/simple.css\
-	swirl/header_body.jpg\
-	swirl/selected.gif\
-	swirl/swirl.css\
-	swirl/unselected.gif \
+	static/* \
 	snow/*
 
 EXTRA_DIST=Makefile

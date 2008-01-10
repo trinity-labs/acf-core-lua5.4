@@ -14,6 +14,7 @@ Content-Type: text/html
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><?= pageinfo.hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
+<link rel="stylesheet" type="text/css" href="/static/reset.css">
 <link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?>">
 </head>
 <body>
