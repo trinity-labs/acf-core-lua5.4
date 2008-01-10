@@ -31,7 +31,15 @@ Content-Type: text/html
 			<div class="tailer"></div>
 		</div>
 		<span class="mute">
-			<p>[ logon link will go here ] | 
+			<p>	
+			<? local ctlr = pageinfo.script .. "/acf-util/logon/"
+			if session.id == nil then 
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", ctlr .. "logon" ) )
+			else
+			   sess = session.name or "unknown"
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. sess .. "'</a>\n", ctlr .. "logout" ) )
+			end ?>
+			 | 
 			<a href="/">home</a> | 
 			<a href="http://wiki.alpinelinux.org">about</a>
 			</p></span>
@@ -49,14 +57,7 @@ Content-Type: text/html
 
 			<? 
 			 -- FIXME: This needs to go in a library function somewhere (menubuilder?)
-			io.write ( "<ul>\n\t\t\t\t<li>Log in/out\n\t\t\t\t\t<ul>\n")
-			local ctlr = pageinfo.script .. "/acf-util/logon/"
-			if session.id == nil then 
-			   io.write ( string.format("\t\t\t\t\t\t<li><a href=\"%s\">Log in</a></li>\n", ctlr .. "logon" ) )
-			else
-			   sess = session.name or "unknown"
-			   io.write ( string.format("\t\t\t\t\t\t<li><a href=\"%s\">Log out as '" .. sess .. "'</a></li>\n", ctlr .. "logout" ) )
-			end
+			io.write ( "<ul>\n\t\t\t\t<li style='margin:0px;padding:0px;height:0px'>\t<ul style='margin:0px;padding:0px;height:0px'>\n")
 
 			  local cat, group
 			  local class
