@@ -70,7 +70,7 @@ body {
 	padding: 			0px 0px 0px 0px;
 	font-family: 		Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
 	font-size:		12pt;
-	background-image: 		url(watermark.jpg);
+	background-image: 		url("/static/watermark.jpg");
 	background-repeat: 		no-repeat;
 	background-position:	400px 140px;
 }
@@ -91,7 +91,7 @@ body {
 	margin: 			0px 0px 0px 0px;
 	padding: 			0px 0px 0px 0px;
 
-	background-image: 		url(alpine.jpg);
+	background-image: 		url("/static/alpine.jpg");
 	background-repeat: 		repeat-x;
 	border: 			1px solid #ddd;
 	padding: 			0px 0px 0px 0px;
