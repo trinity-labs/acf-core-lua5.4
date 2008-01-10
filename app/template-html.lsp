@@ -17,7 +17,7 @@ Content-Type: text/html
 <script src="/static/IE8.js" type="text/javascript"></script>
 <![endif]-->
 <title><?= pageinfo.hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
-<link rel="stylesheet" type="text/css" href=<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?> ">
+<link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?>">
 </head>
 <body>
 
