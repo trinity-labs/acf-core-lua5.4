@@ -4,7 +4,7 @@ WWW_DIST=cgi-bin/acf\
 	cgi-bin/mvc.lua\
 	index.html\
 	sample.html\
-	static/* \
+	ice/* \
 	snow/*
 
 EXTRA_DIST=Makefile

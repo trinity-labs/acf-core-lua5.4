@@ -9,8 +9,7 @@ APP_DIST= acf-util/logon-controller.lua\
 	menuhints.menu\
 	template-html.lsp\
 	welcome-controller.lua\
-	welcome-html.lsp\
-	welcome.menu
+	welcome-html.lsp
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(APP_DIST) $(EXTRA_DIST)
