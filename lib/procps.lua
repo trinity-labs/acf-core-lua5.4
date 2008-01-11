@@ -30,13 +30,15 @@ end
 local function is_stat(path, name)
 	local f = io.open(path.."/stat")
 	local line = f:read()
-	local p = string.match(line, "^%d+ %((%d+)%)")
+	local p = string.gsub(line, ".*%(", "")
+	p = string.gsub(p, "%).*", "")
 	f:close()
-	if p ~= nil and string.len(name) <= 15 and p == name then
-		return true
-	else
-		return false
+	if p ~= nil then	
+		if string.len(name) <= 15 and p == name then
+			return true
+		end
 	end
+	return false
 end
 
 local function is_cmdline(path, name)
@@ -50,7 +52,10 @@ local function is_cmdline(path, name)
 		return false
 	end
 	local arg0 = string.gsub(line, string.char(0)..".*", "")
-	return posix.basename(arg0) == name
+	if posix.basename(arg0) == name then
+		io.stderr:write("found "..name.." in argv0\n")
+		return true
+	end
 end
 
 function pidof(name)
