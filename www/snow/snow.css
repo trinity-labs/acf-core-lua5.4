@@ -56,7 +56,6 @@ body 	{
 
 /*--------------------------------------------------------------------------------*/
 #header {
-	position: 	relative;
 	width:		100%;
 	}
 
@@ -75,10 +74,7 @@ body 	{
 
 #header .tailer {
 	clear: 		both;
-	width: 		100%;
-	background:	url("snowcap.gif") repeat-x; 
-	display:	block;
-	height: 	16px;
+	display:	none;
 	}
 
 
@@ -87,7 +83,6 @@ body 	{
 #logo {
 	float:		left;
 	width:		30%;
-	height:		70px;
 	display:	inline;
 	margin:		.25em;
 	background:	url("logo-190x64.png") no-repeat;
@@ -100,7 +95,7 @@ body 	{
 
 #logo .tailer {
 	display:	none;
-	height:		0px;
+	height:		0;
 	}
 
 #logo h1 {
@@ -109,10 +104,13 @@ body 	{
 	}
 
 #logo p {
-	position:	absolute;
-	bottom:		8px;
+	/* position:	absolute; */
+	display:	block;
+	clear:		both;
+	width:		100%;
 	left:		.25em;
 	font-size:	100%;
+	padding-top:	70px;
 	}
 
 
@@ -123,28 +121,31 @@ body 	{
 #nav {
 	float:			right;
 	display:		inline;
-	background-color:	#ccc;
+	background:		url("g-bottom.png") repeat-x bottom;
 	width:			100%;
 	line-height:		1;
+	border-top:		1px solid #ccc;
 	}	
 
 #nav ul {
-        margin-right:		20em;
+        margin-right:		10em;
 	list-style: 		none;
-	float:			right;
+	float:			left;
 	}
 
 #nav li { /* all list items */
         float: 			left;
-	padding: 		0em 1em 2px 0;
-	text-decoration:	underline;
+	padding: 		0em 2em 2px 2em;
 	color:                  #072966;
 	font-size:		125%;
+	font-weight:		bold;
+	color:			#248;
 	}
 
 #nav  li ul { /* second-level lists - hidden */
 	position: 		absolute; 
-        width: 			20em;
+        font-size:		65%;
+        width: 			15em;
 	left:			-999em;
 	}
 
@@ -153,8 +154,10 @@ body 	{
 		}
 
 #nav li ul li {
-	border: none;
-	font-size:		65%;
+	border: 		none;
+	background:		transparent;
+	padding:		0;
+	color:			#248;
 	}
 
 #nav li:hover ul ul {
@@ -163,17 +166,20 @@ body 	{
 
 #nav li:hover ul  { /* lists nested under hovered list items */
         left: 		auto;
-	clear:		none;
-	background:	#ccc;
-	border-left: 	1px solid #ccf;
-	border-top: 	1px solid #aaa;
-	border-bottom: 	1px solid #ccf;
+        font-size:	65%;
+	background: 	url("orange.png");
+	border-left: 	1px solid #777;
+	border-top: 	1px solid #777;
+	border-bottom: 	1px solid #777;
+	/* next line is for IE only */
+	//  margin-top:	1.25em;
 	}
 
 #nav a {
 	display:	block;
 	padding: 	2px;
-	width: 		19em;
+	font-size:	75%; 
+	width: 		15em; 
 	}	
 
 
@@ -195,12 +201,13 @@ body 	{
 	clear:		both;
 	font-size:	75%;
 	color:		#248;
-	margin:		0 10%;
+	border-top:	1px solid #fff;
+	margin:		0 0;
 	}
 
 #postnav h2 {
 	font-size:	200%;
-	line-height:	200%;
+	margin:		1.5em 10%;
 	}
 
 #postnav .tailer {
@@ -212,77 +219,115 @@ body 	{
 
 /*--------------------------------------------------------------------------------*/
 #subnav {
-	margin:		0 10%;
+	padding:		0 10%;
 	font-weight: 	bold;
-	clear:		both;
-	line-height: 	1;
 	}
 
 #subnav a {
-	display: 		inline;
+	/* display: 		inline; */
 	padding: 		.25em .25em 0 .25em;
-	border: 		1px solid #ccccff;
-	border-bottom: 		none;
-	background: 		url("blutop.png") repeat-x top;
-	color: 			#fff;
-	background-color: 	#aaa;
+	border: 		1px solid #ccc;
+	color:			#fff;
+	border-bottom:		none;
+	background:		#ccc;
 	text-decoration:	none;
 	}
-/*
 
 #subnav a:hover {
-	color: #666;
-	background-color: #ddd;
+	color: 			#fff;
+	background-color:	#248;
 	}
-*/
 
 #subnav .selected {
-	background:	transparent;
+	background: 	#fff;
 	color:		#248;
 	}
 
 /*--------------------------------------------------------------------------------*/
 
 #content {
-	margin:		0 10% 0 10%;
-	padding: 	2em 2em;
 	border: 	1px solid #ccc;
-	background: url("icicles.gif") no-repeat 200% 0;
-	font-size:	80%;
+	font-size:	85%;
 	line-height:	1.5;
-	
+	width:		80%;
+	margin-left:	10%;
+	padding:	2em 2em;
 	}
+	
+#content p {
+	clear:		both;
+	display:	block;
+	}
+
 
 #content h1 {
 	display:	block;
 	font-size:	200%;
-	background:	#ccc;
+	background:	url("g-top.png") repeat-x top;
+	border-bottom:  1px dotted #248;
+	font-weight:	bold;
+	color:		#248;
+	padding:	0 1em;
+	margin-bottom:	.5em;
 	}
+
+
 #content h2 {
 	font-size:	150%;
-	display:	block;
-	background:	#ccc;
-	clear:		both;
-	}
-/*
- #content dt {
-	display:	block;
-	clear:		right;
-	font-size:	120%
 	font-weight:	bold;
-	} */
+	display:	block;
+	clear:		both;
+	padding:	0 1em;
+	margin-bottom:	.5em;
+	border-top:	1px dotted #ccc;
+	background:	url("g-bottom.png") repeat-x bottom;
+	}
+
+#content h3 {
+	font-size:	125%;
+	font-weight:	bold;
+	width:		100%;
+	display:	block;
+	clear:		both;
+	padding:	0 2px;
+	line-height:	1;
+	margin-bottom:	.25em;
+	border-bottom:	1px dotted #248;
+	border-top:	1px dotted #248;
+	}
+
+#content dl {
+	display:		block;
+	width:			100%;
+	clear:			both;
+	color:			#00f;
+	border:			1px solid green;
+	height:			1px;
+	}
+
+
+#content dt {
+	margin-top:	1em;
+	margin-right:	2em; 
+	float:		left;
+	clear:		left;
+	width:		30%;
+	border-top:	1px dashed #ccc;
+	border-right:	1px dashed #ccc;
+	display:	inline;
+	border:		1px solid red;
+	} 
 
 
 #content dd {
-	width:		70%;
-	display:	inline;
-	float:		right;
-	background:	#eee;
-	<!--[if ie]>
-		width: 100%;
-	 	margin:	0 0 0 30%;
-	<![endif-->
-}
+	padding-top:	1em;
+	margin-bottom:	1em;
+	background:	#ccc;
+	display:	block;
+	float:		left;
+	border:		1px solid blue;
+	clear:		right;
+	}
 
 
 #footer {
