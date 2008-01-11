@@ -7,7 +7,7 @@ LIB_DIST=fs.lua\
 	debugs.lua\
 	format.lua\
 	menubuilder.lua\
-	pidof.lua\
+	procps.lua\
 	privsep.lua\
 	session.lua\
 	split.lua\
