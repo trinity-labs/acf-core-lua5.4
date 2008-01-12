@@ -31,7 +31,7 @@ Content-Type: text/html
 			<div class="tailer"></div>
 		</div>
 		<span class="mute">
-			<p>	
+			<p>
 			<? local ctlr = pageinfo.script .. "/acf-util/logon/"
 			if session.id == nil then 
 			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", ctlr .. "logon" ) )
@@ -57,15 +57,18 @@ Content-Type: text/html
 
 			<? 
 			 -- FIXME: This needs to go in a library function somewhere (menubuilder?)
-			io.write ( "<ul>\n\t\t\t\t<li style='margin:0px;padding:0px;height:0px'>\t<ul style='margin:0px;padding:0px;height:0px'>\n")
+			io.write ( "<ul>")
 
 			  local cat, group
 			  local class
 			  for k,v in ipairs(mainmenu) do
 				if v.cat ~= cat then
+					if not (cat == nil) and not (cat == "") then
+						io.write ("\t\t\t\t\t</ul>")
+					end
 					cat = v.cat
 					if (cat ~= "") then		-- Filter out empty categories
-						io.write (string.format("\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", cat))	--start row
+						io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", cat))	--start row
 					end
 					group = ""
 				end
@@ -81,7 +84,8 @@ Content-Type: text/html
 						class,ENV.SCRIPT_NAME,v.prefix, v.controller, v.action, v.group ))
 				end
 			  end ?>
-			</ul></li>
+					</ul>
+				</li>
 			</ul>
 
 			<div class="tailer">
