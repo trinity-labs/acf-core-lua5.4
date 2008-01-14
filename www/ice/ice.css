@@ -338,8 +338,7 @@ body {
 #content p,input.text,select,textarea,table {
 	width:			99%;
 }
-
-#content select,textarea {
+#content textarea {
 	height:			300px;
 }
 #content dd select,dd textarea {
