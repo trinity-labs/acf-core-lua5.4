@@ -13,7 +13,10 @@ LIB_DIST=fs.lua\
 	split.lua\
 	validator.lua\
 	web_elements.lua\
-	authenticator-plaintext.lua
+	authenticator-plaintext.lua\
+	daemoncontrol.lua\
+	getopts.lua\
+
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(LIB_DIST) $(EXTRA_DIST)
