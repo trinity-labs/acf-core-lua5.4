@@ -3,7 +3,7 @@
  *----------------------------------------------------------------------------------
  */
 
-@import url("ice_general.cssx");
+@import url("ice_general.cssxxx");
 @import url("ice_ie.css");
 /*@import url("ice_ff.css"); */
 
@@ -44,7 +44,11 @@ hr {
 .mute {
 	color: 			#777;
 }
-
+pre {
+	font-family:		monospace;
+	font-size:		10pt;
+	padding:		5px;
+}
 
 /*----------------------------------------------------------------------------------
  * BODY & PAGE
