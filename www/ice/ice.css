@@ -345,7 +345,7 @@ body {
 #content textarea {
 	height:			300px;
 }
-#content dd select,dd textarea {
+#content dd textarea {
 	height:			100px;
 }
 #content form select.radio {
