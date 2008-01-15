@@ -1,4 +1,5 @@
 module (..., package.seeall)
+require("posix")
 
 function daemoncontrol (process, action)
 	local cmdresult = ""
@@ -15,5 +16,6 @@ function daemoncontrol (process, action)
 	else
 		cmdresult = "Unknown command!"
 	end
-	return {cmdresult=cmdresult, process=process, action=action, }
+	posix.sleep(2)	-- Wait for the process to start|stop
+	return {cmdresult=cmdresult, process=process, action=action,cmderror=cmderror }
 end
