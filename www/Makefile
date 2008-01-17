@@ -4,6 +4,9 @@ WWW_DIST=cgi-bin/acf\
 	cgi-bin/mvc.lua\
 	index.html\
 	sample.html\
+	static/alpine.jpg\
+	reset.css\
+	watermark.jpg\
 	ice/* \
 	snow/*
 
