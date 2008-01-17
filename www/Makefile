@@ -5,8 +5,8 @@ WWW_DIST=cgi-bin/acf\
 	index.html\
 	sample.html\
 	static/alpine.jpg\
-	reset.css\
-	watermark.jpg\
+	static/reset.css\
+	static/watermark.jpg\
 	ice/* \
 	snow/*
 
