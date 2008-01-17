@@ -17,6 +17,9 @@ function getoptsfromfile (file, search, filter)
 						end
 						if (optstable) then
 							opts[a] = optstable
+							---[[ Next line is DEBUG info. Should be commented out!
+							opts[a]["debug"] = b
+							-- End debug info. --]] 
 						else
 							opts[a] = b
 						end
@@ -35,7 +38,7 @@ function opts_to_table ( optstring, filter )
 	local option = ""
 	local optvalue = ""
 		for j = 1, string.len(optstr) do
-		if (string.sub(optstr, j, j) == "-") then
+		if (string.sub(optstr, j, j) == " -") then
 			option=string.sub(optstr, j, j+1)
 				if not (filter) or (filter == option) then
 					for k = j+1, string.len(optstr) do
