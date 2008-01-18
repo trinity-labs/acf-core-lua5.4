@@ -41,6 +41,12 @@ hr {
 	font-style:		italic;
 	color: 			#f33;
 }
+.attention {
+	font-weight: 		bold;
+	text-decoration:		underline;
+	font-style:		italic;
+	color: 			#f33;
+}
 .mute {
 	color: 			#777;
 }
@@ -350,6 +356,9 @@ body {
 }
 #content form select.radio {
 	border:			none;
+}
+#content p {
+	padding: 			5px;
 }
 
 
