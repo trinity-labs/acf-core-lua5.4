@@ -2,7 +2,8 @@
 
 module (..., package.seeall)
 
-local sess = require ("session")
+require ("session")
+require ("html")
 
 -- load an authenticator
 -- FIXME: use an "always true" as default?
@@ -33,11 +34,28 @@ logon = function (self, id, password )
 	end
 end
 
-logoff = function (self, sessionid)
+logoff = function (self, sessdata)
 	-- sessionid invalid?
 	-- 	record event, ignore the attempt
 	-- else
 	-- 	unlink session
 	--	issue new sessionid
+	
+	--made it so that we get a new sessionid then try to delete it
+	--need to make the whole sessiondata table go bye bye
+	delsess = session.unlink_session(self.conf.sessiondir, sessdata)
+	if delsess == true then 
+	logoff = "Successful"
+	else
+	logoff = "Incomplete or Unsuccessful logoff"
+	end	
+	sessiondata.id = session.random_hash(512) 
+	sessiondata = {}
+	return ( cfe{ {value=logoff,name="logoff"},{value=sessiondata,name="sessiondata"} })
 end
 
+status = function(self, sessdata)
+	sessid = sessdata
+	checkme = session.check_session(self.conf.sessiondir,sessdata)	
+	return ( cfe { checkme={value=checkme,name="checkme"}, sessid={value=sessid,name="sessid" } })	
+end

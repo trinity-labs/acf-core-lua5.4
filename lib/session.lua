@@ -13,6 +13,7 @@
 module (..., package.seeall)
 
 require "posix"
+require "fs"
 
 local b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
@@ -143,11 +144,28 @@ unlink_session = function (sessionpath, session)
 		return nil
 	end
 	session = sessionpath .. "/session." .. s
-	os.remove (session)
-	return nil
+	local statos = os.remove (session)
+	return statos
 end
 
+--need to see if this is a "real"-user session or just a temp one. 
+check_session = function (sessionpath, session)
+	local fullpath = sessionpath .. "/session." .. session
+	if type(session) ~= "string" then return nil end
+	local s = string.gsub (session, "[^" .. b64 .. "]", "")
+	if s ~= session then
+		return nil
+	end
+	check_size = posix.stat(fullpath,"size")
+	if check_size == 0 then 
+	return "Null Session"
+	else
+	local c = fs.read_file(fullpath)
+	return c	
+	end
+		
 
+end
 -- Record an invalid login event 
 -- ID would typically be an ip address or username
 -- the format is lockevent.id.datetime.processid
