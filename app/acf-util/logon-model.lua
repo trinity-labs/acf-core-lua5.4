@@ -43,14 +43,16 @@ logoff = function (self, sessdata)
 	
 	--made it so that we get a new sessionid then try to delete it
 	--need to make the whole sessiondata table go bye bye
-	delsess = session.unlink_session(self.conf.sessiondir, sessdata)
+	delsess = session.unlink_session(conf.sessiondir, sessdata)
 	if delsess == true then 
 	logoff = "Successful"
 	else
 	logoff = "Incomplete or Unsuccessful logoff"
-	end	
+	end
+	for a,b in pairs(sessiondata) do
+	sessiondata[a] = nil
+	end
 	sessiondata.id = session.random_hash(512) 
-	sessiondata = {}
 	return ( cfe{ {value=logoff,name="logoff"},{value=sessiondata,name="sessiondata"} })
 end
 
