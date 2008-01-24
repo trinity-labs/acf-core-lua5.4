@@ -75,7 +75,7 @@ Content-Type: text/html
 				if v.group ~= group then
 					group = v.group
 					if      pageinfo.prefix  == v.prefix .. "/"  and 
-						pageinfo.controller == v.controller and pageinfo.action == v.action then
+						pageinfo.controller == v.controller then
 						class="class='selected'"
 					else
 						class=""
