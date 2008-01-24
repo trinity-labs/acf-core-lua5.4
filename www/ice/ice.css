@@ -348,6 +348,10 @@ body {
 #content p,input.text,select,textarea,table {
 	width:			99%;
 }
+#content table {
+	margin:			5px;
+	margin-top:		0px;
+}
 #content textarea {
 	height:			300px;
 }

@@ -38,7 +38,7 @@ function opts_to_table ( optstring, filter )
 	local option = ""
 	local optvalue = ""
 		for j = 1, string.len(optstr) do
-		if (string.sub(optstr, j, j) == " -") then
+		if (string.sub(optstr, j, j) == "-") then
 			option=string.sub(optstr, j, j+1)
 				if not (filter) or (filter == option) then
 					for k = j+1, string.len(optstr) do
@@ -46,11 +46,11 @@ function opts_to_table ( optstring, filter )
 							optsparams = {}
 						end
 						if (string.sub(optstr, k, k) == "-") then
-							optsparams[option] = string.match(string.sub(optstr, j+2, k-1),"^%s*(.*)%s?")
+							optsparams[option] = string.match(string.sub(optstr, j+2, k-1),"^%s*(.-)%s*$")
 							break
 						end
 						if (k == string.len(optstr)) then
-							optsparams[option] = string.match(string.sub(optstr, j+2, k),"^%s*(.*)%s?")
+							optsparams[option] = string.match(string.sub(optstr, j+2, k),"^%s*(.-)%s*$")
 							break
 						end
 					end
