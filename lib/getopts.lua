@@ -38,7 +38,7 @@ function opts_to_table ( optstring, filter )
 	local option = ""
 	local optvalue = ""
 		for j = 1, string.len(optstr) do
-		if (string.sub(optstr, j, j) == "-") then
+		if (string.sub(optstr, j, j) == "-%a%s") then
 			option=string.sub(optstr, j, j+1)
 				if not (filter) or (filter == option) then
 					for k = j+1, string.len(optstr) do
