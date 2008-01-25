@@ -109,8 +109,8 @@ end
 
 
 -- This code comes from http://lua-users.org/wiki/SplitJoin
--- -- example: format.table_to_string(", ", {"Anna", "Bob", "Charlie", "Dolores"})
-function table_to_string (delimiter, list)
+-- -- example: format.table_to_string( {"Anna", "Bob", "Charlie", "Dolores"}, ",")
+function table_to_string (list, delimiter)
 	local len = getn(list)
 	if len == 0 then 
 		return "" 
@@ -127,8 +127,8 @@ end
 --gives you the second field which is .... is
 
 -- This code comes from http://lua-users.org/wiki/SplitJoin
--- example: format.string_to_table(",%s*", "Anna, Bob, Charlie,Dolores")
-function string_to_table (delimiter, text)
+-- example: format.string_to_table( "Anna, Bob, Charlie,Dolores", ",%s*")
+function string_to_table ( text, delimiter)
 	local list = {}
 	local pos = 1
 	-- this would result in endless loops
