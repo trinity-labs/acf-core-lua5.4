@@ -1,7 +1,9 @@
 module (..., package.seeall)
+require("fs")
 
 function getoptsfromfile (file, search, filter)
 	local opts = nil
+	if not (fs.is_file(file)) then return nil end
 	local conf_file = fs.read_file_as_array ( file )
 	for i=1,table.maxn(conf_file) do
 		local l = conf_file[i]
