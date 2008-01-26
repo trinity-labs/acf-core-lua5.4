@@ -13,7 +13,7 @@
 module (..., package.seeall)
 
 require "posix"
-require "fs"
+require "format"
 
 local b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
@@ -158,9 +158,9 @@ check_session = function (sessionpath, session)
 	end
 	check_size = posix.stat(fullpath,"size")
 	if check_size == 0 then 
-	return "Null Session"
+	return "an unknown user"
 	else
-	local c = fs.read_file(fullpath)
+	local c = dofile(fullpath).userinfo.userid
 	return c	
 	end
 		
@@ -178,13 +178,54 @@ end
 
 -- Check how many invalid login events
 -- have happened for this id in the last n minutes
-count_events =	function ( sessionpath, id, minutes)
-	-- FIXME
-	return 0
+-- this will only effect the lockevent files
+count_events =	function (sessionpath, id, minutes, limit)
+	if id == nil then
+	return true
+	else
+	local now = os.time()
+	local minutes_ago = now - (minutes * 60)
+	local searchfor = sessionpath .. "/lockevent." .. id .. ".*"
+	local t = posix.glob(searchfor)
+	
+	if t == nil then 
+	return true
+	end
+
+		if #t > limit then
+		--may need to add checks for time here, we are passing it...
+		return false
+		else
+		return true
+		end
+	end
 end
 
 -- Clear events that are older than n minutes
-expire_events = function (sessionpath, minutes)
-	-- FIXME
-	return 0
+expired_events = function (sessionpath, minutes)
+	--current os time in seconds
+	local now = os.time()
+	--take minutes and convert to seconds
+	local minutes_ago = now - (minutes * 60)
+	local searchfor = sessionpath .. "/lockevent.*"
+	--first do the lockevent files
+	local temp = posix.glob(searchfor)
+	if temp ~= nil then 
+ 		for a,b in pairs(temp) do
+			if posix.stat(b,"mtime") < minutes_ago then
+			os.remove(b)
+			end
+ 		end
+	end
+	--now do the session files
+	searchfor = sessionpath .. "/session.*"
+	local temp = posix.glob(searchfor)
+	if temp ~= nil then
+ 		for a,b in pairs(temp) do
+ 			if posix.stat(b,"mtime") < minutes_ago then
+			os.remove(b)
+			end
+ 		end
+	end
+ 	return 0
 end
