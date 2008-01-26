@@ -1,5 +1,6 @@
 <? local pageinfo , mainmenu, submenu, viewtable, session = ... 
-   html=require("html") ?>
+   html=require("html") 
+   sess=require("session") ?>
 Status: 200 OK
 Content-Type: text/html
 <? if (session.id) then 
@@ -33,11 +34,12 @@ Content-Type: text/html
 		<span class="mute">
 			<p>
 			<? local ctlr = pageinfo.script .. "/acf-util/logon/"
-			if session.id == nil then 
+			
+			sname = sess.check_session("/tmp", session.id)
+			if sname == "an unknown user" then
 			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", ctlr .. "logon" ) )
 			else
-			   sess = session.name or "unknown"
-			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. sess .. "'</a>\n", ctlr .. "logout" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. sname .. "'</a>\n", ctlr .. "logout" ) )
 			end ?>
 			 | 
 			<a href="/">home</a> | 
