@@ -1,6 +1,13 @@
 module (..., package.seeall)
 require("fs")
 
+--local conf_file
+
+function setoptsinfile (file, search, option, value)
+	local opts = getoptsfromfile(file)
+	return opts
+end
+
 function getoptsfromfile (file, search, filter)
 	local opts = nil
 	if not (fs.is_file(file)) then return nil end
@@ -11,7 +18,7 @@ function getoptsfromfile (file, search, filter)
 			local a = string.match ( l, "^%s*(%S*)=" )
 			if (a) then
 				if not (search) or (search == a) then
-					local b = string.match ( l, '^%s*%S*%=%"?(.-)%s*%"?%s*$' )
+					local b = string.match ( l, '^%s*%S*%s*%=%s*%"?(.-)%s*%"?%s*$' )
 					local optstable = getopts.opts_to_table(b,filter)
 					if (optstable) or not (filter) then
 						if not (opts) then
@@ -20,7 +27,7 @@ function getoptsfromfile (file, search, filter)
 						if (optstable) then
 							opts[a] = optstable
 							---[[ Next line is DEBUG info. Should be commented out!
-							opts[a]["debug"] = b
+							--opts[a]["debug"] = b
 							-- End debug info. --]] 
 						else
 							opts[a] = b
@@ -35,12 +42,11 @@ end
 
 function opts_to_table ( optstring, filter )
 	local optsparams = nil
-	local optstr = string.match(optstring, "^\"?(.*)%\"?")		-- Filter away leading/trailing "
+	local optstr = optstring
 	if optstr then
-	local option = ""
-	local optvalue = ""
+		local option = ""
 		for j = 1, string.len(optstr) do
-		if (string.sub(optstr, j, j) == "-%a%s") then
+			if (string.find(string.sub(optstr, j, string.len(optstr)), "^-%a%s*")) then
 			option=string.sub(optstr, j, j+1)
 				if not (filter) or (filter == option) then
 					for k = j+1, string.len(optstr) do
