@@ -60,25 +60,28 @@ end
 -- This function returns true or false, and
 -- if false:  the reason for failure
 authenticate = function ( self, userid, password )
-	password = password or ""
-	userid = userid or ""
+		password = password or ""
+		userid = userid or ""
 
-	local t = pvt.parse_authfile(self.conf.confdir .. "/passwd")
+		local t = pvt.parse_authfile(self.conf.confdir .. "/passwd")
 
-	if t == false then
-		return false, "password file is missing"
-	else
-		local id = pvt.get_id (userid, t)
-		if id == false then
-			return false, "Userid not found"
+		if t == false then
+			return false, "password file is missing"
+		else
+		  if userid ~= nil then
+			local id = pvt.get_id (userid, t)
+			if id == false or id == nil then
+				return false, "Userid not found"
+			end
+			if id.password ~= password then
+				return false, "Invalid password"
+			end
+		  else 
+		  return false
+		  end
+		return true
 		end
-		if id.password ~= password then
-			return false, "Invalid password"
-		end
-	end
-	return true
-	end
-
+end
 
 -- This function returns the username and roles 
 -- or false on an error 

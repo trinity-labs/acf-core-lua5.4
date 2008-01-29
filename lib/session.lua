@@ -150,6 +150,8 @@ end
 
 --need to see if this is a "real"-user session or just a temp one. 
 check_session = function (sessionpath, session)
+	if session == nil then return "an unknown user" end
+
 	local fullpath = sessionpath .. "/session." .. session
 	if type(session) ~= "string" then return nil end
 	local s = string.gsub (session, "[^" .. b64 .. "]", "")
@@ -169,9 +171,9 @@ end
 -- Record an invalid login event 
 -- ID would typically be an ip address or username
 -- the format is lockevent.id.datetime.processid
-record_event = function( sessionpath, id )
-	local x = io.open (string.format ("%s/lockevent.%s.%s.%s",
-		 sessionpath or "/", id or "", os.time(), 
+record_event = function( sessionpath, id_u, id_ip )
+	local x = io.open (string.format ("%s/lockevent.%s.%s.%s.%s",
+		 sessionpath or "/", id_u or "", id_ip, os.time(), 
 		 (posix.getpid("pid")) or "" ), "w")
 	io.close(x)
 end
@@ -179,27 +181,35 @@ end
 -- Check how many invalid login events
 -- have happened for this id in the last n minutes
 -- this will only effect the lockevent files
-count_events =	function (sessionpath, id, minutes, limit)
-	if id == nil then
-	return true
-	else
+count_events =	function (sessionpath, id_user, ipaddr, minutes)
+	--we need to have the counts added up? deny off any and or all
 	local now = os.time()
 	local minutes_ago = now - (minutes * 60)
-	local searchfor = sessionpath .. "/lockevent." .. id .. ".*"
+	local t = {}
+	--give me all lockevents then we will sort through them
+	local searchfor = sessionpath .. "/lockevent.*"
 	local t = posix.glob(searchfor)
+		
+	if t == nil or id_user == nil or ipaddr == nil then 
+	return 0
+	else
 	
-	if t == nil then 
-	return true
+	local temp = {}
+	for a,b in pairs(t) do 
+		if posix.stat(b,"mtime") > minutes_ago then
+		temp[#temp + 1] = b end
+	end
+	
+	local temp2 = {}
+	for k,v in pairs(temp) do 
+	local c = string.match(v,id_user) or string.match(v,ipaddr)
+	if c ~= nil then temp2[#temp2 + 1] = v end
+	end
+	
+	return #temp2	
 	end
 
-		if #t > limit then
-		--may need to add checks for time here, we are passing it...
-		return false
-		else
-		return true
-		end
 	end
-end
 
 -- Clear events that are older than n minutes
 expired_events = function (sessionpath, minutes)
