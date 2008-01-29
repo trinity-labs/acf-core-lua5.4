@@ -1,11 +1,40 @@
 module (..., package.seeall)
 require("fs")
 
---local conf_file
-
 function setoptsinfile (file, search, option, value)
-	local opts = getoptsfromfile(file)
-	return opts
+	local opts = {}
+	local newfilecontent = nil
+	local filecontent = nil
+	opts = getoptsfromfile(file) or {}
+	filecontent = fs.read_file(file) or ""
+	if (filecontent == "") or (opts[search] == "") or (opts[search] == nil) then
+		opts[search] = {}
+	end
+	if not (search) or not (option) then 
+		return nil, "Invalid usage of function getopts.setoptsinfile()"
+	end
+
+	--Change to new value
+	opts[search][option] = value
+
+	local optstr = ""
+	for k,v in pairs(opts) do
+		if (k == search) then
+			optstr = optstr.. k .. "=\""
+			for kk,vv in pairs(v) do
+				optstr = optstr .. kk .. " " .. vv .. " "
+			end
+			optstr = string.match(optstr, "(.-)%s*$") .. "\""
+		end
+	end
+
+	newfilecontent = string.gsub(filecontent, "%s*[;#]?" .. search .. "%s*=.-\n?$", "\n" .. optstr .. "\n") or ""
+	if (string.find(newfilecontent, search .. "%s*=" ) == nil) or (newfilecontent == "") then
+		fs.write_file(file,string.match(filecontent, "(.-)\n*$") .. "\n" .. optstr .. "\n")
+	else
+		fs.write_file(file,string.match(newfilecontent, "(.-)\n*$"))
+	end
+	return "File '" .. file .. "'has been modifyed!"
 end
 
 function getoptsfromfile (file, search, filter)
