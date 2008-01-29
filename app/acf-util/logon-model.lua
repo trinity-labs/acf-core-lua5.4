@@ -20,20 +20,37 @@ else
 	auth = require ("authenticator-plaintext")
 end
 
-
 logon = function (self, id_user, password_user,sessdata )
-session.expired_events(conf.sessiondir, minutes_expired_events)
 local userid=cfe({ name="userid",type="text" })
 local password=cfe({ name="password" ,type="password"})
 local logon=cfe({ name="Logon", type="submit"})
 local s = ""
 
-if session.check_session(conf.sessiondir, sessdata) ~= "an unknown user" then
-userid.errtxt="Currently logged onto the system. Please Logoff"
+local csess = session.check_session(conf.sessiondir, sessdata)
+if csess ~= "an unknown user" then
+session.unlink_session(conf.sessiondir, sessdata)
+for a,b in pairs(sessiondata) do 
+sessiondata[a] = nil
+end
+sessiondata.id = session.random_hash(512)
 end
 
+local counteven = session.count_events(conf.sessiondir, id_user, session.hash_ip_addr(ENV["REMOTE_ADDR"]), minutes_count_events)
+
+if counteven > limit_count_events then
+userid.errtxt="Information not recognized"
+return (cfe {type="form",
+	option={script=ENV["SCRIPT_NAME"],
+	prefix=self.conf.prefix,
+	controller=self.conf.controller,
+	action="logon" },
+	value={userid,password,logon},testme={counteven}
+	})
+end
+
+session.expired_events(conf.sessiondir, minutes_expired_events)
 	if id_user and password_user then
-		if auth.authenticate (self, id_user, password_user) then
+		if auth.authenticate (self, id_user, password_user)  then
 			local t = auth.get_userinfo (self, id_user)
 			sessiondata.id = session.random_hash(512)
 			sessiondata.userinfo = t or {}
@@ -43,14 +60,14 @@ end
 			self.conf.controller="logon"
 			error(self.conf)
 		else
-		userid.errtxt = "Invalid Attempt"
-		session.record_event(conf.sessiondir, id_user)
+		userid.errtxt = "Information not recognized"
+		session.record_event(conf.sessiondir, id_user, session.hash_ip_addr(ENV["REMOTE_ADDR"]))
 	return (cfe {type="form",
 		option={script=ENV["SCRIPT_NAME"],
 		prefix=self.conf.prefix,
 		controller=self.conf.controller,
 		action="logon" },
-		value={userid,password,logon} 
+		value={userid,password,logon},testme={counteven} 
 		})
 		end
 	else
@@ -59,7 +76,7 @@ end
 	prefix=self.conf.prefix,
 	controller=self.conf.controller,
 	action="logon" } ,
-	value={userid,password,logon}
+	value={userid,password,logon},testme={counteven}
 	})
 	end
 end
