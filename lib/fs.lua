@@ -88,6 +88,18 @@ function md5sum_file ( path )
 	return checksum
 end
 
+function md5sum_string ( str)
+	cmd = "/bin/echo -n " .. str .. "|/usr/bin/md5sum|cut -f 1 -d \" \" "
+	f = io.popen(cmd)
+	local checksum =  {}
+	for line in f:lines() do
+		checksum[#checksum + 1] = line
+		end
+	f:close()
+	return checksum[1]
+end
+
+
 
 -- iterator function for finding dir entries matching filespec (what)
 -- starting at where, or currentdir if not specified.

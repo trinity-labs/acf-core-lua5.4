@@ -4,6 +4,7 @@ module (..., package.seeall)
 
 require ("session")
 require ("html")
+require ("fs")
 
 --varibles for time in case of logons,expired,lockouts
 minutes_expired_events=30
@@ -50,7 +51,8 @@ end
 
 session.expired_events(conf.sessiondir, minutes_expired_events)
 	if id_user and password_user then
-		if auth.authenticate (self, id_user, password_user)  then
+	local password_user_md5 = fs.md5sum_string(password_user)
+		if auth.authenticate (self, id_user, password_user_md5)  then
 			local t = auth.get_userinfo (self, id_user)
 			sessiondata.id = session.random_hash(512)
 			sessiondata.userinfo = t or {}

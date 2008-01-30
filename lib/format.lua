@@ -148,4 +148,3 @@ function string_to_table ( text, delimiter)
 	return list
 end
 
-
