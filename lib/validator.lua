@@ -35,6 +35,14 @@ validator.msg.err.OutOfRange = {}
 validator.msg.err.OutOfRange[lang.English]     = "Value out of range!"
 validator.msg.err.OutOfRange[lang.German]      = "Wert ausserhalb des Bereichs!"
 
+validator.msg.err.FileInvalidPath = {}
+validator.msg.err.FileInvalidPath[lang.English]		= "Not a valid path!"
+validator.msg.err.FileInvalidPath1 = {}
+validator.msg.err.FileInvalidPath1[lang.English]	= "You entered"
+validator.msg.err.FileInvalidPath2 = {}
+validator.msg.err.FileInvalidPath2[lang.English]	= "You are restrected to"
+
+
 function is_string ( str )
 	if type(str) == "string" then
 	return true, str, "Is a string."
@@ -165,9 +173,9 @@ end
 -- and if it is within a given range.
 --
 function is_integer_in_range(numstr, min, max)
-	return  validator.is_integer(numstr) 
-		and numstr >= min
-		and numstr <= max
+	return  is_integer(numstr) 
+		and tonumber(numstr) >= min
+		and tonumber(numstr) <= max
 	
 end
 
@@ -176,6 +184,14 @@ end
 -- and wheter it is between 1 .. 65535
 --
 function is_port(numstr)
-	return  validator.is_integer_in_range(numstr, 1, 65535)
+	return  is_integer_in_range(numstr, 1, 65535)
 end
 
+function is_valid_filename ( path, restriction )
+	if not (path) or ((restriction) and (string.find (path, "^" .. restriction ) == nil)) then
+		return nil, validator.msg.err.FileInvalidPath[lang.Current] .. "\n" ..
+			" * " .. validator.msg.err.FileInvalidPath1[lang.Current] ..":" .. string.format(path) .. "\n * ".. 
+			validator.msg.err.FileInvalidPath2[lang.Current] .. ":" .. string.format(restriction)
+	end
+	return path
+end
