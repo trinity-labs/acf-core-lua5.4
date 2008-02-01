@@ -35,10 +35,8 @@ validator.msg.err.OutOfRange = {}
 validator.msg.err.OutOfRange[lang.English]     = "Value out of range!"
 validator.msg.err.OutOfRange[lang.German]      = "Wert ausserhalb des Bereichs!"
 
-validator.msg.err.FileInvalidPath = {}
-validator.msg.err.FileInvalidPath[lang.English]		= "Not a valid path!"
 validator.msg.err.FileInvalidPath1 = {}
-validator.msg.err.FileInvalidPath1[lang.English]	= "You entered"
+validator.msg.err.FileInvalidPath1[lang.English]	= "Not a valid path!"
 validator.msg.err.FileInvalidPath2 = {}
 validator.msg.err.FileInvalidPath2[lang.English]	= "You are restrected to"
 
@@ -189,7 +187,7 @@ end
 
 function is_valid_filename ( path, restriction )
 	if not (path) or ((restriction) and (string.find (path, "^" .. restriction ) == nil)) then
-		return false, "* " .. validator.msg.err.FileInvalidPath1[lang.Current] ..":" .. string.format(path) .. "\n* ".. 
+		return false, "* " .. validator.msg.err.FileInvalidPath1[lang.Current] .. "\n* ".. 
 			validator.msg.err.FileInvalidPath2[lang.Current] .. ":" .. string.format(restriction)
 	end
 	return true, path
