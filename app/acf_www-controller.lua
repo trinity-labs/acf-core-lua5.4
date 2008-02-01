@@ -233,7 +233,8 @@ cfe = function ( optiontable )
 		type="text",
 		option="",
 		errtxt="",
-		name=""  }
+		name="", 
+		label="" }
 	for key,value in pairs(optiontable) do
 		me[key] = value
 	end
