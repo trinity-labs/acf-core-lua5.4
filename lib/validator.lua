@@ -189,9 +189,8 @@ end
 
 function is_valid_filename ( path, restriction )
 	if not (path) or ((restriction) and (string.find (path, "^" .. restriction ) == nil)) then
-		return nil, validator.msg.err.FileInvalidPath[lang.Current] .. "\n" ..
-			" * " .. validator.msg.err.FileInvalidPath1[lang.Current] ..":" .. string.format(path) .. "\n * ".. 
+		return false, "* " .. validator.msg.err.FileInvalidPath1[lang.Current] ..":" .. string.format(path) .. "\n* ".. 
 			validator.msg.err.FileInvalidPath2[lang.Current] .. ":" .. string.format(restriction)
 	end
-	return path
+	return true, path
 end
