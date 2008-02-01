@@ -11,7 +11,7 @@ function setoptsinfile (file, search, option, value)
 		opts[search] = {}
 	end
 	if not (search) or not (option) then 
-		return nil, "Systeminformation - Invalid usage of function getopts.setoptsinfile()"
+		return fales, nil, "Systeminformation - Invalid usage of function getopts.setoptsinfile()"
 	end
 
 	--Change to new value
@@ -34,7 +34,7 @@ function setoptsinfile (file, search, option, value)
 	else
 		fs.write_file(file,string.match(newfilecontent, "(.-)\n*$"))
 	end
-	return true, "File '" .. file .. "'has been modifyed!"
+	return true, "File '" .. file .. "' has been modifyed!", nil
 end
 
 function getoptsfromfile (file, search, filter)
