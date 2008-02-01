@@ -11,8 +11,8 @@ function daemoncontrol (process, action)
 			file:close()
 		end
 	else
-		cmderror = "Unknown command!"
+		return false,nil,"Unknown command!",action
 	end
 	posix.sleep(2)	-- Wait for the process to start|stop
-	return true, action,cmdmessage,cmderror
+	return true,cmdmessage,nil,action
 end
