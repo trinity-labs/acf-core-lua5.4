@@ -29,7 +29,7 @@ pvt.parse_authfile = function(filename)
 				string.match(l, "([^:]*):([^:]*):([^:]*):(.*)")
 			local r = {}
 			roles=roles or ""
-			for x in string.gmatch(roles, "([^,]*),?") do
+			for x in string.gmatch(roles, "([^,]%w+),?") do
 				table.insert (r, x )
 			end
 				

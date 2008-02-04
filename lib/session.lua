@@ -149,7 +149,7 @@ unlink_session = function (sessionpath, session)
 end
 
 --need to see if this is a "real"-user session or just a temp one. 
-check_session = function (sessionpath, session)
+check_session = function (sessionpath, session )
 	if session == nil then return "an unknown user" end
 
 	local fullpath = sessionpath .. "/session." .. session
@@ -163,17 +163,19 @@ check_session = function (sessionpath, session)
 	return "an unknown user"
 	else
 	local c = dofile(fullpath).userinfo.userid
-	return c	
+	local d = dofile(fullpath).userinfo.roles
+	return c,d
 	end
 		
 
 end
+
 -- Record an invalid login event 
 -- ID would typically be an ip address or username
 -- the format is lockevent.id.datetime.processid
 record_event = function( sessionpath, id_u, id_ip )
 	local x = io.open (string.format ("%s/lockevent.%s.%s.%s.%s",
-		 sessionpath or "/", id_u or "", id_ip, os.time(), 
+		 sessionpath or "/", id_u or "", id_ip or "", os.time(), 
 		 (posix.getpid("pid")) or "" ), "w")
 	io.close(x)
 end

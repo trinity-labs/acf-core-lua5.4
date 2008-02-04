@@ -31,7 +31,8 @@ function remove_blanks_comments ( path )
 	end	
 	local lines = {}
 	for a,b in ipairs(f) do
-	local c = string.match(b, "^$") or string.match(b, "^%#")
+	local c = string.match(b, "^$") or string.match(b, "^%#") 
+	--this does not take care of lua comments with -- or --[[
 	if c == nil then lines[#lines + 1] = b end
 	end
 -- returns a table to iterate over without the blank or commented lines
@@ -148,3 +149,13 @@ function string_to_table ( text, delimiter)
 	return list
 end
 
+function md5sum_string ( str)
+	cmd = "/bin/echo -n " .. str .. "|/usr/bin/md5sum|cut -f 1 -d \" \" "
+	f = io.popen(cmd)
+	local checksum =  {}
+	for line in f:lines() do
+		checksum[#checksum + 1] = line
+		end
+	f:close()
+	return checksum[1]
+end

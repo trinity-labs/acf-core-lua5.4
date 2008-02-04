@@ -2,6 +2,8 @@ include ../config.mk
 
 APP_DIST= acf-util/logon-controller.lua\
 	acf-util/logon-html.lsp\
+	acf-util/logon-status-html.lsp\
+	acf-util/logon-logout-html.lsp\
 	acf-util/logon-model.lua\
 	acf_www-controller.lua\
 	cfgfile-model.lua\
