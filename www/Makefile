@@ -7,6 +7,7 @@ WWW_DIST=cgi-bin/acf\
 	static/alpine.jpg\
 	static/reset.css\
 	static/watermark.jpg\
+	static/prototype.js\
 	ice/* \
 	snow/*
 
