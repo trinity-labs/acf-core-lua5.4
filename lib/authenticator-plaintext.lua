@@ -94,3 +94,12 @@ get_userinfo = function ( self, userid )
 	end
 end
 
+get_userinfo_roles = function (self, userid)
+	local t = pvt.parse_authfile(self.conf.confdir .. "/passwd")
+	if t == false then
+		return nil
+	else
+		temp = pvt.get_id (userid, t)
+		return temp.roles
+	end
+end

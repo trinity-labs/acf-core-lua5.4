@@ -2,6 +2,7 @@
 
 
 require ("posix")
+require ("fs")
 require ("format")
 
 module (..., package.seeall)
@@ -53,5 +54,28 @@ end
 	--we need to go through bobo and take out the mvc func and locals and --
 	return temp1
 	end
+end
+
+get_roles_perm = function(self,roles)
+	--for now we are using the file static
+	--this will go through and search from the roles in sessionid to get the real
+	--permission list
+	local rolesfile = "/etc/acf/roles"
+	f = fs.read_file_as_array(rolesfile)
+	local temp = {}
+	for k,v in pairs(roles) do
+		for a,b in pairs(f) do
+		match = "^" .. v
+		c = string.match(b,match)
+		if c then 
+		inval = string.match(b,"[,%w:]+$")
+		temp[#temp +1] = inval
+		end
+		end
+	end
+	temp1 = format.table_to_string(temp,",")
+	--we now can return the first level of roles perms. What if a role is a member of a role...
+	
+	return temp1
 end
 

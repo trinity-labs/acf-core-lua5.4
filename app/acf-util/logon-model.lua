@@ -5,6 +5,7 @@ module (..., package.seeall)
 require ("session")
 require ("html")
 require ("fs")
+require ("roles")
 
 --varibles for time in case of logons,expired,lockouts
 minutes_expired_events=30
@@ -56,6 +57,7 @@ session.expired_events(conf.sessiondir, minutes_expired_events)
 			local t = auth.get_userinfo (self, id_user)
 			sessiondata.id = session.random_hash(512)
 			sessiondata.userinfo = t or {}
+			sessiondata.userinfo.perm = roles.get_roles_perm(self,auth.get_userinfo_roles(self,id_user))
 			self.conf.prefix="/acf-util/"
 			self.conf.action="status"
 			self.conf.type="redir"

@@ -112,7 +112,7 @@ end
 -- This code comes from http://lua-users.org/wiki/SplitJoin
 -- -- example: format.table_to_string( {"Anna", "Bob", "Charlie", "Dolores"}, ",")
 function table_to_string (list, delimiter)
-	local len = getn(list)
+	local len = #(list)
 	if len == 0 then 
 		return "" 
 	end

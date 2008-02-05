@@ -7,7 +7,9 @@ module (..., package.seeall)
 
 read = function(self,sessionid)
 	useid , theroles = session.check_session(conf.sessiondir,sessionid,"roles")
-	return ( cfe { value=theroles,name="roles" })	
+--we need to expand roles to give us real perm list
+	perm = roles.get_roles_perm(self,theroles)
+	return ( cfe { userid={value=useid,name="userid"},roles={ value=theroles,name="roles"}, perm={value=perm,name="perm"}  })	
 end
 
 getcont = function(self)
