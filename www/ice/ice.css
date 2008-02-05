@@ -33,7 +33,9 @@ input {
 	border:			1px solid #ccc;
 }
 hr {
-	background-color:		#ff9933;
+	background-color:		#eee;
+	border:				none;
+	border-top:			1px solid #bbb;
 	height: 			3px;
 }
 .error {
@@ -345,13 +347,20 @@ body {
 	border-right: 		1px solid #cacaca;
 	border-bottom: 		1px solid #cacaca;
 }
-#content p,input.text,select,textarea,table {
+#content p,input.text,input.password,select,textarea,table {
 	width:			99%;
 }
 #content table {
 	margin:			5px;
 	margin-top:		0px;
 }
+#content .header {
+	background: 		#bbb;
+	color:			white;
+	font-weight: 		bold;
+	font-size:		14pt;
+}
+
 #content textarea {
 	height:			300px;
 }
