@@ -116,13 +116,13 @@ Content-Type: text/html
 			</div>
 
 			<? local class="" ?>
-			<? for k,v in pairs(submenu)  do
-				if v == pageinfo.action then
+			<? for k,v in pairs(submenu or {})  do
+				if submenu[k]["action"] == pageinfo.action then
 					class="class='selected'"
 				else
 					class=""
 				end
-				io.write (string.format('\t\t\t<a %s href="%s">%s</a>\n',class,v,v ))
+				io.write (string.format('\t\t\t<a %s href="%s">%s</a>\n',class,submenu[k]["action"],submenu[k]["tab"] ))
 			end
 			?>
 

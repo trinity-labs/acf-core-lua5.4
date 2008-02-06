@@ -179,13 +179,10 @@ view_resolver = function(self)
 		m=require("menubuilder")
 		local menu = m.get_menuitems(self.conf.appdir)
 
-		-- A quick hack
-		submenu = {}
-		for k,v in pairs ( self.worker ) do
-			if type ( self.worker[k] ) == "function" then
-				table.insert (submenu, k)	
-			end
-		end
+		-- Build the submenu table
+		local submenu = m.get_submenuitems(self.conf.appdir)
+		-- Show only tabs for current controller
+		submenu = submenu[pageinfo.controller]
 
 		return function (viewtable)
 			local template = haserl.loadfile (template)

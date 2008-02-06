@@ -37,6 +37,21 @@ local t_compare = function  (x,y,f)
 		return false
 		end
 
+-- Returns a table of all submenu items found
+-- Displayorder of the tabs comes from the order in the .menu files
+get_submenuitems = function (startdir)
+	local t = {}
+	local menuitems = get_menuitems(startdir)
+
+	for k,v in pairs(menuitems) do
+		if (menuitems[k]["tab"] ~= "") then
+			if not (t[menuitems[k]["controller"]]) then t[menuitems[k]["controller"]] = {} end
+			table.insert (t[menuitems[k]["controller"]], {tab=menuitems[k]["tab"],action=menuitems[k]["action"]})
+		end
+	end
+
+	return t
+end
 
 -- returns a table of all the menu items found, sorted by priority
 -- Table format:   prefix  controller  cat group tab action
