@@ -8,9 +8,6 @@ require ("fs")
 require ("roles")
 
 --varibles for time in case of logons,expired,lockouts
-minutes_expired_events=30
-minutes_count_events=30
-limit_count_events=10
 
 -- load an authenticator
 -- FIXME: use an "always true" as default?
@@ -37,9 +34,9 @@ end
 sessiondata.id = session.random_hash(512)
 end
 
-local counteven = session.count_events(conf.sessiondir, id_user, session.hash_ip_addr(ENV["REMOTE_ADDR"]), minutes_count_events)
+local counteven = session.count_events(conf.sessiondir, id_user, session.hash_ip_addr(ENV["REMOTE_ADDR"]))
 
-if counteven > limit_count_events then
+if counteven then
 userid.errtxt="Information not recognized"
 return (cfe {type="form",
 	option={script=ENV["SCRIPT_NAME"],
@@ -50,7 +47,7 @@ return (cfe {type="form",
 	})
 end
 
-session.expired_events(conf.sessiondir, minutes_expired_events)
+session.expired_events(conf.sessiondir)
 	if id_user and password_user then
 	local password_user_md5 = fs.md5sum_string(password_user)
 		if auth.authenticate (self, id_user, password_user_md5)  then

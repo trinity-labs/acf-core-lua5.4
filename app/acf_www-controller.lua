@@ -53,6 +53,12 @@ mvc.on_load = function (self, parent)
 			sessionlib.record_event(self.conf.sessiondir,
 				sessionlib.hash_ip_addr(self.conf.clientip))
 		else
+		local now = os.time()
+		local minutes_ago = now - (sessionlib.minutes_expired_events * 60)
+			if timestamp < minutes_ago then
+			sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)
+			sessiondata.id = sessionlib.random_hash(512)
+			sessionlib.count_events(self.conf.sessiondir,self.conf.userid or "", sessionlib.hash_ip_addr(self.conf.clientip),sessionlib.limit_count_events)
 			--[[
 			FIXME --- need to write this function
 			if too many bad events for this ip invaidate the session
@@ -65,6 +71,8 @@ mvc.on_load = function (self, parent)
 			generate flash message "Inactivity logout"
 			end
 			]]--
+			sessionlib.expired_events(self.conf.sessiondir,sessionlib.minutes_expired_events)
+			end
 		end
 	end
 end

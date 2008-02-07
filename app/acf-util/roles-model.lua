@@ -9,7 +9,7 @@ read = function(self,sessionid)
 	useid , theroles = session.check_session(conf.sessiondir,sessionid,"roles")
 --we need to expand roles to give us real perm list
 	perm = roles.get_roles_perm(self,theroles)
-	return ( cfe { userid={value=useid,name="userid"},roles={ value=theroles,name="roles"}, perm={value=perm,name="perm"}  })	
+	return ( cfe { userid={value=useid,name="userid"},roles={ value=theroles,name="roles"}, perm={value=perm,name="perm"},{value=self.conf,name="self"},{value=sessiondata.userinfo.perm,name="perm2"} })	
 end
 
 getcont = function(self)

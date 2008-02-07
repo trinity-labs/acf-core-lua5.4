@@ -15,6 +15,10 @@ module (..., package.seeall)
 require "posix"
 require "format"
 
+minutes_expired_events=30
+minutes_count_events=30
+limit_count_events=10
+
 local b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
 -- Return a sessionid of at least size bits length
@@ -183,17 +187,17 @@ end
 -- Check how many invalid login events
 -- have happened for this id in the last n minutes
 -- this will only effect the lockevent files
-count_events =	function (sessionpath, id_user, ipaddr, minutes)
+count_events =	function (sessionpath, id_user, ipaddr)
 	--we need to have the counts added up? deny off any and or all
 	local now = os.time()
-	local minutes_ago = now - (minutes * 60)
+	local minutes_ago = now - (minutes_count_events * 60)
 	local t = {}
 	--give me all lockevents then we will sort through them
 	local searchfor = sessionpath .. "/lockevent.*"
 	local t = posix.glob(searchfor)
 		
 	if t == nil or id_user == nil or ipaddr == nil then 
-	return 0
+	return false
 	else
 	
 	local temp = {}
@@ -208,17 +212,21 @@ count_events =	function (sessionpath, id_user, ipaddr, minutes)
 	if c ~= nil then temp2[#temp2 + 1] = v end
 	end
 	
-	return #temp2	
+	if #temp2 > limit_count_events then
+	return true
+	else
+	return false
+	end
 	end
 
 	end
 
 -- Clear events that are older than n minutes
-expired_events = function (sessionpath, minutes)
+expired_events = function (sessionpath)
 	--current os time in seconds
 	local now = os.time()
 	--take minutes and convert to seconds
-	local minutes_ago = now - (minutes * 60)
+	local minutes_ago = now - (minutes_expired_events * 60)
 	local searchfor = sessionpath .. "/lockevent.*"
 	--first do the lockevent files
 	local temp = posix.glob(searchfor)
