@@ -15,6 +15,16 @@ require "posix"
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
 
+local function build_menus(self)
+	--Build the menu
+	m=require("menubuilder")
+	sessiondata.menu = {}
+	sessiondata.menu.mainmenu = m.get_menuitems(self.conf.appdir)
+	sessiondata.menu.submenu = m.get_submenuitems(self.conf.appdir)
+	-- Debug: Timestamp on menu creation
+	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
+end
+
 mvc = {}
 mvc.on_load = function (self, parent)
 	-- open the log file
@@ -53,6 +63,12 @@ mvc.on_load = function (self, parent)
 			sessionlib.record_event(self.conf.sessiondir,
 				sessionlib.hash_ip_addr(self.conf.clientip))
 		else
+
+		-- FIXME: This is probably wrong place to generate the menus
+		if not (self.sessiondata.menu) then
+			build_menus(self)
+		end
+
 		local now = os.time()
 		local minutes_ago = now - (sessionlib.minutes_expired_events * 60)
 			if timestamp < minutes_ago then
@@ -183,15 +199,15 @@ view_resolver = function(self)
 					skin = self.conf.skin or ""
 					}
 
-		-- Build the menu table
-		m=require("menubuilder")
-		local menu = m.get_menuitems(self.conf.appdir)
+		-- Fetch the menu's from sessiondata (filter out what's needed)
+		local menu = self.sessiondata.menu.mainmenu
+		local submenu = self.sessiondata.menu.submenu[pageinfo.controller]
 
-		-- Build the submenu table
-		local submenu = m.get_submenuitems(self.conf.appdir)
-		-- Show only tabs for current controller
-		submenu = submenu[pageinfo.controller]
-
+--[[		-- DEBUG: Next row's is to display when the menu was created (see function build_menus(self) in BOF)
+		if (submenu) then
+			submenu[99] = sessiondata.menu.timestamp
+		end
+--]]
 		return function (viewtable)
 			local template = haserl.loadfile (template)
 			return template ( pageinfo, menu, submenu, viewtable, self.sessiondata )

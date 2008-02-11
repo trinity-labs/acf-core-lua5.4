@@ -107,7 +107,7 @@ save_session = function( sessionpath, session, sessiontable)
 		count = count + 1 
 	end
 	-- If the table only has an "id" field, then don't save it
-	if count > 0 and file then 
+	if count > 1 and file then 
 		file:write ( "-- This is an ACF session table.\n")
 		file:write ( "\nlocal " )
 		file:write ( serialize("s", sessiontable) )
