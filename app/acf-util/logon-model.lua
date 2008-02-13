@@ -29,7 +29,9 @@ local csess = session.check_session(conf.sessiondir, sessdata)
 if csess ~= "an unknown user" then
 session.unlink_session(conf.sessiondir, sessdata)
 for a,b in pairs(sessiondata) do 
+if a ~= "menu" then
 sessiondata[a] = nil
+end
 end
 sessiondata.id = session.random_hash(512)
 end
@@ -111,7 +113,9 @@ logoff = function (self, sessdata)
 	logoff = "Incomplete or Unsuccessful logoff"
 	end
 	for a,b in pairs(sessiondata) do
+	if a ~= "menu" then
 	sessiondata[a] = nil
+	end
 	end
 	sessiondata.id = session.random_hash(512) 
 	return ( cfe{ {value=logoff,name="logoff"},{value=sessiondata,name="sessiondata"} })
