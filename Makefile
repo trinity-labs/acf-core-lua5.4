@@ -8,7 +8,7 @@ DISTPKG=$(P).tar.bz2
 
 SUBDIRS=app lib www
 EXTRA_DIST=ChangeLog config.mk Makefile README TODO
-CONF_FILES=acf.conf
+CONF_FILES=acf.conf passwd roles
 
 DISTFILES=$(EXTRA_DIST) $(CONF_FILES)
 
