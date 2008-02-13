@@ -1,10 +1,14 @@
 include ../config.mk
 
-APP_DIST= acf-util/logon-controller.lua\
-	acf-util/logon-html.lsp\
-	acf-util/logon-status-html.lsp\
-	acf-util/logon-logout-html.lsp\
-	acf-util/logon-model.lua\
+APP_DIST= \
+	acf-util/logon-controller.lua \
+	acf-util/logon-html.lsp \
+	acf-util/logon-model.lua \
+	acf-util/logon-status-html.lsp \
+	acf-util/roles-controller.lua \
+	acf-util/roles-getlist-html.lsp \
+	acf-util/roles-model.lua \
+	acf-util/roles-read-html.lsp \
 	acf_www-controller.lua\
 	cfgfile-model.lua\
 	service-model.lua\

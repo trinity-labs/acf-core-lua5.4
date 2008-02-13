@@ -20,9 +20,9 @@ else
 end
 
 logon = function (self, id_user, password_user,sessdata )
-local userid=cfe({ name="userid",type="text" })
-local password=cfe({ name="password" ,type="password"})
-local logon=cfe({ name="Logon", type="submit"})
+local userid=cfe({ name="userid",label="User id", type="text" })
+local password=cfe({ name="password" ,label="Password", type="passwd"})
+local logon=cfe({ name="Logon", label="Logon", value="Logon", type="submit"})
 local s = ""
 
 local csess = session.check_session(conf.sessiondir, sessdata)

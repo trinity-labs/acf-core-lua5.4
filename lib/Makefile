@@ -16,6 +16,7 @@ LIB_DIST=fs.lua\
 	authenticator-plaintext.lua\
 	daemoncontrol.lua\
 	getopts.lua\
+	roles.lua\
 
 
 EXTRA_DIST=README Makefile
