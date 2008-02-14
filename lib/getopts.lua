@@ -97,3 +97,27 @@ function opts_to_table ( optstring, filter )
 	end
 	return optsparams
 end
+function getoptsfromfile_onperline (file, search, filter)
+	local opts = nil
+	if not (fs.is_file(file)) then return nil end
+	local conf_file = fs.read_file_as_array ( file )
+	for i=1,table.maxn(conf_file) do
+		local l = conf_file[i]
+		if not string.find ( l, "^[;#].*" ) then
+			local a = string.match ( l, "^%s*(%S*)=" )
+			if (a) then
+				if not (search) or (search == a) then
+					local b = string.match ( l, '^%s*%S*%s*%=%s*%"?(.-)%s*%"?%s*$' )
+--					local optstable = getopts.opts_to_table(b,filter)
+					if not (filter) then
+						if not (opts) then
+							opts = {}
+						end
+						opts[a] = b
+					end
+				end
+			end
+		end
+	end
+	return opts
+end
