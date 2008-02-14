@@ -63,7 +63,8 @@ get_menuitems = function (startdir)
 		local fh = io.open(startdir .. "/" .. v)
 		local prio = 10
 		for x in fh:lines() do
-			if not string.match(x, "^#")  then
+			local c = string.match(x, "^#") or string.match(x,"^$")
+			if c == nil then
 				local item = {}
 				for i in string.gmatch(x, "%S+") do
 					table.insert(item, i)

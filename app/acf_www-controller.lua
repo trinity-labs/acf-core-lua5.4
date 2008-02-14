@@ -18,9 +18,41 @@ local parent_exception_handler
 local function build_menus(self)
 	--Build the menu
 	m=require("menubuilder")
+	roll = require ("roles")
+	form = require ("format")
 	sessiondata.menu = {}
 	sessiondata.menu.mainmenu = m.get_menuitems(self.conf.appdir)
 	sessiondata.menu.submenu = m.get_submenuitems(self.conf.appdir)
+--  if sessiondata.userinfo == nil then
+	--we are dealing with un unknown user
+--	p = {"ALL"}
+	--temp should be the 
+--	local temp = format.string_to_table(roll.get_roles_perm(self,p),",")
+	--lets apply permissions
+--	for a,b in pairs(sessiondata.menu.mainmenu) do
+--	for k,v in pairs(temp) do
+
+--	local control,acti = string.match(v,"(%a+):(%a+)")
+--	if sessiondata.menu.mainmenu[a].controller == control then
+--	test action
+--
+--	sessiondata.menu.mainmenu[a].action ~= acti then 
+--	sessiondata.menu.mainmenu[a] = nil
+--	end
+
+--	end
+--	end
+ -- else
+	--we don't need to figure out what permission have it is in sessiondata
+--	local temp = format.string_to_table(sessiondata.userinfo.perm,",")
+--	for e,f in pairs(temp) do
+--	local control,acti = string.match(f,"(%a+):(%a+)")
+--	if sessiondata.menu.mainmenu[a].controller ~= control and sessiondata.menu.mainmenu[a].action ~= acti then
+--	sessiondata.menu.mainmenu[a] = nil
+--	end
+--	end
+
+  -- end
 	-- Debug: Timestamp on menu creation
 	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
 end
