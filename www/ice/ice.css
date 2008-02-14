@@ -33,9 +33,7 @@ input {
 	border:			1px solid #ccc;
 }
 hr {
-	background-color:		#eee;
-	border:				none;
-	border-top:			1px solid #bbb;
+	background-color:		#ff9933;
 	height: 			3px;
 }
 .error {
@@ -43,12 +41,11 @@ hr {
 	font-style:		italic;
 	color: 			#f33;
 }
-.attention {
-	font-weight: 		bold;
-	text-decoration:		underline;
-	font-style:		italic;
-	color: 			#f33;
+input.error,select.error,textarea.error {
+	font-weight: 		normal;
+	font-style:		normal;
 }
+
 .mute {
 	color: 			#777;
 }
@@ -148,8 +145,8 @@ body {
 	top: 			97px;
 	left: 			0px;
 	width: 			180px;
-	margin: 			0px 0px 0px 9px;
-	padding: 			0px 10px 0px 0px;
+	margin: 		0px 0px 0px 9px;
+	padding: 		0px 10px 0px 0px;
 	background:		white;
 	background-image: 		url(shadow-side.png);
 	background-repeat: 		repeat-y;
@@ -168,11 +165,13 @@ body {
 	border-top: 		1px solid #7799BB;
 }
 #nav ul li ul {
+	margin-top:	5px;
 }
 #nav ul li ul li {
+	padding-bottom: 	0px;
+	height: 		21px;
 	font-weight: 		normal;
 	font-size:		10pt;
-	height: 			21px;
 	white-space: 		nowrap;
 	overflow: 		hidden;
 	border-bottom: 		1px solid #cacaca;
@@ -347,20 +346,9 @@ body {
 	border-right: 		1px solid #cacaca;
 	border-bottom: 		1px solid #cacaca;
 }
-#content p,input.text,input.password,select,textarea,table {
-	width:			99%;
+#content p,input.text,select,textarea,table,input.password {
+	width:			97%;
 }
-#content table {
-	margin:			5px;
-	margin-top:		0px;
-}
-#content .header {
-	background: 		#bbb;
-	color:			white;
-	font-weight: 		bold;
-	font-size:		14pt;
-}
-
 #content textarea {
 	height:			300px;
 }
@@ -369,9 +357,6 @@ body {
 }
 #content form select.radio {
 	border:			none;
-}
-#content p {
-	padding: 			5px;
 }
 
 
