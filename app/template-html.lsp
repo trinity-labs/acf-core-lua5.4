@@ -17,6 +17,9 @@ Content-Type: text/html
 <title><?= pageinfo.hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
 <link rel="stylesheet" type="text/css" href="/static/reset.css">
 <link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?>">
+<!--[if IE]>
+<link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin.."-ie.css" ?>">
+<![endif]-->
 <link rel="stylesheet" type="text/css" href="/ext-2.0/resources/css/ext-all.css">
 <script type="text/javascript" src="/ext-2.0/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="/ext-2.0/ext-all.js"></script>
