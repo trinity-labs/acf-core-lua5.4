@@ -33,7 +33,7 @@ input {
 	border:			1px solid #ccc;
 }
 hr {
-	background-color:		#ff9933;
+	background-color:		white;
 	height: 			3px;
 }
 .error {
@@ -48,6 +48,10 @@ input.error,select.error,textarea.error {
 
 .mute {
 	color: 			#777;
+}
+.header {
+	background: 		#cccccc;
+	font-weight: 		bold;
 }
 pre {
 	font-family:		monospace;
