@@ -8,6 +8,16 @@ WWW_DIST=cgi-bin/acf\
 	static/reset.css\
 	static/watermark.jpg\
 	static/prototype.js\
+	static/tango/16x16/actions/* \
+	static/tango/16x16/animations/* \
+	static/tango/16x16/apps/* \
+	static/tango/16x16/categories/* \
+	static/tango/16x16/devices/* \
+	static/tango/16x16/emblems/* \
+	static/tango/16x16/emotes/* \
+	static/tango/16x16/mimetypes/* \
+	static/tango/16x16/places/* \
+	static/tango/16x16/status/* \
 	ice/* \
 	snow/*
 
