@@ -362,6 +362,10 @@ body {
 #content form select.radio {
 	border:			none;
 }
+#content table td {
+	padding-right:			10px;
+	white-space:			nowrap;
+}
 
 
 /*----------------------------------------------------------------------------------
