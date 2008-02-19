@@ -58,7 +58,10 @@ pre {
 	font-size:		10pt;
 	padding:		5px;
 }
-
+input[type=text][disabled] {
+	color:			#755;
+	background:		#eee;
+}
 /*----------------------------------------------------------------------------------
  * BODY & PAGE
  *----------------------------------------------------------------------------------
@@ -350,9 +353,15 @@ body {
 	border-right: 		1px solid #cacaca;
 	border-bottom: 		1px solid #cacaca;
 }
-#content p,input.text,select,textarea,table,input.password {
+#content p,input[type=text],select,textarea,table,input[type=password] {
 	width:			97%;
 }
+#content input.short {
+	width:			200px;
+	margin-right:		10px;
+	display:			inline;
+}
+
 #content textarea {
 	height:			300px;
 }
