@@ -83,6 +83,22 @@ authenticate = function ( self, userid, password )
 		end
 end
 
+pvt.permission_to_change = function()
+	--FIXME: See to that user is allowed to change things
+	return true
+end
+
+pvt.availablefields = function (field)
+	-- This is a list of fileds in the /passwd file that we are allowed to use.
+	-- Could be used to check that right variable-name is used.
+	local availablefileds = {
+		['userid']=true, 
+		['password']=true, 
+		['username']=true, 
+		['roles']=true, 
+		}
+	return availablefileds[field]
+end
 -- This function returns the username and roles 
 -- or false on an error 
 get_userinfo = function ( self, userid )
@@ -102,4 +118,70 @@ get_userinfo_roles = function (self, userid)
 		temp = pvt.get_id (userid, t)
 		return temp.roles
 	end
+end
+
+list_users = function (self)
+	local output = {}
+	local t = pvt.parse_authfile(self.conf.confdir .. "/passwd")
+	if t == false then
+		return nil
+	else
+		for k,v in pairs(t) do
+			table.insert(output,v.userid)
+		end
+		return output
+
+	end
+end
+list_roles = function (self)
+	local output = {"CREATE","UPDATE","DELETE","READ"}
+	return output
+end
+
+change_settings = function (self, userid,parameter,value) 
+	-- We start by checking if user is allowed to do changes
+	-- FIXME: This functions is probably not done yet!!!
+	if not (pvt.permission_to_change) then
+		return false, "No permission to change!"
+	end
+
+	-- Check if user entered available commands
+	if not (userid) or not (parameter) or not (pvt.availablefields(parameter)) then
+		return false, "You need to enter valid userid, parameter and value!"
+	end
+
+	local passwdfilecontent = fs.read_file_as_array(self.conf.confdir .. "/passwd")
+	local changes
+	for k,v in pairs(passwdfilecontent) do
+		if ( string.match(v, "^".. userid .. ":") ) then
+			changes = {}
+			-- Get current values
+			changes.userid, changes.password, changes.username, changes.roles =
+				string.match(v, "([^:]*):([^:]*):([^:]*):(.*)")
+			-- Actually change the value (remove all ':')
+			changes[parameter] = string.gsub(value, ":", "")
+			-- Update the table with the new values
+			passwdfilecontent[k] = changes.userid .. ":" .. changes.password .. ":".. changes.username .. ":" .. changes.roles
+		end
+	end
+	
+	--Write changes to file
+	fs.write_file(self.conf.confdir .. "/passwd", table.concat(passwdfilecontent,"\n"))
+	return true
+end
+
+new_settings = function ( self, userid, username, password, password_confirm, ...)
+	local errormessage = {}
+	local roles = { ... }
+	-- Set errormessages when entering invalid values
+	if (#userid == 0) then errormessage.userid = "You need to enter a valid userid!" end
+	if (password ~= password_confirm) then errormessage.password = "You entered wrong password/confirmation" end
+	if not (password) or (#password == 0) then errormessage.password = "Password cant be blank!" end
+
+	-- Return false if some errormessages is set
+	for k,v in pairs(errormessage) do
+		return false, errormessage
+	end
+
+	return true, errormessage
 end
