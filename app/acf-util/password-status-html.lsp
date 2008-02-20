@@ -58,11 +58,18 @@ if (type(myform) == "table") then
 		end
 		io.write("><IMG SRC='/static/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> " .. myform.label .. "</DT>\n")
 		io.write("\t\t<DD>\n\t\t<TABLE>")
-		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>".. myform.value.userid.label .."</B></TD>\n\t\t\t\t<TD WIDTH='90%'>" .. myform.value.userid.value .. "</TD>\n\t\t\t</TR>")
-		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>".. myform.value.username.label .."</B></TD>\n\t\t\t\t<TD>" .. myform.value.username.value .. "</TD>\n\t\t\t</TR>")
-		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>".. myform.value.roles.label .."</B></TD>\n\t\t\t\t<TD>" .. myform.value.roles.value .. "</TD>\n\t\t\t</TR>")
+		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>".. myform.value.userid.label ..
+			"</B></TD>\n\t\t\t\t<TD WIDTH='90%'>" .. myform.value.userid.value .. "</TD>\n\t\t\t</TR>")
+		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>".. myform.value.username.label ..
+			"</B></TD>\n\t\t\t\t<TD>" .. myform.value.username.value .. "</TD>\n\t\t\t</TR>")
+		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>".. myform.value.roles.label ..
+			"</B></TD>\n\t\t\t\t<TD>" .. myform.value.roles.value .. "</TD>\n\t\t\t</TR>")
+		if (myform.value.errors) then
+			io.write("\n\t\t\t<TR>\n\t\t\t\t<TD CLASS='error'><B>".. myform.value.errors.label .. 
+				"</B></TD>\n\t\t\t\t<TD CLASS='error'>" .. myform.value.errors.value .. "</TD>\n\t\t\t</TR>")
+		end
 		io.write("</TD>\n\t\t\t</TR>")
-		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>Option</B></TD>\n\t\t\t\t<TD>[<A HREF='administrator?userid=".. myform.value.userid.value .. "'>Edit this account</A>]</TD>\n\t\t\t</TR>")
+		io.write("\n\t\t\t<TR>\n\t\t\t\t<TD><B>Option</B></TD>\n\t\t\t\t<TD>[<A HREF='administrator?orguserid=".. myform.value.userid.value .. "'>Edit this account</A>]</TD>\n\t\t\t</TR>")
 		io.write("\n\t\t</TABLE>\n")
 		if (#myform.errtxt > 0) then io.write("\t\t<P CLASS='error'>" .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
 		io.write("\t\t</DD>\n")
@@ -73,7 +80,7 @@ io.write("</DL>")
 
 
 <?
----[[ DEBUG INFORMATION
+--[[ DEBUG INFORMATION
 io.write("<H1>DEBUGGING</H1><span style='color:red'><H2>DEBUG INFO: CFE</H2>")
 io.write(html.cfe_unpack(form))
 io.write("</span>")

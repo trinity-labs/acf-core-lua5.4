@@ -25,17 +25,20 @@ function displayinfo(myform,tags,viewtype)
 				elseif (viewtype == "roles") then
 					for k,v in pairs(form.config.availableroles.option) do
 						local checked = ""
-						for kk,vv in pairs(form.config.roles.option) do
-							if (v == vv) then
-								checked = "checked='yes'"
-								break
+						if (type(form.config.roles.option) == "table") then
+							for kk,vv in pairs(form.config.roles.option) do
+								if (v == vv) then
+									checked = "checked='yes'"
+									break
+								end
 							end
 						end
-						io.write("\n\t\t\t" ..v .. ":<input class='checkbox' type='checkbox'  name='roles'  value='' " .. checked .. " disabled> ")
+						io.write("\n\t\t\t" ..v .. ":<input class='checkbox' type='checkbox'  name='"..v.."'  value='"..v.."' " .. checked .. " > ")
 					end
 				else
 					io.write(html.form[val.type](val))
 				end
+				if (val.descr) and (#val.descr > 0) then io.write("\t\t<P CLASS='descr'>" .. string.gsub(val.descr, "\n", "<BR>") .. "</P>\n") end
 				if (#val.errtxt > 0) then io.write("\t\t<P CLASS='error'>" .. string.gsub(val.errtxt, "\n", "<BR>") .. "</P>") end
 				io.write("\n\t\t</DD>")
 			else
@@ -66,7 +69,7 @@ displayinfo(myform,tags)
 </form>
 
 <?
----[[ DEBUG INFORMATION
+--[[ DEBUG INFORMATION
 io.write("<H1>DEBUGGING</H1><span style='color:red'><H2>DEBUG INFO: CFE</H2>")
 io.write(html.cfe_unpack(form))
 io.write("</span>")
