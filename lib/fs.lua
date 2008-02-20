@@ -72,7 +72,7 @@ function write_line_file ( path, str )
 	if ( file) then
 	local c = file:read("*a")
 	file:close()
-	local d = (c .. "\n" .. str .. "\n")
+	local d = (c .. str .. "\n")
 	-- include a friendly newline for EOF
 	fs.write_file(path,d)
 	end
