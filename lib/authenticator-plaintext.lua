@@ -84,8 +84,20 @@ authenticate = function ( self, userid, password )
 end
 
 pvt.permission_to_change = function()
-	--FIXME: See to that user is allowed to change things
+	--FIXME: Check if user is allowed to change things
 	return true
+end
+
+pvt.weak_password = function(password)
+	-- If password is too short, return false
+	if (#password < 4) then
+		return true, "Password is too short!"
+	end	
+	if (tonumber(password)) then
+		return true, "Password can't contain only numbers!"
+	end	
+
+	return false
 end
 
 pvt.availablefields = function (field)
@@ -139,18 +151,50 @@ list_roles = function (self)
 end
 
 change_settings = function (self, userid,parameter,value) 
+	local errormessage = {}
+	local passwd_path = self.conf.confdir .. "/passwd"
+
 	-- We start by checking if user is allowed to do changes
-	-- FIXME: This functions is probably not done yet!!!
 	if not (pvt.permission_to_change) then
-		return false, "No permission to change!"
+		errormessage.permissions = "No permission to change!"
+	end
+
+	-- Check if userid already used
+	if (parameter == "userid") and (userid ~= value) then
+		for k,v in pairs(list_users(self)) do
+			if (v == value) then
+				errormessage.userid = "This userid already exists!"
+			end
+		end
 	end
 
 	-- Check if user entered available commands
 	if not (userid) or not (parameter) or not (pvt.availablefields(parameter)) then
-		return false, "You need to enter valid userid, parameter and value!"
+		errormessage.userid = "You need to enter valid userid, parameter and value!"
 	end
 
-	local passwdfilecontent = fs.read_file_as_array(self.conf.confdir .. "/passwd")
+	-- Check if password is weak
+	if (parameter == "password") then
+		local weak_password_result, weak_password_errormessage = pvt.weak_password(value)
+		if (weak_password_result) then
+			errormessage.password = weak_password_errormessage
+		end
+	end
+
+	-- Return false if some errormessages is set
+	for k,v in pairs(errormessage) do
+		return false, errormessage
+	end
+
+	-- FIXME: See to that roles (value) cant be other than the list_roles(self) presents
+	-- FIXME: We should be able to change ROLES
+
+	-- If the parameter is password, then scramble the password
+	if (parameter == "password") then
+		value = fs.md5sum_string(value)
+	end
+
+	local passwdfilecontent = fs.read_file_as_array(passwd_path)
 	local changes
 	for k,v in pairs(passwdfilecontent) do
 		if ( string.match(v, "^".. userid .. ":") ) then
@@ -165,23 +209,66 @@ change_settings = function (self, userid,parameter,value)
 		end
 	end
 	
+
 	--Write changes to file
-	fs.write_file(self.conf.confdir .. "/passwd", table.concat(passwdfilecontent,"\n"))
+	fs.write_file(passwd_path, table.concat(passwdfilecontent,"\n"))
 	return true
 end
 
-new_settings = function ( self, userid, username, password, password_confirm, ...)
+new_settings = function ( self, userid, username, password, password_confirm, roles)
 	local errormessage = {}
-	local roles = { ... }
+	-- We start by checking if user is allowed to do changes
+	if not (pvt.permission_to_change) then
+		errormessage.permissions = "No permission to change!"
+	end
+
+	-- Set path to passwordfile
+	local passwd_path = self.conf.confdir .. "/passwd"
+
 	-- Set errormessages when entering invalid values
 	if (#userid == 0) then errormessage.userid = "You need to enter a valid userid!" end
-	if (password ~= password_confirm) then errormessage.password = "You entered wrong password/confirmation" end
+	if (password ~= password_confirm) then errormessage.password_confirm = "You entered wrong password/confirmation" end
 	if not (password) or (#password == 0) then errormessage.password = "Password cant be blank!" end
-
+--	if not (roles) or (#roles == 0) then errormessage.roles = "You need to enter some roles!" end
+	local weak_password_result, weak_password_errormessage = pvt.weak_password(password)
+	if (weak_password_result) then errormessage.password = weak_password_errormessage end
+	-- Check if userid already used
+	for k,v in pairs(list_users(self)) do
+		if (v == userid) then
+			errormessage.userid = "This userid already exists!"
+		end
+	end
+	
 	-- Return false if some errormessages is set
 	for k,v in pairs(errormessage) do
 		return false, errormessage
 	end
+
+	-- Write the newline into the file
+	fs.write_line_file(passwd_path, userid .. ":" .. fs.md5sum_string(password) .. ":" .. username .. ":" .. table.concat(roles,",") )
+
+	return true, errormessage
+end
+
+delete_user = function( self, userid)
+	local errormessage = {}
+	local passwd_path = self.conf.confdir .. "/passwd"
+
+	-- We start by checking if user is allowed to do changes
+	if not (pvt.permission_to_change) then
+		errormessage.permissions = "No permission to change!"
+	end
+
+	local passwdfilecontent = fs.read_file_as_array(passwd_path)
+	local output = {}
+	for k,v in pairs(passwdfilecontent) do
+		if not ( string.match(v, "^".. userid .. ":") ) then
+			table.insert(output, v)
+		end
+	end
+	
+	--Save the updated table
+	fs.write_file(passwd_path, table.concat(output,"\n"))
 
 	return true, errormessage
 end
