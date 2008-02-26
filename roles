@@ -2,4 +2,4 @@ CREATE=syslog:config,syslog:status
 READ=skins:read,alpineversion:read,interfaces:read,logfiles:status
 UPDATE=skins:update,syslog:expert
 DELETE=interfaces:delete,logfiles:delete
-ALL=welcome:read
+ALL=welcome:read,interfaces:read,health:system,skins:read
