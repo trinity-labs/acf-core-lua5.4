@@ -186,9 +186,6 @@ change_settings = function (self, userid,parameter,value)
 		return false, errormessage
 	end
 
-	-- FIXME: See to that roles (value) cant be other than the list_roles(self) presents
-	-- FIXME: We should be able to change ROLES
-
 	-- If the parameter is password, then scramble the password
 	if (parameter == "password") then
 		value = fs.md5sum_string(value)
