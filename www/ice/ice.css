@@ -353,7 +353,7 @@ body {
 	border-right: 		1px solid #cacaca;
 	border-bottom: 		1px solid #cacaca;
 }
-#content p,input[type=text],select,textarea,table,input[type=password] {
+#content p,input.text,select,textarea,table,input.password {
 	width:			97%;
 }
 #content input.short {

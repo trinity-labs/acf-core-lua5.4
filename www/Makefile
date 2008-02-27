@@ -5,6 +5,7 @@ WWW_DIST=cgi-bin/acf\
 	index.html\
 	sample.html\
 	static/alpine.jpg\
+	static/alpine_inv.jpg\
 	static/reset.css\
 	static/watermark.jpg\
 	static/prototype.js\

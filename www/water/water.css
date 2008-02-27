@@ -61,7 +61,7 @@ body {
 	padding: 			0px;
 	font-family: 			Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
 	font-size:			12pt;
-	background:	#EDEEF0;
+	background:	#FCFFFF;
 }
 #page { 
 
@@ -141,21 +141,28 @@ body {
 #nav ul li ul {
 	margin-top:			2px;
 	margin-bottom:			15px;
+	display:			list-item;
 }
 #nav ul li ul li {
 	font-size:			10pt;
 	font-weight: 			normal;
+
 }
 #nav ul li ul li.selected {
 	font-weight:			bold;
 	border: 			1px solid #7799BB;
 	border-right: 			none;
-	background:		#EDEEF0;
+	background:			#FCFFFF;
+	display:			block;
 }
 #nav ul li ul li a {
-	padding-top:			2px;
-	padding-bottom:			2px;
+	border: 			1px solid red;
 	display:			list-item;
+/*	padding-top:			2px;
+	padding-bottom:			2px;
+	margin-bottom:			2px;
+	margin-top:			2px;*/
+/*	display:			list-item; */
 	padding-left:			10px;
 }
 #nav ul li ul li a:hover {
@@ -203,7 +210,7 @@ body {
 	border: 			2px solid #7799BB;
 	border-bottom: 			none;
 	font-weight:			bold;
-	background:			#EDEEF0;
+	background:			#FCFFFF;
 }
 
 /*----------------------------------------------------------------------------------
@@ -258,9 +265,12 @@ body {
 */
 #content dl {
 	display:			block;
+	border: 			1px dashed #7799BB;
+	margin-bottom:			10px;
+
 }
 #content dt {
-	border-top: 			1px dashed #bbb;
+/*	border-top: 			1px dashed #bbb; */
 	font-weight: 			bold;
 
 /*	float: 			left;
