@@ -87,7 +87,7 @@ local generic_input = function ( field_type, v )
 		return nil
 	end
 	
-	local str = string.format ( '<input type="%s" ', field_type )
+	local str = string.format ( '<input class="%s" type="%s" ', field_type,field_type )
 
 	for i,k in ipairs ( {
 			"name", "size", "checked", "maxlength", 
