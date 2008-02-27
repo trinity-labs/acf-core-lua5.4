@@ -1,0 +1,413 @@
+/* .css - Alpine ACF */
+
+/*----------------------------------------------------------------------------------
+ * GENERAL
+ *----------------------------------------------------------------------------------
+ */
+
+.hide {
+	display:			none;
+}
+
+a {
+	text-decoration:		none;
+	color:				#072966;
+}
+a:visited {
+	color:				#072966;
+}
+a:hover {
+	text-decoration:		underline;
+	color:				red;
+}
+input {
+	border:				1px solid #ccc;
+}
+hr {
+	background-color:			#ffffff;
+	height: 				3px;
+}
+.error {
+	font-weight: 			bold;
+	font-style:			italic;
+	color: 				#f33;
+}
+input.error,select.error,textarea.error {
+	font-weight: 			normal;
+	font-style:			normal;
+}
+
+.mute {
+	color: 				#777;
+}
+pre {
+	font-family:			monospace;
+	font-size:			10pt;
+	padding:			5px;
+}
+.header {
+	background-color:			#F6F6FF;
+	color:				#6BA0D2;
+	padding:				5px;
+	text-align:			left;
+	font-weight: 			bold;
+}
+/*----------------------------------------------------------------------------------
+ * BODY & PAGE
+ *----------------------------------------------------------------------------------
+ */
+body {
+	margin: 			0px;
+	padding: 			0px;
+	font-family: 			Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
+	font-size:			12pt;
+	background:	black;
+}
+#page { 
+	left:				0px;
+	margin:				10px 5% 0% 5%;
+	background:			white;
+	height:				100%;
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > HEADER
+ *----------------------------------------------------------------------------------
+ */
+#header {
+	width: 				100%;
+	height: 			75px;
+	background-image: 		url("/static/alpine_inv.jpg");
+	background-repeat: 		repeat-x;
+	border-bottom: 			3px solid black;
+/*	background: 	#777;	*/
+	color:		white;
+}
+#header p {
+	float: 				right;
+	font-size:			14px;
+	margin-right: 			5px;
+	margin-top: 			5px;
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > HEADER > LOGO
+ *----------------------------------------------------------------------------------
+ */
+#logo h1 {
+	position:			absolute;
+	top:				5px;
+	left: 				10px;
+	font-size:			40px; 
+}
+#logo p {
+	position:			absolute;
+	top:				55px;
+	left:				10px;
+	font-size:			14px;
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > MAIN
+ *----------------------------------------------------------------------------------
+ */
+#main {
+	margin-top: 		20px;
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > MAIN > NAV
+ *----------------------------------------------------------------------------------
+ */
+#nav {
+	float:				left;
+	width: 				180px;
+	margin-left:			5px;
+/*	top: 				82px;
+	left: 				8px;
+	margin:				0px;
+	padding:			0px;
+	display:			block;
+	background:			white;
+	background-repeat: 		repeat-y;
+	background-position: 		right; */
+}
+#nav ul {
+	list-style-type: 		none;
+}
+#nav ul li {
+/*	color: 			white;
+	font-size: 		16px;
+	font-weight: 		bold;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	background:		#6688AA;
+	border-top: 		1px solid #7799BB; */
+	padding-left:		5px; 
+/*	padding-top:		5px;*/
+	background: 		silver;
+	font-weight:		bold;
+	padding-top:		5px
+
+}
+#nav ul li ul {
+/*	margin-top:	5px; */
+	background: 		white;
+	margin-top:		5px;
+}
+#nav ul li ul li {
+	margin-left:		-5px;
+	padding:		2px;
+	padding-left:		15px;
+/*
+	padding-bottom: 	0px;
+	font-weight: 		normal;
+	font-size:		10pt;
+	border-bottom: 		1px solid #cacaca;
+	border-top: 		1px solid #ccc;
+	border-left: 		1px solid #ddd;*/
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	background: 		white;
+/*	height: 		21px;
+	margin:			0px;
+	padding:		0px; */
+}
+#nav ul li ul li a {
+/*	clear:			right; */
+	display:		list-item;
+	height:			20px;
+	font-weight:		normal;
+
+/*	padding-left:		5px;
+	padding-top:		3px;
+	padding-bottom:		3px; */
+}
+#nav ul li ul li a:hover {
+}
+#nav ul li ul li.selected a {
+	font-weight:		bold;
+	text-decoration:	underline;
+}
+/*----------------------------------------------------------------------------------
+ * PAGE > MAIN > POSTNAV
+ *----------------------------------------------------------------------------------
+ */
+#postnav h2 {
+	display: none;
+}
+#postnav p {
+	display: none;
+}
+/*----------------------------------------------------------------------------------
+ * PAGE > MAIN > SUBNAV
+ *----------------------------------------------------------------------------------
+ */
+#subnav {
+	position:			absolute;
+	top:				58px;
+	left:				200px;
+ 	padding-top: 			2px;
+	margin-bottom:			10px;
+	height:				40px;
+}
+#subnav a {
+/*	height:				20px; */
+/*	margin: 			0px 0px 5px 0px;
+	padding: 			3px 5px 2px 5px; */
+	padding:			5px;
+	padding-bottom:			0px;
+	margin-bottom:			50px;
+
+	font-size:			12px;
+/*	background-image: 		url(menu_item.png); */
+	border: 			1px solid #7799BB;
+	border-bottom: 			none;
+	background:			white;
+}
+
+#subnav a.selected {
+	border: 			2px solid #7799BB;
+	border-bottom: 			none;
+	font-weight:			bold;
+	background:			white;
+	text-decoration:		underline;
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > MAIN > CONTENT
+ *----------------------------------------------------------------------------------
+ */
+#content {
+	padding:			5px;
+	padding-top:			0px;
+	margin-left:	200px;
+/*	margin-left:			200px; */
+}
+#content h1,h2,h3,h4,h5 { 
+	margin-left: 	0px;
+	height:	18px;
+	text-align:			left;
+	text-transform:			uppercase; 
+	color:				#55d;
+	font-size: 			10pt;
+	font-family:			verdana;
+	margin-bottom:		-8px;
+	clear:		right;
+	width:		auto;
+	margin-right:	10px;
+
+/*	clear:			right;
+	white-space: 		nowrap;
+	overflow: 		hidden;
+	display:		block;
+	padding:			2px;
+*/
+/*	float:			left;
+	clear:			right;
+	width:		100%;*/
+
+/*	background-color:			#F6F6FF;
+	color:				#6BA0D2;
+	padding:				5px;
+	font-weight: 			bold;
+*/
+/*	font-size:			120%; 
+	font-variant:			small-caps;*/
+
+/*	clear:				right;
+	text-align:			center;
+	white-space: 			nowrap;
+	overflow: 			hidden;
+	text-transform:			capitalize; */
+}
+#content h1 { 
+/*	border-top: 			3px solid #7799BB;*/
+	border:				1px solid #777;
+	border-left:			none;
+	border-top:			none;
+	
+	margin-bottom:		0px;
+	font-size: 			12pt;
+	background:			#ccc;
+	padding:			5px;
+	color:				black;
+	display:block;
+}
+
+#content h2 { 
+	padding-left:			10px;
+}
+#content h3 { 
+	padding-left:			20px;
+	text-transform:			lowercase; 
+}
+/*
+
+#content .descr {
+	clear:	both;
+}
+
+#content .value {
+	display: inline;
+	padding-left: 200px;
+}
+*/
+#content dl {
+	border:			1px solid #ddd;
+	float: 			left;
+	margin:			0px;
+	padding:		0px;
+	margin-bottom:		10px;
+	margin-top:		2px;
+	width:			97%;
+	display:		block;
+	clear:	right;
+}
+#content dt {
+	width: 			220px;
+	font-size: 		12px;
+	text-align:		left;
+	font-weight:		bold;
+	float: 			left;
+	clear: 			left;
+	margin-top:		1px;
+	margin-left: 		0px;
+	padding-left:		5px;
+	padding-top:		5px;
+	padding-bottom:		5px;
+}
+#content dd {
+	margin-top:		1px;
+	clear: right;
+	font-size: 		12px;
+	margin-left: 		230px;
+	padding-top:		5px;
+	padding-bottom:		5px;
+}
+#content .submit {
+	width: 			100px;
+	border-right:		1px solid #cacaca;
+	border-bottom:		1px solid #cacaca;
+	background:		#eee;
+}
+#content table {
+	border-top:		1px solid #cacaca;
+}
+#content textarea {
+	border-right: 		1px solid #cacaca;
+	border-bottom: 		1px solid #cacaca;
+}
+#content table input.text,table select,table textarea,table input.password, textarea {
+	width:			96%;
+}
+
+#content dd input.text ,dd select,dd textarea,dd input.password {
+	width:			96%;
+}
+#content p,table,hr {
+	width:			96%;
+}
+#content p {
+	margin:			7px;
+	margin-left:		0px;
+	margin-right:		0px;
+}
+
+#content p.descr {
+/* margin-left:		20px; */
+	display: inline;
+	width:	auto;
+}
+#content textarea {
+	height:			300px;
+}
+#content dd textarea {
+	height:			100px;
+}
+
+/*----------------------------------------------------------------------------------
+ * PAGE > FOOTER
+ *----------------------------------------------------------------------------------
+ */
+
+#footer {
+/* float: right; */
+	margin: 			10px;
+	margin-top:			60px;
+	padding:			5px;
+	margin-left:			200px;
+	margin-right:			20px;
+	clear: right;
+	text-align:		center; 
+	border-top:		1px solid #d6d6d6;
+	font-size:		10px;
+	color: 			#aaa;
+
+/*	position:			relative;
+	clear: 			both;
+	width: 			100%;
+	padding:			5px 0px 5px 0px;
+	margin:			15px 0px 0px 10px; */
+}
+
