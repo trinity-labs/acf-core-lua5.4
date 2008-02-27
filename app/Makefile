@@ -11,7 +11,6 @@ APP_DIST= \
 	acf-util/roles-read-html.lsp \
 	acf-util/password-controller.lua \
 	acf-util/password-html.lsp \
-	acf-util/password-model.lua \
 	acf-util/password-status-html.lsp \
 	acf-util/password.menu \
 	acf_www-controller.lua\
