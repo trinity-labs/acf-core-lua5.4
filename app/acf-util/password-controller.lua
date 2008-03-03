@@ -23,6 +23,17 @@ local function admin_permission()
 	end
 end
 
+local function check_logonstatus(self)
+	-- Redirect the user if he's not logged in.
+	if not (self.sessiondata.userinfo) then
+		self.conf.action = "logon"
+		self.conf.controller = "logon"
+		self.conf.type = "redir"
+		error (self.conf)
+		return self
+	end
+end
+
 local function get_config(self,userid)
 	local config = {}
 	local userinfo = {}
@@ -82,6 +93,10 @@ local function get_config(self,userid)
 end
 
 function status(self)
+
+	-- Redirect the user if he's not logged in.
+	check_logonstatus(self)
+
 	local status = {}
 
 	-- Check for admin persmissions - else redirect to personal options
@@ -154,10 +169,14 @@ function status(self)
 		value="Create",
 --		disabled="yes",
 		})
-	return { status=status }
+	return {	status=status }
 end
 
 function administrator(self)
+
+	-- Redirect the user if he's not logged in.
+	check_logonstatus(self)
+
 	local output = {}
 
 	-- Check for admin persmissions - else redirect to personal options
@@ -192,7 +211,8 @@ end
 
 function edit_me(self)
 
-	-- FIXME: Redirect to Welcome or logon if user is not logged on
+	-- Redirect the user if he's not logged in.
+	check_logonstatus(self)
 
 	-- Output userinfo
 	local output = get_config(self,sessiondata.userinfo.userid)
@@ -218,7 +238,7 @@ function edit_me(self)
 	return {config=output}
 end
 
-clientdata_from_roles = function(self)
+local clientdata_from_roles = function(self)
 	local output = {}
 
 	for k,v in pairs(auth.list_roles()) do
@@ -231,6 +251,9 @@ clientdata_from_roles = function(self)
 end
 
 function save(self)
+	-- Redirect the user if he's not logged in.
+	check_logonstatus(self)
+
 	local errormessage = {}
 	local cmdresult = {}
 
