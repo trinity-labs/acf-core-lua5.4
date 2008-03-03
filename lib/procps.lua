@@ -29,10 +29,12 @@ end
 
 local function is_stat(path, name)
 	local f = io.open(path.."/stat")
-	local line = f:read()
-	local p = string.gsub(line, ".*%(", "")
-	p = string.gsub(p, "%).*", "")
-	f:close()
+	if (f) then
+		local line = f:read()
+		local p = string.gsub(line, ".*%(", "")
+		p = string.gsub(p, "%).*", "")
+		f:close()
+	end
 	if p ~= nil then	
 		if string.len(name) <= 15 and p == name then
 			return true
