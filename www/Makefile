@@ -21,7 +21,7 @@ WWW_DIST=cgi-bin/acf\
 	static/tango/16x16/status/* \
 	ice/* \
 	snow/* \
-	ddwrt/*
+	clouds/*
 
 EXTRA_DIST=Makefile
 DISTFILES=$(WWW_DIST) $(EXTRA_DIST)
