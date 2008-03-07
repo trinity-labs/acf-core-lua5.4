@@ -32,25 +32,31 @@ local function build_menus(self)
 	--lets apply permissions
 	
 	
-	for a,b in pairs(sessiondata.menu.mainmenu) do
+for a,b in pairs(sessiondata.menu.mainmenu) do
 
 	for k,v in pairs(temp) do
 	local control,acti = string.match(v,"(%a+):(%a+)")
 
-	if sessiondata.menu.mainmenu[a].controller == control then
+		if sessiondata.menu.mainmenu[a].controller == control then
 	--test action
-		if sessiondata.menu.mainmenu[a].action == acti then
-		sessiondata.menu.mainmenu[a].match = "yes"
+			if sessiondata.menu.mainmenu[a].action == acti then
+			sessiondata.menu.mainmenu[a].match = "yes"
+			break
+			else
+			sessiondata.menu.mainmenu[a].match = "no"
+			end
 		else
---		sessiondata.menu.mainmenu[a] = nil
 		sessiondata.menu.mainmenu[a].match = "no"
 		end
-	else
-	sessiondata.menu.mainmenu[a].match = "no"
-	end
+		if sessiondata.menu.mainmenu[a].controller == "menuhints" then
+		sessiondata.menu.mainmenu[a].match = "yes" end
 
 	end
-	end
+	if sessiondata.menu.mainmenu[a].match == "no" then
+	table.remove(sessiondata.menu.mainmenu,a) end
+end
+		
+
   else
 	--we don't need to figure out what permission have it is in sessiondata
 	local temp = format.string_to_table(sessiondata.userinfo.perm,",")
