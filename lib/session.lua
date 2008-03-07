@@ -154,9 +154,9 @@ end
 
 --need to see if this is a "real"-user session or just a temp one. 
 check_session = function (sessionpath, session )
-	if session == nil then return "an unknown user" end
-
+	if session == nil then return "an unknown user" end	
 	local fullpath = sessionpath .. "/session." .. session
+	if posix.stat(fullpath) == nil then return "an unknown user" end
 	if type(session) ~= "string" then return nil end
 	local s = string.gsub (session, "[^" .. b64 .. "]", "")
 	if s ~= session then
