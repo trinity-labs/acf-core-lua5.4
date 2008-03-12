@@ -1,5 +1,5 @@
 CREATE=syslog:config,syslog:status
-READ=skins:read,alpineversion:read,interfaces:read,logfiles:status
+READ=skins:read,alpineversion:read,interfaces:read,logfiles:status,password:status,welcome:read,health:system,health:storage,health:network,health:modules,health:proc
 UPDATE=skins:update,syslog:expert
 DELETE=interfaces:delete,logfiles:delete
-ALL=welcome:read,interfaces:read,health:system,skins:read
+ALL=welcome:read,interfaces:read,health:system

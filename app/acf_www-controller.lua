@@ -23,51 +23,64 @@ local function build_menus(self)
 	sessiondata.menu = {}
 	sessiondata.menu.mainmenu = m.get_menuitems(self.conf.appdir)
 	sessiondata.menu.submenu = m.get_submenuitems(self.conf.appdir)
-  if sessiondata.userinfo == nil then
+
+if sessiondata.userinfo == nil then
 	--we are dealing with an unknown user
-	p = {"ALL"}
+p = {"ALL"}
 	--this will be whatever the "UNKNOWN" role is ... right now it is ALL
 	--temp should be the 
-	local temp = format.string_to_table(roll.get_roles_perm(self,p),",")
+local temp = format.string_to_table(roll.get_roles_perm(self,p),",")
 	--lets apply permissions
-	
-	
-for a,b in pairs(sessiondata.menu.mainmenu) do
-
-	for k,v in pairs(temp) do
-	local control,acti = string.match(v,"(%a+):(%a+)")
-
-		if sessiondata.menu.mainmenu[a].controller == control then
-	--test action
-			if sessiondata.menu.mainmenu[a].action == acti then
-			sessiondata.menu.mainmenu[a].match = "yes"
-			break
+	for a,b in pairs(sessiondata.menu.mainmenu) do
+		for k,v in pairs(temp) do
+		local control,acti = string.match(v,"(%a+):(%a+)")
+			if sessiondata.menu.mainmenu[a].controller == control then
+				if sessiondata.menu.mainmenu[a].action == acti then
+				sessiondata.menu.mainmenu[a].match = "yes"
+				break
+				else
+				sessiondata.menu.mainmenu[a].match = "no"
+				end
 			else
 			sessiondata.menu.mainmenu[a].match = "no"
 			end
-		else
-		sessiondata.menu.mainmenu[a].match = "no"
+			if sessiondata.menu.mainmenu[a].controller == "menuhints" then
+			sessiondata.menu.mainmenu[a].match = "yes" 
+			end
 		end
-		if sessiondata.menu.mainmenu[a].controller == "menuhints" then
-		sessiondata.menu.mainmenu[a].match = "yes" end
-
+		if sessiondata.menu.mainmenu[a].match == "no" then
+--	table.remove(sessiondata.menu.mainmenu,a) end
+		print("yes") 
+		end
 	end
-	if sessiondata.menu.mainmenu[a].match == "no" then
-	table.remove(sessiondata.menu.mainmenu,a) end
-end
-		
-
-  else
+else
 	--we don't need to figure out what permission have it is in sessiondata
 	local temp = format.string_to_table(sessiondata.userinfo.perm,",")
-	for e,f in pairs(temp) do
-	local control,acti = string.match(f,"(%a+):(%a+)")
-	if sessiondata.menu.mainmenu[a].controller ~= control and sessiondata.menu.mainmenu[a].action ~= acti then
-	sessiondata.menu.mainmenu[a] = nil
+	for a,b in pairs(sessiondate.menu.mainmenu) do
+		for e,f in pairs(temp) do
+		local control,acti = string.match(f,"(%a+):(%a+)")
+			if sessiondate.menu.mainmenu[a].controller == control then
+				if sessiondata.menu.mainmenu[a].action == acti then
+				sessiondata.menu.mainmenu[a].match = "yes"
+				break
+				else
+				sessiondata.menu.mainmenu[a].match = "no"
+				end
+			else
+			sessiondata.menu.mainmenu[a].match = "no"
+			end
+			if sessiondata.menu.mainmenu[a].controller == "menuhints" then 
+			sessiondata.menu.mainmenu[a].match = "yes"
+			end
+	if sessiondata.menu.mainmenu[a].match == "no" then
+	--table.remove(sessiondata.menu.mainmenu,a) 
+	print("yes")
 	end
+		end
 	end
 
-   end
+end
+
 	-- Debug: Timestamp on menu creation
 	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
 end
@@ -99,16 +112,19 @@ mvc.on_load = function (self, parent)
 	if self.clientdata.sessionid == nil then
 		self.sessiondata.id  = sessionlib.random_hash(512) 
 		tempid = self.sessiondata.id
+		--build_menus(self)
 	else
 		local timestamp
 		tempid = self.clientdata.sessionid
 		timestamp, self.sessiondata = 
 			sessionlib.load_session(self.conf.sessiondir,
 				self.clientdata.sessionid)
+		--		build_menus(self)
 		if timestamp == nil then 
 			self.sessiondata.id = tempid
 			sessionlib.record_event(self.conf.sessiondir,
 				sessionlib.hash_ip_addr(self.conf.clientip))
+		--		build_menus(self)
 		else
 
 		-- FIXME: This is probably wrong place to generate the menus
