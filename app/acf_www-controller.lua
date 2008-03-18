@@ -72,12 +72,13 @@ else
 	end
 
 end
+	local temptab = {}
 	for a,b in pairs(sessiondata.menu.mainmenu) do
-		if sessiondata.menu.mainmenu[a].match == "no" then
-		sessiondata.menu.mainmenu[a] = nil 
+		if sessiondata.menu.mainmenu[a].match ~= "no" then
+		temptab[#temptab +1 ] = sessiondata.menu.mainmenu[a]
 		end
 	end
-
+	sessiondata.menu.mainmenu = temptab
 	-- Debug: Timestamp on menu creation
 	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
 end
@@ -109,7 +110,10 @@ mvc.on_load = function (self, parent)
 	if self.clientdata.sessionid == nil then
 		self.sessiondata.id  = sessionlib.random_hash(512) 
 		tempid = self.sessiondata.id
-		build_menus(self)
+		if not (self.sessiondata.menu) then
+			build_menus(self)
+		end
+		
 	else
 		local timestamp
 		tempid = self.clientdata.sessionid
@@ -125,9 +129,6 @@ mvc.on_load = function (self, parent)
 		else
 
 		-- FIXME: This is probably wrong place to generate the menus
-		if not (self.sessiondata.menu) then
-			build_menus(self)
-		end
 
 		local now = os.time()
 		local minutes_ago = now - (sessionlib.minutes_expired_events * 60)
@@ -148,6 +149,7 @@ mvc.on_load = function (self, parent)
 			end
 			]]--
 			sessionlib.expired_events(self.conf.sessiondir,sessionlib.minutes_expired_events)
+			build_menus(self)
 			end
 		end
 	end
