@@ -15,7 +15,7 @@ require "posix"
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
 
-local function build_menus(self)
+function build_menus(self)
 	--Build the menu
 	m=require("menubuilder")
 	roll = require ("roles")

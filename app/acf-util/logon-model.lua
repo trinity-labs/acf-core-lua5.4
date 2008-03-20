@@ -118,6 +118,7 @@ logoff = function (self, sessdata)
 	end
 	end
 	sessiondata.id = session.random_hash(512) 
+	build_menus(self)
 	return ( cfe{ {value=logoff,name="logoff"},{value=sessiondata,name="sessiondata"} })
 end
 
