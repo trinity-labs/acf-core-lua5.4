@@ -34,6 +34,7 @@ sessiondata[a] = nil
 end
 end
 sessiondata.id = session.random_hash(512)
+build_menus(self)
 end
 
 local counteven = session.count_events(conf.sessiondir, id_user, session.hash_ip_addr(ENV["REMOTE_ADDR"]))
