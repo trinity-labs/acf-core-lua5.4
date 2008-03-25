@@ -49,6 +49,21 @@ local temp = format.string_to_table(roll.get_roles_perm(self,p),",")
 			end
 		end
 	end
+	--also need to do the submenu tabs... this is only for appearence
+	--will have to make sure somewhere else they can't run them :)
+	for a,b in pairs(sessiondata.menu.submenu) do
+	 for c,d in pairs(sessiondata.menu.submenu[a]) do
+	 	for k,v in pairs(temp) do 
+	 	local control,acti = string.match(v,"(%a+):(%a+)")
+			if sessiondata.menu.submenu[a][c].action == acti then
+			  sessiondata.menu.submenu[a][c].match = "yes"
+			  break
+			else
+			  sessiondata.menu.submenu[a][c].match = "no"
+			  end
+	 	end	
+	 end	
+	end	
 else
 	--we don't need to figure out what permission have it is in sessiondata
 	local temp = format.string_to_table(sessiondata.userinfo.perm,",")
@@ -78,7 +93,18 @@ end
 		temptab[#temptab +1 ] = sessiondata.menu.mainmenu[a]
 		end
 	end
+	
 	sessiondata.menu.mainmenu = temptab
+	local tempsub = {}
+	for c,d in pairs(sessiondata.menu.submenu) do
+	 for e,f in pairs(sessiondata.menu.submenu[c]) do
+	 	if sessiondata.menu.submenu[c][e].match ~= "no" then
+		tempsub[#tempsub +1] = sessiondata.menu.submenu[c][e]
+		--may need this to be c
+		end
+	 end
+	end
+	sessiondata.menu.submenu = tempsub
 	-- Debug: Timestamp on menu creation
 	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
 end
