@@ -117,7 +117,7 @@ mvc.on_load = function (self, parent)
 	-- Make sure we have some kind of sane defaults for libdir and sessiondir
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
-	self.conf.appuri = "http://" .. ENV.HTTP_HOST .. ENV.SCRIPT_NAME
+	self.conf.appuri = "https://" .. ENV.HTTP_HOST .. ENV.SCRIPT_NAME
 	self.conf.default_controller = "welcome"	
 	self.clientdata = FORM
 	self.conf.clientip = ENV.REMOTE_ADDR
