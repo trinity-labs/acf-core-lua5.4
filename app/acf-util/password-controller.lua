@@ -61,7 +61,7 @@ local function get_config(self,userid)
 		})
 	config.username =  cfe({
 		name="username",
-		label="User name",
+		label="Real name",
 		value=userinfo.username,
 		})
 	config.roles =  cfe({
@@ -129,7 +129,7 @@ function status(self)
 					}),
 				username=cfe ({
 					name="username",
-					label="User name",
+					label="Real name",
 					value=userinfo.username,
 					}),
 				roles=cfe ({
