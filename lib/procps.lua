@@ -55,7 +55,6 @@ local function is_cmdline(path, name)
 	end
 	local arg0 = string.gsub(line, string.char(0)..".*", "")
 	if posix.basename(arg0) == name then
-		io.stderr:write("found "..name.." in argv0\n")
 		return true
 	end
 end
