@@ -1,5 +1,5 @@
 CREATE=syslog:config,syslog:status
-READ=skins:read,alpineversion:read,interfaces:read,logfiles:status,password:status,welcome:read,health:system,health:storage,health:network,health:modules,health:proc
+READ=welcome:read,interfaces:read,health:system,healt:storage,healt:proc,health:network,health:modules,skins:read,opennhrp:status,tinydns:status,ipsectools:status,openntpd:status,logfiles:status,syslog:status,lbu:staus,dansguardian:basic,acfupdate:status,dhcp:home,openvpn:status,shorewall:status,snort:status,squid:basic,password:status
 UPDATE=skins:update,syslog:expert
 DELETE=interfaces:delete,logfiles:delete
 ALL=welcome:read,interfaces:read,health:system
