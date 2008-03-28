@@ -69,7 +69,7 @@ input[type=text][disabled] {
 body {
 	margin: 			0px 0px 0px 0px;
 	padding: 			0px 0px 0px 0px;
-	font-family: 		Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
+	font-family: 		Liberation Sans, Helvetica, Geneva, Arial, SunSans-Regular, sans-serif, Verdana, "Trebuchet MS", SunSans-Regular;
 	font-size:		12pt;
 	background-image: 		url("/static/watermark.jpg");
 	background-repeat: 		no-repeat;
