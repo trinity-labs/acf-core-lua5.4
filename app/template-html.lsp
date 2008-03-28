@@ -20,9 +20,6 @@ Content-Type: text/html
 <!--[if IE]>
 <link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin.."-ie.css" ?>">
 <![endif]-->
-<link rel="stylesheet" type="text/css" href="/ext-2.0/resources/css/ext-all.css">
-<script type="text/javascript" src="/ext-2.0/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="/ext-2.0/ext-all.js"></script>
 </head>
 <body>
 
