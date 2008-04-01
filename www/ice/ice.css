@@ -50,8 +50,10 @@ input.error,select.error,textarea.error {
 	color: 			#777;
 }
 .header {
-	background: 		#cccccc;
+	background: 		#eee;
+	border-bottom:		3px double #999;
 	font-weight: 		bold;
+	vertical-align:		bottom;
 }
 pre {
 	font-family:		monospace;
@@ -353,8 +355,11 @@ body {
 	border-right: 		1px solid #cacaca;
 	border-bottom: 		1px solid #cacaca;
 }
-#content p,input.text,select,textarea,table,input.password {
+#content p,input.text,select,textarea,input.password {
 	width:			97%;
+}
+#content table {
+	width:			100%;
 }
 #content input.short {
 	width:			200px;
