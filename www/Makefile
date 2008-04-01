@@ -11,6 +11,8 @@ WWW_DIST=cgi-bin/acf\
 	static/prototype.js\
 	static/tango/16x16/categories/applications-internet.png \
 	static/tango/16x16/places/start-here.png \
+	static/tango/16x16/places/network-server.png \
+	static/tango/16x16/status/network*.png \
 	static/tango/16x16/devices/computer.png \
 	static/tango/16x16/apps/system-users.png \
 	ice/* \
