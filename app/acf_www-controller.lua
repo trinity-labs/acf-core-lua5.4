@@ -24,12 +24,18 @@ function build_menus(self)
 	sessiondata.menu.mainmenu = m.get_menuitems(self.conf.appdir)
 	sessiondata.menu.submenu = m.get_submenuitems(self.conf.appdir)
 
+local temp
 if sessiondata.userinfo == nil then
 	--we are dealing with an unknown user
 p = {"ALL"}
 	--this will be whatever the "UNKNOWN" role is ... right now it is ALL
 	--temp should be the 
-local temp = format.string_to_table(roll.get_roles_perm(self,p),",")
+temp = format.string_to_table(roll.get_roles_perm(self,p),",")
+else
+	--we don't need to figure out what permission have it is in sessiondata
+temp = format.string_to_table(sessiondata.userinfo.perm,",")
+end
+
 	--lets apply permissions
 	for a,b in pairs(sessiondata.menu.mainmenu) do
 		for k,v in pairs(temp) do
@@ -55,43 +61,23 @@ local temp = format.string_to_table(roll.get_roles_perm(self,p),",")
 	 for c,d in pairs(sessiondata.menu.submenu[a]) do
 	 	for k,v in pairs(temp) do 
 	 	local control,acti = string.match(v,"(%a+):(%a+)")
+			if (a == control) then
 			if sessiondata.menu.submenu[a][c].action == acti then
 			  sessiondata.menu.submenu[a][c].match = "yes"
 			  break
 			else
 			  sessiondata.menu.submenu[a][c].match = "no"
 			  end
-	 	end	
+			end
+		end	
 	 end	
-	end	
-else
-	--we don't need to figure out what permission have it is in sessiondata
-	local temp = format.string_to_table(sessiondata.userinfo.perm,",")
-	for a,b in pairs(sessiondata.menu.mainmenu) do
-		for e,f in pairs(temp) do
-		local control,acti = string.match(f,"(%a+):(%a+)")
-			if sessiondata.menu.mainmenu[a].controller == control then
-				if sessiondata.menu.mainmenu[a].action == acti then
-				sessiondata.menu.mainmenu[a].match = "yes"
-				break
-				else
-				sessiondata.menu.mainmenu[a].match = "no"
-				end
-			else
-			sessiondata.menu.mainmenu[a].match = "no"
-			end
-			if sessiondata.menu.mainmenu[a].controller == "menuhints" then 
-			sessiondata.menu.mainmenu[a].match = "yes"
-			end
-		end
 	end
 
-end
 	local temptab = {}
 	for a,b in pairs(sessiondata.menu.mainmenu) do
 		if sessiondata.menu.mainmenu[a].match ~= "no" then
 		temptab[#temptab +1 ] = sessiondata.menu.mainmenu[a]
-		end
+	end
 	end
 	
 	sessiondata.menu.mainmenu = temptab
@@ -99,8 +85,8 @@ end
 	for c,d in pairs(sessiondata.menu.submenu) do
 	 for e,f in pairs(sessiondata.menu.submenu[c]) do
 	 	if sessiondata.menu.submenu[c][e].match ~= "no" then
-		tempsub[#tempsub +1] = sessiondata.menu.submenu[c][e]
-		--may need this to be c
+			if not (tempsub[c]) then tempsub[c] = {} end
+			tempsub[c][#tempsub[c] +1] = sessiondata.menu.submenu[c][e]
 		end
 	 end
 	end
