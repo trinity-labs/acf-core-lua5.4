@@ -16,11 +16,11 @@ mvc.on_load = function(self, parent)
 end
 
 local function admin_permission()
-	if (sessiondata.userinfo) and (sessiondata.userinfo.userid == "alpine") then
+--	if (sessiondata.userinfo) and (sessiondata.userinfo.userid == "alpine") then
 		return true
-	else
-		return false
-	end
+--	else
+--		return false
+--	end
 end
 
 local function check_logonstatus(self)
@@ -101,8 +101,8 @@ function status(self)
 
 	-- Check for admin persmissions - else redirect to personal options
 	if not (admin_permission()) then
-		self.conf.action = "edit_me"
-		return edit_me(self)
+		self.conf.action = "editme"
+		return editme(self)
 	end
 
 	-- Redirect when creating a new account
@@ -181,9 +181,9 @@ function administrator(self)
 
 	-- Check for admin persmissions - else redirect to personal options
 	if not (admin_permission()) then
-		self.conf.action = "edit_me"
+		self.conf.action = "editme"
 		self.conf.type = "redir"
-		return edit_me(self)
+		return editme(self)
 	end
 
 	-- Output userinfo
@@ -209,7 +209,7 @@ function administrator(self)
 	return {config=output}
 end
 
-function edit_me(self)
+function editme(self)
 
 	-- Redirect the user if he's not logged in.
 	check_logonstatus(self)
