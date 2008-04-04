@@ -16,7 +16,14 @@ logon = function(self)
 end
 
 logout = function(self)
-	return  { logout = self.model:logoff(clientdata.sessionid) } 
+	local logout = self.model:logoff(clientdata.sessionid)
+	if (logout) and (logout[1]) and (logout[1]["value"]) and (string.lower(logout[1]["value"]) == "successful") then
+		self.conf.action = "logon"
+		self.conf.type = "redir"
+		error (self.conf)
+	end
+
+	return  { logout = logout } 
 end
 
 status = function(self)
