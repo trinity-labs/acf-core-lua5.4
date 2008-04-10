@@ -27,8 +27,8 @@ function build_menus(self)
 local temp
 if sessiondata.userinfo == nil then
 	--we are dealing with an unknown user
-p = {"ALL"}
-	--this will be whatever the "UNKNOWN" role is ... right now it is ALL
+p = {"ANONYMOUS"}
+	--this will be whatever the "UNKNOWN" role is ... right now it is ANONYMOUS
 	--temp should be the 
 temp = format.string_to_table(roll.get_roles_perm(self,p),",")
 else
