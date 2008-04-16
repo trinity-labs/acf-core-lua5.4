@@ -17,6 +17,8 @@ LIB_DIST=fs.lua\
 	daemoncontrol.lua\
 	getopts.lua\
 	roles.lua\
+	processinfo.lua\
+	viewfunctions.lua\
 
 
 EXTRA_DIST=README Makefile
