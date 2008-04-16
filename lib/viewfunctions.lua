@@ -11,6 +11,7 @@ function displayinfo(myform,tags,viewtype)
 			io.write(">" .. val.label .. "</DT>")
 			io.write("\n\t\t<DD>")
 			if (viewtype == "viewonly") then
+				if (val.value == "") and (val.errtxt == "") and ((val.descr) and (val.descr == "")) then val.value = "&nbsp;" end
 				io.write(val.value)
 			elseif (val.type == "radio") and (type(val.option) == "table") and (#val.option > 0) then
 				io.write("<span style='display:inline' class='" .. ( val.class or "") .. "'>")
