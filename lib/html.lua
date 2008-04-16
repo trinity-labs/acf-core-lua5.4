@@ -167,7 +167,7 @@ function form.select ( v )
 	for i,k in ipairs ( {
 			"name", "size", "tabindex", "accesskey", 
 			"onfocus", "onblur", "onchange", "id", 
-			"class"
+			"class", "multiple"
 			} ) do
 		str = str .. nv_pair ( k, v[k] )
 	end
