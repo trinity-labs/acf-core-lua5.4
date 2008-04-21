@@ -10,157 +10,115 @@ module(..., package.seeall)
 -- startdir should be the app dir.
 local get_candidates = function (startdir)
 	local t = {}
-	startdir = startdir .. "/"
 	local fh = io.popen('find ' .. startdir .. ' -name "*.menu"')
-
-	local start = string.gsub(startdir, "/$", "")
 	for x in fh:lines() do
-		table.insert (t, (string.gsub(x, start, "")))
+		t[#t + 1] = x
 	end
-
 	return t
 end
 
+-- Split string into priority and name, convert '_' to space
+local parse_menu_entry = function (entry)
+	local name, priority
+	if (string.match(entry, "^%d")) then
+		priority, name = string.match(entry, "(%d+)(.*)")
+	else
+		name = entry
+	end
+	name = string.gsub(name, "_", " ")
+	return name, priority
+end
 
--- internal function for table.sort
-local t_compare = function  (x,y,f)
-		for k,v in pairs(f) do
-			local a = x[v]  
-			local b = y[v] 
-			if tonumber(a) and tonumber(b) then
-				a=tonumber(a) 
-				b=tonumber(b) 
-			end
-			if a < b then return true end
-			if a > b then return false end
+-- Parse menu file entry, returning cat, group, tab, action and priorities
+local parse_menu_line = function (line)
+	local result = nil
+	--skip comments and blank lines
+	if nil == (string.match(line, "^#") or string.match(line,"^$")) then
+		local item = {}
+		for i in string.gmatch(line, "%S+") do
+			item[#item + 1] = i
 		end
-		return false
-		end
-
--- Returns a table of all submenu items found
--- Displayorder of the tabs comes from the order in the .menu files
-get_submenuitems = function (startdir)
-	local t = {}
-	local menuitems = get_menuitems(startdir)
-
-	for k,v in pairs(menuitems) do
-		if (menuitems[k]["tab"] ~= "") then
-			if not (t[menuitems[k]["controller"]]) then t[menuitems[k]["controller"]] = {} end
-			table.insert (t[menuitems[k]["controller"]], {tab=menuitems[k]["tab"],action=menuitems[k]["action"]})
+		if #item >= 1 then
+			result = {}
+			result.cat, result.cat_prio = parse_menu_entry(item[1])
+			if (item[2]) then result.group, result.group_prio = parse_menu_entry(item[2]) end
+			if (item[3]) then result.tab = parse_menu_entry(item[3]) end
+			if (item[4]) then result.action = parse_menu_entry(item[4]) end
 		end
 	end
+	return result
+end
 
-	return t
+-- Function to compare priorities, missing priority moves to the front, same priority sorted alphabetically
+local prio_compare = function(x,y)
+	if x.priority == y.priority then
+		if x.name < y.name then return true end
+		return false
+	end
+	if nil == x.priority then return true end
+	if nil == y.priority then return false end
+	if tonumber(x.priority) < tonumber(y.priority) then return true end
+	return false
 end
 
 -- returns a table of all the menu items found, sorted by priority
--- Table format:   prefix  controller  cat group tab action
 get_menuitems = function (startdir)
-	local t = {}
-	for k,v in pairs(get_candidates(startdir)) do
-		local prefix, controller = mvc.dirname(v), mvc.basename(v, ".menu")
-		-- open the thing, and parse the contents
-		local fh = io.open(startdir .. "/" .. v)
-		local prio = 10
-		for x in fh:lines() do
-			local c = string.match(x, "^#") or string.match(x,"^$")
-			if c == nil then
-				local item = {}
-				for i in string.gmatch(x, "%S+") do
-					table.insert(item, i)
+	local cats = {}
+	local reversecats = {}
+	startdir = (string.gsub(startdir, "/$", ""))	--remove trailing /
+	for k,filename in pairs(get_candidates(startdir)) do
+		local controller = mvc.basename(filename, ".menu")
+		local prefix = (string.gsub(mvc.dirname(filename), startdir, ""))
+
+		-- open the menu file, and parse the contents
+		local handle = io.open(filename)
+		for x in handle:lines() do
+			local result = parse_menu_line(x)
+			if result then
+				for i = 1,1 do	-- loop so break works
+				-- Add the category
+				if nil == reversecats[result.cat] then
+					table.insert ( cats, 
+						{ name=result.cat, 
+						groups = {}, 
+						reversegroups = {} } )
+					reversecats[result.cat] = #cats
 				end
-				table.insert(t, { prefix=prefix, 
-						  controller=controller, 
-						  catprio="nan",
-						  cat=item[1] or "",
-						  groupprio="nan", 
-						  group=item[2] or "",
-						  tabprio=tostring(prio),
-						  tab=item[3] or "",
-						  action=item[4] or "" })
-				prio=prio+5
+				local cat = cats[reversecats[result.cat]]
+				cat.priority = cat.priority or result.cat_prio
+				-- Add the group
+				if nil == result.group then break end
+				if nil == cat.groups[cat.reversegroups[result.group]] then
+					table.insert ( cat.groups,
+						{ name = result.group,
+						controller = controller,
+						prefix = prefix,
+						tabs = {} } )
+					cat.reversegroups[result.group] = #cat.groups
+				end
+				local group = cat.groups[cat.reversegroups[result.group]]
+				group.priority = group.priority or result.group_prio
+				-- Add the tab
+				if nil == result.tab or nil == result.action then break end
+				local tab = { name = result.tab, action = result.action }
+				table.insert(group.tabs, tab)
+				end
 			end
 		end
-		fh:close()	
-	end
-	-- Ok, we now have the raw menu table 
-	-- now try to parse out numbers in front of any cat, group or tabs
-	for x in ipairs(t) do
-		local f = t[x]
-		if (string.match(f.cat, "^%d")) then
-			f.catprio, f.cat = string.match(f.cat, "(%d+)(.*)")
-		end
-		if (string.match(f.group, "^%d")) then
-			f.groupprio, f.group = string.match(f.group, "(%d+)(.*)")
-		end
-		if (string.match(f.tab, "^%d")) then
-			f.tabprio, f.tab = string.match(f.tab, "(%d+)(.*)")
-		end
+		handle:close()
 	end
 
-	-- Convert underscores to spaces
-	for x in ipairs(t) do
-		t[x].cat = string.gsub(t[x].cat, "_", " ")
-		t[x].group = string.gsub(t[x].group, "_", " ")
-		t[x].tab = string.gsub(t[x].tab, "_", " ")
+	-- Now that we have the entire menu, sort by priority
+	-- Categories first
+	table.sort(cats, prio_compare)
+
+	-- Then groups
+	for x, cat in ipairs(cats) do
+		cat.reversegroups = nil	-- don't need reverse table anymore
+		table.sort(cat.groups, prio_compare)
 	end
 
-	-- Now alpha sort
-	table.sort(t, function(x,y)
-		return t_compare (x,y,{"cat", "catprio", "group", "groupprio", "tab", "tabprio"} )
-		end)
-
-	-- Fill in the priorities
-	local fill_prio = function (t, start, stop, col)
-		local prio = t[start][col] 
-		if prio == "nan" then prio = "0" end
-		while start <= stop do
-			t[start][col] = prio
-			start = start + 1
-		end
-	end
-
-
--- Fill in the priorities
--- Warning - UGLY code ahead.
--- Basic rules, for each cat and group, if the prio is nan, then set it
--- to the lowest value for that group or cat.  
- 	local k = 1
-	while ( k <= table.maxn(t) ) do
-		local c = k
-		while ( c <= table.maxn(t) and t[c].cat == t[k].cat ) do 
-			c=c+1 
-			end
-		c=c-1 -- back up one - we only want whats the same
-		fill_prio(t,k,c,"catprio")
-		-- from k,c is a mini table, do the same for groupprio
-		local g = k
-		while ( g <= c ) do
-			local h = g
-			while ( h <= c and t[h].group == t[g].group ) do
-				h=h+1
-			end
-			h=h-1 --- back up one (again)
-			fill_prio(t,g,h,"groupprio")
-			g=h+1
-		end
-		k = c + 1
-	end
-	
-	-- Now priority sort
-	table.sort(t, function(x,y)
-		return t_compare (x,y,{"catprio", "cat", "groupprio", "group", "tabprio", "tab"} )
-		end)
-
-
-	-- drop the priorities - they were internal
-	for k,v in ipairs(t) do
-		v.catprio = nil
-		v.groupprio = nil
-		v.tabprio = nil
-	end
-
-	return t
+	return cats
 end
 
 

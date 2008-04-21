@@ -91,29 +91,30 @@ function serialize (name, value, saved )
 	return str
 end
 
-save_session = function( sessionpath, session, sessiontable)
-	local file = io.open(sessionpath .. "/session." .. session , "w")
-	if file == nil then 
-		return nil
-	end
-
-	local id = sessiontable.id	
+-- Save the session (unless all it contains is the id)
+-- return true or false for success
+save_session = function( sessionpath, sessiontable)
+	if nil == sessiontable or nil == sessiontable.id then return false end
 	
-	-- clear the id key
+	-- clear the id key, don't need to store that
+	local id = sessiontable.id	
 	sessiontable.id = nil
-	-- count the keys
-	local count = 0
-	for k,v in pairs (sessiontable) do
-		count = count + 1 
-	end
+
 	-- If the table only has an "id" field, then don't save it
-	if count > 1 and file then 
+	if #sessiontable then 
+		local file = io.open(sessionpath .. "/session." .. id , "w")
+		if file == nil then
+			sessiontable.id=id
+			return false
+		end
+
 		file:write ( "-- This is an ACF session table.\n")
 		file:write ( "\nlocal " )
 		file:write ( serialize("s", sessiontable) )
 		file:write ( "return s\n")
+		file:close()
 	end
-	file:close()
+
 	sessiontable.id=id
 	return true
 end
@@ -121,8 +122,9 @@ end
 
 -- Loads a session
 -- Returns a timestamp (when the session data was saved) and the session table.
--- We insert a "id" field from the "session"
+-- Insert the session into the "id" field
 load_session = function ( sessionpath, session )
+	if type(session) ~= "string" then return nil, {} end
 	local s = {}
 	-- session can only have b64 characters in it
 	session = string.gsub ( session or "", "[^" .. b64 .. "]", "")
@@ -140,7 +142,8 @@ load_session = function ( sessionpath, session )
 	end
 end
 
--- unlinks a session
+-- Unlinks a session (deletes the session file)
+-- return nil for failure, ?? for success
 unlink_session = function (sessionpath, session)
 	if type(session)  ~= "string" then return nil end
 	local s = string.gsub (session, "[^" .. b64 .. "]", "")
@@ -150,28 +153,6 @@ unlink_session = function (sessionpath, session)
 	session = sessionpath .. "/session." .. s
 	local statos = os.remove (session)
 	return statos
-end
-
---need to see if this is a "real"-user session or just a temp one. 
-check_session = function (sessionpath, session )
-	if session == nil then return "an unknown user" end	
-	local fullpath = sessionpath .. "/session." .. session
-	if posix.stat(fullpath) == nil then return "an unknown user" end
-	if type(session) ~= "string" then return nil end
-	local s = string.gsub (session, "[^" .. b64 .. "]", "")
-	if s ~= session then
-		return nil
-	end
-	check_size = posix.stat(fullpath,"size")
-	if check_size == 0 then 
-	return "an unknown user"
-	else
-	local c = dofile(fullpath).userinfo.userid
-	local d = dofile(fullpath).userinfo.roles
-	return c,d
-	end
-		
-
 end
 
 -- Record an invalid login event 
@@ -197,29 +178,23 @@ count_events =	function (sessionpath, id_user, ipaddr)
 	local t = posix.glob(searchfor)
 		
 	if t == nil or id_user == nil or ipaddr == nil then 
-	return false
+		return false
 	else
-	
-	local temp = {}
-	for a,b in pairs(t) do 
-		if posix.stat(b,"mtime") > minutes_ago then
-		temp[#temp + 1] = b end
+		local count = 0
+		for a,b in pairs(t) do 
+			if posix.stat(b,"mtime") > minutes_ago then
+				if string.match(b,id_user) or string.match(b,ipaddr) then
+					count = count + 1
+				end
+			end
+		end
+		if count>limit_count_events then
+			return true
+		else
+			return false
+		end
 	end
-	
-	local temp2 = {}
-	for k,v in pairs(temp) do 
-	local c = string.match(v,id_user) or string.match(v,ipaddr)
-	if c ~= nil then temp2[#temp2 + 1] = v end
-	end
-	
-	if #temp2 > limit_count_events then
-	return true
-	else
-	return false
-	end
-	end
-
-	end
+end
 
 -- Clear events that are older than n minutes
 expired_events = function (sessionpath)

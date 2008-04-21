@@ -97,37 +97,86 @@ new = function (self, modname)
 end
 
 -- This is a sample front controller/dispatch.   
-dispatch = function (self, prefix, userctlr, action) 
+dispatch = function (self, userprefix, userctlr, useraction) 
 	local controller
 	local success, err = xpcall ( function () 
 
-	if prefix == nil then
+	if userprefix == nil then
 		self.conf.prefix, self.conf.controller, self.conf.action =
 			parse_path_info(ENV["PATH_INFO"])
 	else
-		self.conf.prefix = prefix
+		self.conf.prefix = userprefix
 		self.conf.controller = userctlr or ""
-		self.conf.action = action or ""
+		self.conf.action = useraction or ""
 	end
 
-	-- If they didn't provide a controller, and a default was specified
-	-- use it
-	if self.conf.controller == "" and self.conf.default_controller then
+	-- Find the proper controller/action combo
+	local origconf = {controller = self.conf.controller, action = self.conf.action}
+	local controller = nil
+	local action = ""
+	self.conf.default_controller = self.conf.default_controller or ""
+	if "" == self.conf.controller then
 		self.conf.controller = self.conf.default_controller
+		self.conf.action = ""
+	end
+	while "" ~= self.conf.controller do
+		-- We now know the controller / action combo, check if we're allowed to do it
+		local perm = true
+		if type(self.worker.mvc.check_permission) == "function" then
+			perm = self.worker.mvc.check_permission(self, self.conf.controller)
+		end
+
+		if perm then
+			controller = self:new(self.conf.prefix .. self.conf.controller)
+		end
+		if controller then
+			controller.conf.default_action = controller.conf.default_action or ""
+			action = controller.conf.action or ""
+			if "" == action then
+				action = controller.conf.default_action
+			end
+			while "" ~= action do
+				local perm = true
+				if  type(controller.worker.mvc.check_permission) == "function" then
+					perm = controller.worker.mvc.check_permission(controller, self.conf.controller, action)
+				end
+				-- Because of the inheritance, normally the 
+				-- controller.worker.action will flow up, so that all children have
+				-- actions of all parents.  We use rawget to make sure that only
+				-- controller defined actions are used on dispatch
+				if perm and (type(rawget(controller.worker, action)) == "function") then
+					-- We have a valid and permissible controller / action
+					self.conf.action = action
+					controller.conf.action = action
+					break
+				end
+				if action ~= controller.conf.default_action then
+					action = controller.conf.default_action
+				else
+					action = ""
+				end
+			end
+			if "" ~= action then break end
+		end
+		controller = nil
+		self.conf.action = ""
+		if self.conf.controller ~= self.conf.default_controller then
+			self.conf.controller = self.conf.default_controller
+		else
+			self.conf.controller = ""
+		end
 	end
 
-	controller = self:new(self.conf.prefix .. self.conf.controller)
-
-	local action = controller.conf.action
-
-	-- Because of the inheritance, normally the 
-	-- controller.worker.action will flow up, so that all children have
-	-- actions of all parents.  We sue rawget to make sure that only
-	-- controller defined actions are used on dispatch
 	-- If the controller or action are missing, raise an error
-	if ( type(rawget(controller.worker, action)) ~= "function") then
-			self.conf.type = "dispatch"
-			error (self.conf)
+	if nil == controller then
+		origconf.type = "dispatch"
+		error (origconf)
+	end
+
+	-- If we have different controller / action, redirect
+	if self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
+		self.conf.type = "redir"
+		error(self.conf)
 	end
 
 	-- run the (first found) pre_exec code, starting at the controller 

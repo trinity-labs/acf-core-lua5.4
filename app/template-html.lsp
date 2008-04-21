@@ -1,6 +1,5 @@
-<? local pageinfo , mainmenu, submenu, viewtable, session = ... 
-   html=require("html") 
-   sess=require("session") ?>
+<? local pageinfo , viewtable, session = ... 
+   html=require("html") ?>
 Status: 200 OK
 Content-Type: text/html
 <? if (session.id) then 
@@ -38,11 +37,10 @@ Content-Type: text/html
 			<p>
 			<? local ctlr = pageinfo.script .. "/acf-util/logon/"
 			
-			sname = sess.check_session("/tmp", session.id)
-			if sname == "an unknown user" then
-			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", ctlr .. "logon" ) )
+			if session.userinfo and session.userinfo.userid then
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. session.userinfo.userid .. "'</a>\n", ctlr .. "logout" ) )
 			else
-			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. sname .. "'</a>\n", ctlr .. "logout" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", ctlr .. "logon" ) )
 			end ?>
 			 | 
 			<a href="/">home</a> | 
@@ -61,37 +59,25 @@ Content-Type: text/html
 			</div>
 
 			<? 
-			 -- FIXME: This needs to go in a library function somewhere (menubuilder?)
+			local class
+			local tabs
 			io.write ( "<ul>")
-
-			  local cat, group
-			  local class
-			  for k,v in ipairs(mainmenu) do
-				if v.cat ~= cat then
-					if not (cat == nil) and not (cat == "") then
-						io.write ("\t\t\t\t\t</ul>")
-					end
-					cat = v.cat
-					if (cat ~= "") then		-- Filter out empty categories
-						io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", cat))	--start row
-					end
-					group = ""
-				end
-				if v.group ~= group then
-					group = v.group
-					if      pageinfo.prefix  == v.prefix .. "/"  and 
-						pageinfo.controller == v.controller then
+			for x,cat in ipairs(session.menu.cats) do
+				io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", cat.name))	--start row
+				for y,group in ipairs(cat.groups) do
+					if pageinfo.prefix == group.prefix .. '/' and pageinfo.controller == group.controller then
 						class="class='selected'"
+						tabs = group.tabs
 					else
 						class=""
 					end
 					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
-						class,ENV.SCRIPT_NAME,v.prefix, v.controller, v.action, v.group ))
+						class,ENV.SCRIPT_NAME,group.prefix, group.controller, group.tabs[1].action, group.name ))
 				end
-			  end ?>
-					</ul>
-				</li>
-			</ul>
+				io.write ( "\t\t\t\t\t</ul>" )
+			  end
+			io.write ( "\n\t\t\t\t</li>\n\t\t\t</ul>\n")
+			?>
 
 			<div class="tailer">
 			</div>
@@ -116,13 +102,13 @@ Content-Type: text/html
 			</div>
 
 			<? local class="" ?>
-			<? for k,v in pairs(submenu or {})  do
-				if submenu[k]["action"] == pageinfo.action then
+			<? for x,tab in pairs(tabs or {})  do
+				if tab.action == pageinfo.action then
 					class="class='selected'"
 				else
 					class=""
 				end
-				io.write (string.format('\t\t\t<a %s href="%s">%s</a>\n',class,submenu[k]["action"],submenu[k]["tab"] ))
+				io.write (string.format('\t\t\t<a %s href="%s">%s</a>\n',class,tab.action,tab.name ))
 			end
 			?>
 

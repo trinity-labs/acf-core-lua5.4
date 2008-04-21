@@ -1,18 +1,10 @@
 module(..., package.seeall)
 
-auth=require("authenticator-plaintext")
-
-local list_redir = function (self)
-	self.conf.action = "status"
-	self.conf.type = "redir"
-	error (self.conf)
-end
+local auth=require("authenticator-plaintext")
 
 mvc = {}
 mvc.on_load = function(self, parent)
-	if (self.worker[self.conf.action] == nil ) or ( self.conf.action == "init" ) then
-		self.worker[self.conf.action] = list_redir(self)
-	end
+	self.conf.default_action = "status"
 end
 
 local function admin_permission()

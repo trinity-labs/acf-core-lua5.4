@@ -15,82 +15,47 @@ require "posix"
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
 
-function build_menus(self)
-	--Build the menu
+local function build_menus(self)
 	m=require("menubuilder")
 	roll = require ("roles")
-	form = require ("format")
-	sessiondata.menu = {}
-	sessiondata.menu.mainmenu = m.get_menuitems(self.conf.appdir)
-	sessiondata.menu.submenu = m.get_submenuitems(self.conf.appdir)
 
-local temp
-if sessiondata.userinfo == nil then
-	--we are dealing with an unknown user
-p = {"ANONYMOUS"}
-	--this will be whatever the "UNKNOWN" role is ... right now it is ANONYMOUS
-	--temp should be the 
-temp = format.string_to_table(roll.get_roles_perm(self,p),",")
-else
-	--we don't need to figure out what permission have it is in sessiondata
-temp = format.string_to_table(sessiondata.userinfo.perm,",")
-end
-
-	--lets apply permissions
-	for a,b in pairs(sessiondata.menu.mainmenu) do
-		for k,v in pairs(temp) do
-		local control,acti = string.match(v,"(%a+):(%a+)")
-			if sessiondata.menu.mainmenu[a].controller == control then
-				if sessiondata.menu.mainmenu[a].action == acti then
-				sessiondata.menu.mainmenu[a].match = "yes"
-				break
-				else
-				sessiondata.menu.mainmenu[a].match = "no"
-				end
-			else
-			sessiondata.menu.mainmenu[a].match = "no"
-			end
-			if sessiondata.menu.mainmenu[a].controller == "menuhints" then
-			sessiondata.menu.mainmenu[a].match = "yes" 
-			end
-		end
+	-- Build the permissions table
+	local roles = {}
+	if sessiondata.userinfo and sessiondata.userinfo.roles then
+		roles = sessiondata.userinfo.roles
 	end
-	--also need to do the submenu tabs... this is only for appearence
-	--will have to make sure somewhere else they can't run them :)
-	for a,b in pairs(sessiondata.menu.submenu) do
-	 for c,d in pairs(sessiondata.menu.submenu[a]) do
-	 	for k,v in pairs(temp) do 
-	 	local control,acti = string.match(v,"(%a+):(%a+)")
-			if (a == control) then
-			if sessiondata.menu.submenu[a][c].action == acti then
-			  sessiondata.menu.submenu[a][c].match = "yes"
-			  break
-			else
-			  sessiondata.menu.submenu[a][c].match = "no"
-			  end
-			end
-		end	
-	 end	
-	end
-
-	local temptab = {}
-	for a,b in pairs(sessiondata.menu.mainmenu) do
-		if sessiondata.menu.mainmenu[a].match ~= "no" then
-		temptab[#temptab +1 ] = sessiondata.menu.mainmenu[a]
-	end
-	end
+	local permissions = roll.get_roles_perm(self.conf.appdir,roles)
+	sessiondata.permissions = permissions
 	
-	sessiondata.menu.mainmenu = temptab
-	local tempsub = {}
-	for c,d in pairs(sessiondata.menu.submenu) do
-	 for e,f in pairs(sessiondata.menu.submenu[c]) do
-	 	if sessiondata.menu.submenu[c][e].match ~= "no" then
-			if not (tempsub[c]) then tempsub[c] = {} end
-			tempsub[c][#tempsub[c] +1] = sessiondata.menu.submenu[c][e]
+	--Build the menu
+	local cats = m.get_menuitems(self.conf.appdir)
+	-- now, loop through menu and remove actions without permission
+	-- go in reverse so we can remove entries while looping
+	for x = #cats,1,-1 do
+		local cat = cats[x]
+		for y = #cat.groups,1,-1 do
+			local group = cat.groups[y]
+			if nil == permissions[group.controller] then
+				table.remove(cat.groups, y)
+			else
+				for z = #group.tabs,1,-1 do
+					local tab = group.tabs[z]
+					if nil == permissions[group.controller][tab.action] then
+						table.remove(group.tabs, z)
+					end
+				end
+				if 0 == #group.tabs then
+					table.remove(cat.groups, y)
+				end
+			end
 		end
-	 end
+		if 0 == #cat.groups then
+			table.remove(cats, x)
+		end
 	end
-	sessiondata.menu.submenu = tempsub
+	sessiondata.menu = {}
+	sessiondata.menu.cats = cats
+
 	-- Debug: Timestamp on menu creation
 	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
 end
@@ -104,7 +69,8 @@ mvc.on_load = function (self, parent)
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.appuri = "https://" .. ENV.HTTP_HOST .. ENV.SCRIPT_NAME
-	self.conf.default_controller = "welcome"	
+	self.conf.default_controller = "welcome"
+	self.conf.default_action = "read"
 	self.clientdata = FORM
 	self.conf.clientip = ENV.REMOTE_ADDR
 
@@ -115,68 +81,66 @@ mvc.on_load = function (self, parent)
 	
 	sessionlib=require ("session")
 
+	-- before we look at sessions, remove old sessions and events
+	-- this prevents us from giving a "session timeout" message, but I'm ok with that
+	sessionlib.expired_events(self.conf.sessiondir)
 
+	-- Load the session data
+	self.sessiondata = nil
 	self.sessiondata = {}
-	
-	local tempid = ""
-	if self.clientdata.sessionid == nil then
-		self.sessiondata.id  = sessionlib.random_hash(512) 
-		tempid = self.sessiondata.id
-		if not (self.sessiondata.menu) then
-			build_menus(self)
-		end
-		
-	else
+	if nil ~= self.clientdata.sessionid then
+		logevent("Found session id = " .. self.clientdata.sessionid)
+		-- Load existing session data
 		local timestamp
-		tempid = self.clientdata.sessionid
 		timestamp, self.sessiondata = 
 			sessionlib.load_session(self.conf.sessiondir,
 				self.clientdata.sessionid)
-				build_menus(self)
 		if timestamp == nil then 
-			self.sessiondata.id = tempid
+			-- invalid session id, report event and create new one
 			sessionlib.record_event(self.conf.sessiondir,
 				sessionlib.hash_ip_addr(self.conf.clientip))
-				build_menus(self)
+			logevent("Didn't find session")
 		else
-
-		-- FIXME: This is probably wrong place to generate the menus
-
-		local now = os.time()
-		local minutes_ago = now - (sessionlib.minutes_expired_events * 60)
-			if timestamp < minutes_ago then
-			sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)
-			sessiondata.id = sessionlib.random_hash(512)
-			sessionlib.count_events(self.conf.sessiondir,self.conf.userid or "", sessionlib.hash_ip_addr(self.conf.clientip),sessionlib.limit_count_events)
-			--[[
-			FIXME --- need to write this function
-			if too many bad events for this ip invaidate the session
-		
-			if (timestamp is > 10 minutes old)	
-			sessionlib.unlink.session (self.conf.sessiondir,
-				self.sessiondata.id)
-			self.sessiondata = {}
-			self.sessiondata.id = sessionlib.random_hash(512)
-			generate flash message "Inactivity logout"
-			end
-			]]--
-			sessionlib.expired_events(self.conf.sessiondir,sessionlib.minutes_expired_events)
-			build_menus(self)
+			logevent("Found session")
+			-- We read in a valid session, check if it's ok
+			if sessionlib.count_events(self.conf.sessiondir,self.conf.userid or "", sessionlib.hash_ip_addr(self.conf.clientip)) then
+				logevent("Bad session, erasing")
+				-- Too many events on this id / ip, kill the session
+				sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)
+				self.sessiondata.id = nil
 			end
 		end
 	end
+
+	if nil == self.sessiondata.id then
+		self.sessiondata = {}
+		self.sessiondata.id = sessionlib.random_hash(512)
+		logevent("New session = " .. self.sessiondata.id)
+	end
+	if nil == self.sessiondata.permissions or nil == self.sessiondata.menu then
+		logevent("Build menus")
+		build_menus(self)
+	end
 end
 
+mvc.check_permission = function(self, controller, action)
+	logevent("Trying " .. (controller or "nil") .. ":" .. (action or "nil"))
+	if nil == self.sessiondata.permissions then return false end
+	if controller then
+		if nil == self.sessiondata.permissions[controller] then return false end
+		if action and nil == self.sessiondata.permissions[controller][action] then return false end
+	end
+	return true
+end
 
 mvc.post_exec = function (self)
 	sessionlib=require ("session")
 	-- sessionlib.serialize("s", sessiondata))
 	if sessiondata.id then
-		sessionlib.save_session(conf.sessiondir, 
-        			sessiondata.id, sessiondata)     
+		sessionlib.save_session(conf.sessiondir, sessiondata)     
         end
 	-- Close the logfile
-        conf.logfile:close()
+	conf.logfile:close()
 end
 
 
@@ -249,15 +213,13 @@ view_resolver = function(self)
 		local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
 		local alpineversion  = self:new("alpine-baselayout/alpineversion")
 		
-		-- FIXME - this is ugly, but it puts the hostname the expected
-		-- format if the controller doesn't load correctly 
-		local h = {}
-		
 		-- If the worker and model loaded correctly, then
 		-- use the sub-controller
+		local h
 		if worker_loaded and model_loaded then
 			h = m.worker.read(m)
 		else
+			h = {}
 			h.hostname = { value = "unknown" }
 		end
 		
@@ -273,18 +235,9 @@ view_resolver = function(self)
 					skin = self.conf.skin or ""
 					}
 
-		-- Fetch the menu's from sessiondata (filter out what's needed)
-		local menu = self.sessiondata.menu.mainmenu
-		local submenu = self.sessiondata.menu.submenu[pageinfo.controller]
-
---[[		-- DEBUG: Next row's is to display when the menu was created (see function build_menus(self) in BOF)
-		if (submenu) then
-			submenu[99] = sessiondata.menu.timestamp
-		end
---]]
 		return function (viewtable)
 			local template = haserl.loadfile (template)
-			return template ( pageinfo, menu, submenu, viewtable, self.sessiondata )
+			return template ( pageinfo, viewtable, self.sessiondata )
 		end
 	end
 
@@ -298,7 +251,10 @@ end
 
 exception_handler = function (self, message )
 	local html = require ("html")
-	mvc.post_exec (self)
+	pcall(function()
+		if sessiondata.id then logevent("Redirecting " .. sessiondata.id) end
+		mvc.post_exec (self)
+	end)	-- don't want exceptions from this
 	if type(message) == "table" then
 		if message.type == "redir" then
 			io.write ("Status: 302 Moved\n")
@@ -315,7 +271,7 @@ exception_handler = function (self, message )
 		elseif message.type == "dispatch" then
 			parent_exception_handler(self, message)
 		end
-		else
+	else
 		parent_exception_handler( self, message)
 	end
 end
