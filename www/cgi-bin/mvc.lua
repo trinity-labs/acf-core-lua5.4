@@ -115,21 +115,24 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	local controller = nil
 	local action = ""
 	self.conf.default_controller = self.conf.default_controller or ""
+	self.conf.default_prefix = self.conf.default_prefix or ""
 	if "" == self.conf.controller then
+		self.conf.prefix = self.conf.default_prefix
 		self.conf.controller = self.conf.default_controller
 		self.conf.action = ""
 	end
 	while "" ~= self.conf.controller do
 		-- We now know the controller / action combo, check if we're allowed to do it
 		local perm = true
+		local worker_loaded = false
 		if type(self.worker.mvc.check_permission) == "function" then
 			perm = self.worker.mvc.check_permission(self, self.conf.controller)
 		end
 
 		if perm then
-			controller = self:new(self.conf.prefix .. self.conf.controller)
+			controller, worker_loaded = self:new(self.conf.prefix .. self.conf.controller)
 		end
-		if controller then
+		if worker_loaded then
 			controller.conf.default_action = controller.conf.default_action or ""
 			action = controller.conf.action or ""
 			if "" == action then
@@ -161,6 +164,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		controller = nil
 		self.conf.action = ""
 		if self.conf.controller ~= self.conf.default_controller then
+			self.conf.prefix = self.conf.default_prefix
 			self.conf.controller = self.conf.default_controller
 		else
 			self.conf.controller = ""

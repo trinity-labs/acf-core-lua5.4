@@ -69,6 +69,7 @@ mvc.on_load = function (self, parent)
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.appuri = "https://" .. ENV.HTTP_HOST .. ENV.SCRIPT_NAME
+	self.conf.default_prefix = "/"
 	self.conf.default_controller = "welcome"
 	self.conf.default_action = "read"
 	self.clientdata = FORM
@@ -135,7 +136,6 @@ end
 
 mvc.post_exec = function (self)
 	sessionlib=require ("session")
-	-- sessionlib.serialize("s", sessiondata))
 	if sessiondata.id then
 		sessionlib.save_session(conf.sessiondir, sessiondata)     
         end
