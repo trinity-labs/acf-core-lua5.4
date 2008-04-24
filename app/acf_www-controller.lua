@@ -11,7 +11,6 @@ module(..., package.seeall)
 -- require statements shouldn't need to go to the disk lib
 require "posix"
 
-
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
 
@@ -73,7 +72,6 @@ mvc.on_load = function (self, parent)
 	self.conf.appuri = "https://" .. ENV.HTTP_HOST .. ENV.SCRIPT_NAME
 	self.conf.default_prefix = "/"
 	self.conf.default_controller = "welcome"
-	self.conf.default_action = "read"
 	self.clientdata = FORM
 	self.conf.clientip = ENV.REMOTE_ADDR
 

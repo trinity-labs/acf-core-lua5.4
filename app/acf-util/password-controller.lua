@@ -2,10 +2,7 @@ module(..., package.seeall)
 
 local auth=require("authenticator-plaintext")
 
-mvc = {}
-mvc.on_load = function(self, parent)
-	self.conf.default_action = "status"
-end
+default_action = "status"
 
 local function admin_permission()
 --	if (sessiondata.userinfo) and (sessiondata.userinfo.userid == "alpine") then

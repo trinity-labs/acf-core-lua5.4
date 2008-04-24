@@ -120,11 +120,11 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	-- Find the proper controller/action combo
 	local origconf = {controller = self.conf.controller, action = self.conf.action}
 	local action = ""
-	self.conf.default_controller = self.conf.default_controller or ""
-	self.conf.default_prefix = self.conf.default_prefix or ""
+	local default_prefix = self.conf.default_prefix or ""
+	local default_controller = self.conf.default_controller or ""
 	if "" == self.conf.controller then
-		self.conf.prefix = self.conf.default_prefix
-		self.conf.controller = self.conf.default_controller
+		self.conf.prefix = default_prefix
+		self.conf.controller = default_controller
 		self.conf.action = ""
 	end
 	while "" ~= self.conf.controller do
@@ -139,11 +139,9 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			controller, worker_loaded = self:new(self.conf.prefix .. self.conf.controller)
 		end
 		if worker_loaded then
-			controller.conf.default_action = controller.conf.default_action or ""
-			action = controller.conf.action or ""
-			if "" == action then
-				action = controller.conf.default_action
-			end
+			local default_action = rawget(controller.worker, "default_action") or ""
+			action = self.conf.action
+			if action == "" then action = default_action end
 			while "" ~= action do
 				local perm = true
 				if  type(controller.worker.mvc.check_permission) == "function" then
@@ -156,11 +154,10 @@ dispatch = function (self, userprefix, userctlr, useraction)
 				if perm and (type(rawget(controller.worker, action)) == "function") then
 					-- We have a valid and permissible controller / action
 					self.conf.action = action
-					controller.conf.action = action
 					break
 				end
-				if action ~= controller.conf.default_action then
-					action = controller.conf.default_action
+				if action ~= default_action then
+					action = default_action
 				else
 					action = ""
 				end
@@ -172,9 +169,9 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			controller = nil
 		end
 		self.conf.action = ""
-		if self.conf.controller ~= self.conf.default_controller then
-			self.conf.prefix = self.conf.default_prefix
-			self.conf.controller = self.conf.default_controller
+		if self.conf.controller ~= default_controller then
+			self.conf.prefix = default_prefix
+			self.conf.controller = default_controller
 		else
 			self.conf.controller = ""
 		end
@@ -188,8 +185,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 
 	-- If we have different controller / action, redirect
 	if self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
-		self.conf.type = "redir"
-		error(self.conf)
+		redirect(self, self.conf.action)
 	end
 
 	-- run the (first found) pre_exec code, starting at the controller 
@@ -232,6 +228,17 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	end
 end
 
+-- Cause a redirect to specified (or default) action
+-- We use the self.conf table because it already has prefix,controller,etc
+-- The actual redirection is defined in the application error handler (acf-controller)
+redirect = function (self, action)
+	if nil == action then
+		action = rawget(self.worker, "default_action") or ""
+	end
+	self.conf.action = action
+	self.conf.type = "redir"
+	error(self.conf)
+end
 
 -- Tries to see if name exists in the self.conf.appdir, and if so, it loads it.
 -- otherwise, returns nil, but no error

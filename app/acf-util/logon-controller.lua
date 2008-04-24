@@ -2,10 +2,7 @@
 
 module (..., package.seeall)
 
-mvc = {}
-mvc.on_load = function(self, parent)
-	self.conf.default_action = "status"
-end
+default_action = "status"
 
 -- Logon a new user based upon id and password in clientdata
 logon = function(self)
