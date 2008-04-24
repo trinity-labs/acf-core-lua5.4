@@ -65,6 +65,8 @@ mvc.on_load = function (self, parent)
 	-- open the log file
 	self.conf.logfile = io.open ("/var/log/acf.log", "a+")
 
+	--logevent("acf_www-controller mvc.on_load")
+	
 	-- Make sure we have some kind of sane defaults for libdir and sessiondir
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
@@ -124,6 +126,16 @@ mvc.on_load = function (self, parent)
 	end
 end
 
+mvc.on_unload = function (self)
+	sessionlib=require ("session")
+	if sessiondata.id then
+		sessionlib.save_session(conf.sessiondir, sessiondata)     
+        end
+	-- Close the logfile
+	--logevent("acf_www-controller mvc.on_unload")
+	conf.logfile:close()
+end
+
 mvc.check_permission = function(self, controller, action)
 	logevent("Trying " .. (controller or "nil") .. ":" .. (action or "nil"))
 	if nil == self.sessiondata.permissions then return false end
@@ -133,16 +145,6 @@ mvc.check_permission = function(self, controller, action)
 	end
 	return true
 end
-
-mvc.post_exec = function (self)
-	sessionlib=require ("session")
-	if sessiondata.id then
-		sessionlib.save_session(conf.sessiondir, sessiondata)     
-        end
-	-- Close the logfile
-	conf.logfile:close()
-end
-
 
 -- look for a template
 -- ctlr-action-view, then  ctlr-view, then action-view, then view
@@ -211,7 +213,7 @@ view_resolver = function(self)
 		-- ***************************************************
 		
 		local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
-		local alpineversion  = self:new("alpine-baselayout/alpineversion")
+		--local alpineversion  = self:new("alpine-baselayout/alpineversion")
 		
 		-- If the worker and model loaded correctly, then
 		-- use the sub-controller
@@ -235,6 +237,8 @@ view_resolver = function(self)
 					skin = self.conf.skin or ""
 					}
 
+		m:destroy()
+		
 		return function (viewtable)
 			local template = haserl.loadfile (template)
 			return template ( pageinfo, viewtable, self.sessiondata )
@@ -251,12 +255,9 @@ end
 
 exception_handler = function (self, message )
 	local html = require ("html")
-	pcall(function()
-		if sessiondata.id then logevent("Redirecting " .. sessiondata.id) end
-		mvc.post_exec (self)
-	end)	-- don't want exceptions from this
 	if type(message) == "table" then
 		if message.type == "redir" then
+			if sessiondata.id then logevent("Redirecting " .. sessiondata.id) end
 			io.write ("Status: 302 Moved\n")
 			io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
 				  	message.prefix .. message.controller ..

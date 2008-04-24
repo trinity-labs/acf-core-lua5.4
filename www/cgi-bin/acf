@@ -16,4 +16,6 @@ APP=FRAMEWORK:new("acf_www")
 
 -- Dispatch the application
 APP:dispatch()
+APP:destroy()
+FRAMEWORK:destroy()
 ?>

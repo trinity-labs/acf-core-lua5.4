@@ -96,9 +96,16 @@ new = function (self, modname)
 	return c, worker_loaded, model_loaded
 end
 
+destroy = function (self)
+	if  type(rawget(self.worker.mvc, "on_unload")) == "function" then
+		self.worker.mvc.on_unload(self)
+		self.worker.mvc.on_unload = nil
+	end
+end
+
 -- This is a sample front controller/dispatch.   
 dispatch = function (self, userprefix, userctlr, useraction) 
-	local controller
+	local controller = nil
 	local success, err = xpcall ( function () 
 
 	if userprefix == nil then
@@ -112,7 +119,6 @@ dispatch = function (self, userprefix, userctlr, useraction)
 
 	-- Find the proper controller/action combo
 	local origconf = {controller = self.conf.controller, action = self.conf.action}
-	local controller = nil
 	local action = ""
 	self.conf.default_controller = self.conf.default_controller or ""
 	self.conf.default_prefix = self.conf.default_prefix or ""
@@ -161,7 +167,10 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			end
 			if "" ~= action then break end
 		end
-		controller = nil
+		if controller then
+			controller:destroy()
+			controller = nil
+		end
 		self.conf.action = ""
 		if self.conf.controller ~= self.conf.default_controller then
 			self.conf.prefix = self.conf.default_prefix
@@ -192,15 +201,17 @@ dispatch = function (self, userprefix, userctlr, useraction)
  	-- run the action		
 	local viewtable = controller.worker[action](controller)
 
-
 	-- run the post_exec code
 	if  type(controller.worker.mvc.post_exec) == "function" then
 		controller.worker.mvc.post_exec ( controller )
 	end
-	
 
 	local viewfunc  = controller.worker:view_resolver(viewtable)
 
+	-- we're done with the controller, destroy it
+	controller:destroy()
+	controller = nil
+		
 	viewfunc (viewtable)
 	end, 
 	self:soft_traceback(message)
@@ -210,9 +221,14 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		local handler
 		if controller then 
 			handler = controller.worker or controller
+			if handler then handler:exception_handler(err) end
+			controller:destroy()
+			controller = nil
 		end
-		handler = handler or self.worker or mvc
-		handler:exception_handler(err)
+		if nil == handler then
+			handler = self.worker or mvc
+			handler:exception_handler(err)
+		end
 	end
 end
 
