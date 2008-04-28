@@ -231,7 +231,9 @@ end
 -- Cause a redirect to specified (or default) action
 -- We use the self.conf table because it already has prefix,controller,etc
 -- The actual redirection is defined in the application error handler (acf-controller)
-redirect = function (self, action)
+redirect = function (self, action, controller, prefix)
+	if prefix then self.conf.prefix = prefix end
+	if controller then self.conf.controller = controller end
 	if nil == action then
 		action = rawget(self.worker, "default_action") or ""
 	end

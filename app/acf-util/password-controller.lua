@@ -15,11 +15,7 @@ end
 local function check_logonstatus(self)
 	-- Redirect the user if he's not logged in.
 	if not (self.sessiondata.userinfo) then
-		self.conf.action = "logon"
-		self.conf.controller = "logon"
-		self.conf.type = "redir"
-		error (self.conf)
-		return self
+		redirect(self, "logon", "logon")
 	end
 end
 
