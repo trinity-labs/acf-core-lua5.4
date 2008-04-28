@@ -23,12 +23,13 @@ end
 logoff = function (sessiondir, sessiondata)
 	-- Unlink / delete the current session
 	local result = session.unlink_session(sessiondir, sessiondata.id)
+	local success = (result ~= nil)
 	-- Clear the current session data
 	for a,b in pairs(sessiondata) do
 		sessiondata[a] = nil
 	end
 
-	return (result)
+	return cfe({ type="boolean", value=success, name="Logoff Success" })
 end
 
 -- Log on new user if possible and set up userinfo in session
@@ -38,10 +39,9 @@ logon = function (self, clientdata, ip_addr, sessiondir, sessiondata)
 	local countevent = session.count_events(sessiondir, clientdata.userid, session.hash_ip_addr(ip_addr))
 	if countevent then
 		session.record_event(sessiondir, clientdata.userid, session.hash_ip_addr(ip_addr))
-		return (false)
 	end
 
-	if clientdata.userid and clientdata.password then
+	if false == countevent and clientdata.userid and clientdata.password then
 		local password_user_md5 = fs.md5sum_string(clientdata.password)
 		if auth.authenticate (self, clientdata.userid, password_user_md5) then
 			-- We have a successful login, change sessiondata
@@ -57,21 +57,12 @@ logon = function (self, clientdata, ip_addr, sessiondir, sessiondata)
 			sessiondata.id = session.random_hash(512)
 			local t = auth.get_userinfo (self, clientdata.userid)
 			sessiondata.userinfo = t or {}
-			return (true)
+			return cfe({ type="boolean", value=true, name="Logon Success" })
 		else
 			-- We have a bad login, log the event
 			session.record_event(sessiondir, clientdata.userid, session.hash_ip_addr(ip_addr))
 		end
 	end
-	return (false)
-end
-
--- Return the session id and username
-status = function(sessiondata)
-	local name = "unknown"
-	if sessiondata.userinfo and sessiondata.userinfo.username then
-		name = sessiondata.userinfo.username
-	end
-	return ( { sessionid = sessiondata.id, username = name } )
+	return cfe({ type="boolean", value=false, name="Logon Success" })
 end
 
