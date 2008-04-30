@@ -92,7 +92,7 @@ local generic_input = function ( field_type, v )
 	for i,k in ipairs ( {
 			"name", "size", "checked", "maxlength", 
 			"value", "length",   "class", "id", "src",
-			"align", "alt", 
+			"align", "alt", "contenteditable", 
 			"tabindex", "accesskey", "onfocus", "onblur"
 			} ) do
 		str = str .. nv_pair ( k, v[k] )
@@ -129,7 +129,7 @@ form.longtext = function ( v )
 end
 
 
-function form.passwd ( v )
+function form.password ( v )
 	return generic_input ( "password", v )
 end
 
@@ -156,7 +156,7 @@ function form.image ( v )
 end
 
 
--- v.value is the selected item
+-- v.value is the selected item (or an array if multiple)
 -- v.option is an array of valid options
 -- NOTE use of value and values (plural)
 function form.select ( v )
@@ -177,6 +177,12 @@ function form.select ( v )
 	end
 	str = str .. ">"
 	-- now the options
+	local reverseval = {}
+	if type(v.value) == "table" then
+		for x,val in ipairs(v.value) do
+			reverseval[val]=x
+		end
+	end
 	for i, k in ipairs ( v.option ) do
 		local val = k
 		local txt = nil
@@ -184,9 +190,13 @@ function form.select ( v )
 			txt=val[1]
 			val=val[0]
 		end
-		str = str .. "<option " 
-		if ( v.value == val ) then
-			str = str .. " selected "
+		str = str .. "<option "
+		if type(v.value) == "table" then
+			if reverseval[val] then
+				str = str .. " selected"
+			end
+		elseif ( v.value == val ) then
+			str = str .. " selected"
 		end
 		str = str .. nv_pair("value", val) .. ">" .. k .. "</option>"
 	end 

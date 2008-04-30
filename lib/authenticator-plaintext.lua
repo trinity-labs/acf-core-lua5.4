@@ -47,12 +47,14 @@ pvt.parse_authfile = function(filename)
 end
 
 pvt.get_id = function(userid, authstruct)
-	if authstruct == nil then return nil end
-	for x = 1,#authstruct do
-		if authstruct[x].userid == userid then
-			return authstruct[x]
+	if authstruct ~= nil then
+		for x = 1,#authstruct do
+			if authstruct[x].userid == userid then
+				return authstruct[x]
+			end
 		end
 	end
+	return nil
 end
 
 --- public methods
@@ -111,6 +113,42 @@ pvt.availablefields = function (field)
 		}
 	return availablefileds[field]
 end
+
+-- validate the settings (ignore password if it's nil)
+local validate_settings = function (self, userid, username, password, password_confirm, roles)
+	local errormessage = {}
+
+	-- Set errormessages when entering invalid values
+	if (#userid == 0) then errormessage.userid = "You need to enter a valid userid!" end
+	if password then
+		if (#password == 0) then
+			errormessage.password = "Password cannot be blank!"
+		elseif (password ~= password_confirm) then 
+			errormessage.password_confirm = "You entered wrong password/confirmation"
+		else
+			local weak_password_result, weak_password_errormessage = pvt.weak_password(password)
+			if (weak_password_result) then errormessage.password = weak_password_errormessage end
+		end
+	end
+	local reverseroles = {}
+	for x,role in pairs(list_roles(self)) do
+		reverseroles[role] = x
+	end
+	for x,role in pairs(roles) do
+		if reverseroles[role] == nil then
+			errormessage.roles = "Invalid role"
+			break
+		end
+	end
+
+	-- Return false if any errormessages are set
+	for k,v in pairs(errormessage) do
+		return false, errormessage
+	end
+
+	return true, errormessage
+end
+
 -- This function returns the username and roles 
 -- or false on an error 
 get_userinfo = function ( self, userid )
@@ -150,7 +188,7 @@ list_roles = function (self)
 	return output
 end
 
-change_settings = function (self, userid,parameter,value) 
+change_settings = function (self, userid, parameter, value) 
 	local errormessage = {}
 	local passwd_path = self.conf.confdir .. "/passwd"
 
@@ -212,60 +250,102 @@ change_settings = function (self, userid,parameter,value)
 	return true
 end
 
-new_settings = function ( self, userid, username, password, password_confirm, roles)
+-- For an existing user, change the settings that are non-nil
+change_settings = function (self, userid, username, password, password_confirm, roles)
+	local result = true
 	local errormessage = {}
-	-- We start by checking if user is allowed to do changes
-	if not (pvt.permission_to_change) then
-		errormessage.permissions = "No permission to change!"
+
+	-- Get the current user info
+	local userinfo = get_userinfo(self, userid)
+	if userinfo == nil then
+		errormessage.userid = "This userid does not exist!"
+		result = false
 	end
 
-	-- Set path to passwordfile
-	local passwd_path = self.conf.confdir .. "/passwd"
+	local change = username or password or password_confirm or roles
+	if change then
+		-- Validate the inputs
+		if (result == true) then
+			-- Use the current settings if new ones are nil, except for password
+			result, errormessage = validate_settings(self, userid, username or userinfo.username, password, password_confirm, roles or userinfo.roles)
+		end
 
-	-- Set errormessages when entering invalid values
-	if (#userid == 0) then errormessage.userid = "You need to enter a valid userid!" end
-	if (password ~= password_confirm) then errormessage.password_confirm = "You entered wrong password/confirmation" end
-	if not (password) or (#password == 0) then errormessage.password = "Password cant be blank!" end
---	if not (roles) or (#roles == 0) then errormessage.roles = "You need to enter some roles!" end
-	local weak_password_result, weak_password_errormessage = pvt.weak_password(password)
-	if (weak_password_result) then errormessage.password = weak_password_errormessage end
+		-- Update all the fields
+		if (result == true) then
+			userinfo.username = username or userinfo.username
+			if password then
+				userinfo.password = fs.md5sum_string(password)
+			end
+			userinfo.roles = roles or userinfo.roles
+
+			-- write the updated user
+			delete_user(self, userid)
+
+			-- Set path to passwordfile
+			local passwd_path = self.conf.confdir .. "/passwd"
+			-- Write the newline into the file
+			fs.write_line_file(passwd_path, userid .. ":" .. userinfo.password .. ":" .. userinfo.username .. ":" .. table.concat(userinfo.roles,",") )
+		end
+	end
+
+	return result, errormessage
+end
+
+new_settings = function (self, userid, username, password, password_confirm, roles)
+	local result = true
+	local errormessage = {}
+	-- make sure to check all fields
+	userid = userid or ""
+	username = username or ""
+	password = password or ""
+	password_confirm = password_confirm or ""
+	roles = roles or {}
+
 	-- Check if userid already used
 	for k,v in pairs(list_users(self)) do
 		if (v == userid) then
 			errormessage.userid = "This userid already exists!"
+			result = false
 		end
 	end
 	
-	-- Return false if some errormessages is set
-	for k,v in pairs(errormessage) do
-		return false, errormessage
+	-- validate the settings
+	if (result == true) then
+		result, errormessage = validate_settings(self, userid, username, password, password_confirm, roles)
 	end
 
-	-- Write the newline into the file
-	fs.write_line_file(passwd_path, userid .. ":" .. fs.md5sum_string(password) .. ":" .. username .. ":" .. table.concat(roles,",") )
+	-- write the new user
+	if (result == true) then
+		-- Set path to passwordfile
+		local passwd_path = self.conf.confdir .. "/passwd"
 
-	return true, errormessage
+		-- Write the newline into the file
+		fs.write_line_file(passwd_path, userid .. ":" .. fs.md5sum_string(password) .. ":" .. username .. ":" .. table.concat(roles,",") )
+	end
+
+	return result, errormessage
 end
 
-delete_user = function( self, userid)
-	local errormessage = {}
+delete_user = function (self, userid)
+	local result = false
+	local errormessage = {userid="User not found"}
+
 	local passwd_path = self.conf.confdir .. "/passwd"
-
-	-- We start by checking if user is allowed to do changes
-	if not (pvt.permission_to_change) then
-		errormessage.permissions = "No permission to change!"
-	end
-
 	local passwdfilecontent = fs.read_file_as_array(passwd_path)
 	local output = {}
 	for k,v in pairs(passwdfilecontent) do
 		if not ( string.match(v, "^".. userid .. ":") ) then
 			table.insert(output, v)
+		else
+			result = true
+			errormessage = {}
 		end
 	end
 	
 	--Save the updated table
-	fs.write_file(passwd_path, table.concat(output,"\n"))
+	if result == true then
+		fs.write_file(passwd_path, table.concat(output,"\n"))
+	end
 
-	return true, errormessage
+	return result, errormessage
 end

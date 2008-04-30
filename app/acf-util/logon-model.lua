@@ -29,7 +29,7 @@ logoff = function (sessiondir, sessiondata)
 		sessiondata[a] = nil
 	end
 
-	return cfe({ type="boolean", value=success, name="Logoff Success" })
+	return cfe({ type="boolean", value=success, label="Logoff Success" })
 end
 
 -- Log on new user if possible and set up userinfo in session
@@ -57,12 +57,12 @@ logon = function (self, clientdata, ip_addr, sessiondir, sessiondata)
 			sessiondata.id = session.random_hash(512)
 			local t = auth.get_userinfo (self, clientdata.userid)
 			sessiondata.userinfo = t or {}
-			return cfe({ type="boolean", value=true, name="Logon Success" })
+			return cfe({ type="boolean", value=true, label="Logon Success" })
 		else
 			-- We have a bad login, log the event
 			session.record_event(sessiondir, clientdata.userid, session.hash_ip_addr(ip_addr))
 		end
 	end
-	return cfe({ type="boolean", value=false, name="Logon Success" })
+	return cfe({ type="boolean", value=false, label="Logon Success" })
 end
 

@@ -275,15 +275,12 @@ exception_handler = function (self, message )
 	end
 end
 
--- create a Configuration Framework Entity (cfe) 
--- returns a table with at least "value", "type", "option" and "errtxt"
+-- create a Configuration Framework Entity (cfe)
+-- returns a table with at least "value", "type", and "label"
 cfe = function ( optiontable )
 	optiontable = optiontable or {}
 	me = { 	value="",
 		type="text",
-		option="",
-		errtxt="",
-		name="", 
 		label="" }
 	for key,value in pairs(optiontable) do
 		me[key] = value
