@@ -48,7 +48,7 @@ get_controllers_func = function(self,controller_info)
 	temp1 = {}
 	for a,b in pairs(temp) do 
 		local c = string.match(a,"mvc") or string.match(a,"^_") 
-		if c == nil then
+		if c == nil and type(temp[a])=="function" then
 			temp1[#temp1 +1] = a
 		end
 	end
@@ -87,6 +87,37 @@ get_roles_perm = function(startdir,roles)
 		f = fs.read_file_as_array(file)
 		for y,line in pairs(f) do
 			if reverseroles[string.match(line,"^[%a]+")] then
+				temp = format.string_to_table(string.match(line,"[,%a:]+$"),",")
+				for z,perm in pairs(temp) do
+					local control,action = string.match(perm,"(%a+):(%a+)")
+					if control then
+						if nil == permissions[control] then
+							permissions[control] = {}
+						end
+						if action and nil == permissions[control][action] then
+							permissions[control][action] = {}
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	return permissions
+end
+
+-- Go through the roles files and determine the permissions for the specified role
+get_role_perm = function(startdir,role)
+	permissions = {}
+
+	-- find all of the roles files and add in the master file
+	local rolesfiles = get_roles_candidates(startdir)
+	rolesfiles[#rolesfiles + 1]  = "/etc/acf/roles"
+
+	for x,file in ipairs(rolesfiles) do
+		f = fs.read_file_as_array(file)
+		for y,line in pairs(f) do
+			if role == string.match(line,"^[%a]+") then
 				temp = format.string_to_table(string.match(line,"[,%a:]+$"),",")
 				for z,perm in pairs(temp) do
 					local control,action = string.match(perm,"(%a+):(%a+)")

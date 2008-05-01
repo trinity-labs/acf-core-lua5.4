@@ -1,4 +1,3 @@
 ALL=welcome:read,logon:logon,logon:logout,logon:status
-CREATE=password:status,password:edituser,password:newuser,password:deleteuser
-READ=password:editme
-NONE=roles:read,roles:getlist
+CREATE=password:status,password:edituser,password:newuser,password:deleteuser,roles:getlist,roles:viewroles,roles:viewperms
+READ=password:editme,roles:read

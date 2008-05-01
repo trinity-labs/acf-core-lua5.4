@@ -6,9 +6,8 @@ APP_DIST= \
 	acf-util/logon-model.lua \
 	acf-util/logon-status-html.lsp \
 	acf-util/roles-controller.lua \
-	acf-util/roles-getlist-html.lsp \
 	acf-util/roles-model.lua \
-	acf-util/roles-read-html.lsp \
+	acf-util/roles-html.lsp \
 	acf-util/password-controller.lua \
 	acf-util/password-html.lsp \
 	acf-util/password-model.lua \

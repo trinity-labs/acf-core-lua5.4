@@ -9,9 +9,12 @@ getcont = function(self)
 	controllers = roles.get_controllers(self)
 	local table_m = {}
 	for a,b in pairs(controllers) do
-	temp = roles.get_controllers_func(self,b)
-	table_m[b.sname] = temp
+		table_m[b.sname] = {}
+		temp = roles.get_controllers_func(self,b)
+		for x,y in ipairs(temp) do
+			table_m[b.sname][y] = {}
+		end
 	end
 
-	return (table_m)
+	return cfe({ type="table", value=table_m, label="All permissions" })
 end

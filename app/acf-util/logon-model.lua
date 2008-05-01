@@ -42,8 +42,7 @@ logon = function (self, clientdata, ip_addr, sessiondir, sessiondata)
 	end
 
 	if false == countevent and clientdata.userid and clientdata.password then
-		local password_user_md5 = fs.md5sum_string(clientdata.password)
-		if auth.authenticate (self, clientdata.userid, password_user_md5) then
+		if auth.authenticate (self, clientdata.userid, clientdata.password) then
 			-- We have a successful login, change sessiondata
 			-- for some reason, can't call this function or it skips rest of logon
 			-- logout(sessiondir, sessiondata)
