@@ -75,6 +75,20 @@ mvc.on_load = function (self, parent)
 	self.clientdata = FORM
 	self.conf.clientip = ENV.REMOTE_ADDR
 
+	-- FIXME this is because multi selects don't work in haserl
+	for name,oldtable in pairs(self.clientdata) do
+		if type(oldtable) == "table" then
+			-- Assume it's a sparse array, and remove blanks
+			local newtable={}
+			for x=1,table.maxn(oldtable) do
+				if oldtable[x] then
+					newtable[#newtable + 1] = oldtable[x]
+				end
+			end
+			self.clientdata[name] = newtable
+		end
+	end
+	
 	parent_exception_handler = parent.exception_handler
 	
 	-- this sets the package path for us and our children

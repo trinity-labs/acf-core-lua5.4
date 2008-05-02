@@ -99,7 +99,7 @@ function displayitem(myitem, viewtype)
 		for x,val in ipairs(myitem.option) do
 			myitem.value = val
 			myitem.checked = reverseval[val]
-			myitem.name = tempname .. "." .. val
+			myitem.name = tempname .. "." .. x
 			io.write(html.form.checkbox(myitem) .. val .. "<br>\n")
 		end
 		myitem.name = tempname

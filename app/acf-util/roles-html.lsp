@@ -27,10 +27,22 @@
 	<? elseif view.value.role then ?>
 		<H2><?= view.value.role.value ?>'s full permissions are</H2>
 	<? end ?>
-	<? for x,cont in pairs(view.value.permissions.value) do
-		print("<b>",x,"</b>")
-		for y,act in pairs(cont) do
-			print(y)
+	<? local controllers = {}
+	   -- It's nice to have it in alphabetical order
+	   for cont in pairs(view.value.permissions.value) do
+		controllers[#controllers + 1] = cont
+	   end
+	   table.sort(controllers)
+	   for x,cont in ipairs(controllers) do
+		print("<b>",cont,"</b>")
+		-- Again, alphabetical order
+		local actions = {}
+		for act in pairs(view.value.permissions.value[cont]) do
+			actions[#actions + 1] = act
+		end
+		table.sort(actions)
+		for y,act in pairs(actions) do
+			print(act)
 		end
 		print("<br>")
 	end ?>

@@ -37,9 +37,6 @@ function update_user(self, clientdata, newuser)
 	end
 	userinfo = userinfo or {}
 
-	-- Get list of available roles
-	local avail_roles=auth.list_roles()
-
 	config.userid =  cfe({
 		label="User id",
 		value=(userinfo.userid or clientdata.userid or ""),
@@ -54,7 +51,7 @@ function update_user(self, clientdata, newuser)
 		label="Roles",
 		value=(userinfo.roles or clientdata.roles or {}),
 		type="multi",
-		option=avail_roles,
+		option=auth.list_roles(),
 		errtxt = errormessage.roles
 		})
 	config.password =  cfe({
@@ -73,6 +70,7 @@ function get_users(self)
 	--List all users and their userinfo
 	local users = {}
 	local userlist = auth.list_users(self)
+	
 	for x,user in pairs(userlist) do
 		local userinfo = auth.get_userinfo(self,user)
 		users[user] = cfe({

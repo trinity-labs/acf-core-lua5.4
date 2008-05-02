@@ -12,6 +12,7 @@ userid:password:username:role1[,role2...]
 module (..., package.seeall)
 
 local sess = require ("session")
+require("roles")
 
 local pvt={}
 
@@ -181,8 +182,15 @@ list_users = function (self)
 end
 
 list_roles = function (self)
-	local output = {"CREATE","UPDATE","DELETE","READ"}
-	return output
+	-- Get list of available roles (everything except ALL)
+	local avail_roles = roles.list_all_roles()
+	for x,role in ipairs(avail_roles) do
+		if role=="ALL" then
+			table.remove(avail_roles,x)
+			break
+		end
+	end
+	return avail_roles
 end
 
 change_setting = function (self, userid, parameter, value) 

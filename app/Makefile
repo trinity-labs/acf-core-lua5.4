@@ -8,6 +8,10 @@ APP_DIST= \
 	acf-util/roles-controller.lua \
 	acf-util/roles-model.lua \
 	acf-util/roles-html.lsp \
+	acf-util/roles-viewroles-html.lsp \
+	acf-util/roles-editrole-html.lsp \
+	acf-util/roles-newrole-html.lsp \
+	acf-util/roles.menu \
 	acf-util/password-controller.lua \
 	acf-util/password-html.lsp \
 	acf-util/password-model.lua \

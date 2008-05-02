@@ -29,15 +29,6 @@ function edituser(self)
 	if self.clientdata.password == "" then self.clientdata.password = nil end
 	if self.clientdata.password_confirm == "" then self.clientdata.password_confirm = nil end
 
-	-- FIXME this is because multi selects don't work in haserl
-	if self.clientdata.roles then
-		local newroles = {}
-		for x,role in pairs(self.clientdata.roles) do
-			newroles[#newroles + 1] = role
-		end
-		self.clientdata.roles = newroles
-	end
-
 	-- Update userinfo
 	local output = self.model.update_user(self, self.clientdata, false)
 
@@ -51,15 +42,6 @@ function edituser(self)
 end
 
 function newuser(self)
-	-- FIXME this is because multi selects don't work in haserl
-	if self.clientdata.roles then
-		local newroles = {}
-		for x,role in pairs(self.clientdata.roles) do
-			newroles[#newroles + 1] = role
-		end
-		self.clientdata.roles = newroles
-	end
-
 	-- Update userinfo
 	local output = self.model.update_user(self, self.clientdata, true)
 
