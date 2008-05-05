@@ -329,11 +329,11 @@ body {
 #content dl {
 	border:			1px dashed #ddd;
 	margin:			0px;
-	padding:		0px;
+	padding:			0px;
 	margin-bottom:		10px;
 	margin-top:		2px;
 	width:			98%;
-	display:		block;
+	display:			block;
 	clear:			right;
 }
 #content dt {
