@@ -31,6 +31,7 @@ io.write("</span>")
 			<TD>
 			[<A HREF='edituser?userid=<?= name ?>'>Edit this account</A>]
 			[<A HREF='deleteuser?userid=<?= name ?>'>Delete this account</A>]
+			[<A HREF='<?= ENV.SCRIPT_NAME ?>/acf-util/roles/viewuserroles?userid=<?= name ?>'>View roles for this account</A>]
 			</TD>
 		</TR>
 	</TABLE></DD>

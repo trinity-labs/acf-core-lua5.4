@@ -11,7 +11,7 @@
 	form.action = ""
 	form.submit = "Save"
 	-- If editing existing role, disable role
-	if form.value.role and "GET" == ENV["REQUEST_METHOD"] then
+	if nil == string.find(ENV.PATH_INFO, "/newrole") then
 		form.value.role.contenteditable = false
 	end
 	local order = { "role", "permissions" }

@@ -88,6 +88,8 @@ local validate_settings = function (self, userid, username, password, password_c
 
 	-- Set errormessages when entering invalid values
 	if (#userid == 0) then errormessage.userid = "You need to enter a valid userid!" end
+	if string.find(userid, "[^%w_]") then errormessage.userid = "Userid can only contain letters, numbers, and '_'" end
+	if string.find(username, "%p") then errormessage.username = "Real name cannot contain punctuation" end
 	if password then
 		if (#password == 0) then
 			errormessage.password = "Password cannot be blank!"

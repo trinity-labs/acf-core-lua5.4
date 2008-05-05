@@ -88,7 +88,7 @@ list_roles = function()
 	-- Open the roles file and parse for defined roles
 	f = fs.read_file_as_array(roles_file)
 	for x,line in pairs(f) do
-		temprole = string.match(line,"^[%a]+")
+		temprole = string.match(line,"^[%w_]+")
 		if not reverseroles[temprole] then
 			defined_roles[#defined_roles + 1] = temprole
 		end
@@ -123,7 +123,7 @@ get_roles_perm = function(startdir,roles)
 	for x,file in ipairs(rolesfiles) do
 		f = fs.read_file_as_array(file)
 		for y,line in pairs(f) do
-			if reverseroles[string.match(line,"^[%a]+")] then
+			if reverseroles[string.match(line,"^[%w_]+")] then
 				temp = format.string_to_table(string.match(line,"[,%a:]+$"),",")
 				for z,perm in pairs(temp) do
 					local control,action = string.match(perm,"(%a+):(%a+)")
@@ -156,7 +156,7 @@ get_role_perm = function(startdir,role)
 	for x,file in ipairs(rolesfiles) do
 		f = fs.read_file_as_array(file)
 		for y,line in pairs(f) do
-			if role == string.match(line,"^[%a]+") then
+			if role == string.match(line,"^[%w_]+") then
 				temp = format.string_to_table(string.match(line,"[,%a:]+$"),",")
 				for z,perm in pairs(temp) do
 					local control,action = string.match(perm,"(%a+):(%a+)")
@@ -213,6 +213,9 @@ set_role_perm = function(role, permissions, permissions_array)
 		if role==ro then
 			return false, "Cannot modify default roles"
 		end
+	end
+	if string.find(role, '[^%w_]') then
+		return false, "Role can only contain letters, numbers, and '_'"
 	end
 	if permissions and not permissions_array then
 		permissions_array = {}
