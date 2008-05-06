@@ -132,18 +132,20 @@ end
 
 -- This function does almost the same as posix.stat, but instead it writes the output human readable.
 function stat ( path )
-	local filedetails = posix.stat(path)	
-	filedetails["ctime"]=os.date("%c", filedetails["ctime"])
-	filedetails["mtime"]=os.date("%c", filedetails["mtime"])
-	filedetails["path"]=path
-	if ( filedetails["size"] > 1073741824 ) then
-		filedetails["size"]=((filedetails["size"]/1073741824) - (filedetails["size"]/1073741824%0.1)) .. "G"
-	elseif ( filedetails["size"] > 1048576 ) then
-		filedetails["size"]=((filedetails["size"]/1048576) - (filedetails["size"]/1048576%0.1))  .. "M"
-	elseif ( filedetails["size"] > 1024 ) then
-		filedetails["size"]=((filedetails["size"]/1024) - (filedetails["size"]/1024%0.1)) .. "k"
-	else
-		filedetails["size"]=filedetails["size"]
+	local filedetails = posix.stat(path)
+	if (filedetails) then
+		filedetails["ctime"]=os.date("%c", filedetails["ctime"])
+		filedetails["mtime"]=os.date("%c", filedetails["mtime"])
+		filedetails["path"]=path
+		if ( filedetails["size"] > 1073741824 ) then
+			filedetails["size"]=((filedetails["size"]/1073741824) - (filedetails["size"]/1073741824%0.1)) .. "G"
+		elseif ( filedetails["size"] > 1048576 ) then
+			filedetails["size"]=((filedetails["size"]/1048576) - (filedetails["size"]/1048576%0.1))  .. "M"
+		elseif ( filedetails["size"] > 1024 ) then
+			filedetails["size"]=((filedetails["size"]/1024) - (filedetails["size"]/1024%0.1)) .. "k"
+		else
+			filedetails["size"]=filedetails["size"]
+		end
 	end
 	return filedetails
 end
