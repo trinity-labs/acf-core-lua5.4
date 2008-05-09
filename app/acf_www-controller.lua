@@ -59,6 +59,43 @@ local function build_menus(self)
 	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
 end
 
+-- This function is made available within the view to allow loading of components
+local dispatch_component = function(action, controller, prefix, clientdata)
+	-- Before we call dispatch, we have to set up conf and clientdata like it was really called for this component
+	self = APP
+	local tempconf = self.conf
+	self.conf = {}
+	for x,y in pairs(tempconf) do
+		self.conf[x] = y
+	end
+	self.conf.component = true
+	local tempclientdata = self.clientdata
+	self.clientdata = clientdata or {}
+	self.clientdata.sessionid = tempclientdata.sessionid
+
+	self.dispatch(self, prefix or self.conf.prefix, controller or self.conf.controller, action or "")
+
+	-- Revert to the old conf and clientdata
+	self.conf = nil
+	if not (self.conf) then self.conf = tempconf end
+	self.clientdata = nil
+	if not (self.clientdata) then self.clientdata = tempclientdata end
+end
+
+local create_helper_library = function ( self )
+	local library = {}
+--[[	-- If we have a separate library, here's how we could do it
+	local library = require("library_name")
+	for name,func in pairs(library) do
+		if type(func) == "function" then
+			library.name = function(...) return func(self, ...) end
+		end
+	end
+--]]
+	library.dispatch_component = dispatch_component
+	return library
+end
+
 mvc = {}
 mvc.on_load = function (self, parent)
 	-- open the log file
@@ -181,39 +218,50 @@ find_template = function ( appdir, prefix, controller, action, viewtype )
 	end
 	-- not found, so try one level higher
 	if prefix == "" then -- already at the top level - fail
-		return false
+		return nil
 	end
 	prefix = dirname (prefix) 
 	return find_template ( appdir, prefix, controller, action, viewtype )
 end
 
+-- look for a view
+-- ctlr-action-view, then  ctlr-view
 
-
--- Overload the MVC's view resolver with our own
-
-view_resolver = function(self)
+find_view = function ( appdir, prefix, controller, action, viewtype )
+	local names = { appdir .. prefix .. controller .. "-" ..
+				action .. "-" .. viewtype .. ".lsp",
+			appdir .. prefix .. controller .. "-" ..
+				viewtype .. ".lsp" }
 	local file
-	local viewname
-	local viewtype = self.conf.viewtype or "html"
-	local names = { self.conf.appdir .. self.conf.prefix .. self.conf.controller ..
-				"-" .. self.conf.action .. "-" .. viewtype .. ".lsp",
-			self.conf.appdir .. self.conf.prefix .. self.conf.controller ..
-				"-" .. viewtype .. ".lsp" }
-
-
-	-- search for template
-	local template = find_template ( self.conf.appdir, self.conf.prefix,
-		self.conf.controller, self.conf.action, "html") 
-	
 	-- search for view
 	for i,filename in ipairs (names) do
 		file = io.open(filename)
 		if file then
 			file:close()
-			viewname = filename
-			break
+			return filename
 		end
 	end
+	return nil
+end
+
+-- Overload the MVC's view resolver with our own
+
+view_resolver = function(self)
+	local template, viewname, viewlibrary
+	local viewtype = self.conf.viewtype or "html"
+
+	-- search for template
+	if self.conf.component ~= true then
+		template = find_template ( self.conf.appdir, self.conf.prefix,
+			self.conf.controller, self.conf.action, viewtype )
+	end
+	
+	-- search for view
+	viewname = find_view ( self.conf.appdir, self.conf.prefix,
+		self.conf.controller, self.conf.action, viewtype )
+
+	-- create the view helper library
+	viewlibrary = create_helper_library ( self )
 
 	-- We have a template
 	if template then
@@ -253,13 +301,16 @@ view_resolver = function(self)
 		
 		return function (viewtable)
 			local template = haserl.loadfile (template)
-			return template ( pageinfo, viewtable, self.sessiondata )
+			return template ( pageinfo, viewtable, self.sessiondata, viewlibrary )
 		end
 	end
 
 	-- No template, but have a view
 	if viewname then
-		return haserl.loadfile (viewname)
+		return function (viewtable)
+			local viewfunction = haserl.loadfile (viewname)
+			return viewfunction ( viewtable, viewlibrary )
+		end
 	else
 		return function() end 
 	end
@@ -268,7 +319,9 @@ end
 exception_handler = function (self, message )
 	local html = require ("html")
 	if type(message) == "table" then
-		if message.type == "redir" then
+		if message.type == "redir" and self.conf.component == true then
+			io.write ("Component cannot be found")
+		elseif message.type == "redir" then
 			if sessiondata.id then logevent("Redirecting " .. sessiondata.id) end
 			io.write ("Status: 302 Moved\n")
 			io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
