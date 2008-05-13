@@ -75,7 +75,24 @@ function displaymanagement (myform,tags)
 	end
 end
 
-function displayitem(myitem, viewtype)
+function displayitem(myitem)
+	if not myitem then return end
+	io.write("<DT")
+	if myitem.errtxt then 
+		myitem.class = "error"
+		io.write(" class='error'")
+	end
+	io.write(">" .. myitem.label .. "</DT>\n")
+	io.write("<DD>")
+	io.write(myitem.value .. "\n")
+	if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
+	if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
+	io.write("</DD>\n")
+end
+
+function displayformitem(myitem, name, viewtype)
+	if not myitem then return end
+	if name then myitem.name = name end
 	io.write("<DT")
 	if myitem.errtxt then 
 		myitem.class = "error"
@@ -104,8 +121,12 @@ function displayitem(myitem, viewtype)
 		end
 		myitem.name = tempname
 		myitem.value = tempval
+	elseif myitem.type == "boolean" then
+		if (myitem.value == true) then myitem.checked = "" end
+		myitem.value = "true"
+		io.write(html.form.checkbox(myitem) .. "\n")
 	else
-		io.write(html.form[myitem.type](myitem) .. "\n")
+		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
 	if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
 	if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
@@ -113,6 +134,7 @@ function displayitem(myitem, viewtype)
 end
 
 function displayform(myform, order)
+	if not myform then return end
 	if myform.descr then io.write("<P CLASS='descr'>" .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
 	if myform.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
 	io.write('<form action="' .. myform.action .. '" method="POST">\n')
@@ -123,17 +145,17 @@ function displayform(myform, order)
 			reverseorder[name] = x
 			if myform.value[name] then
 				myform.value[name].name = name
-				displayitem(myform.value[name])
+				displayformitem(myform.value[name])
 			end
 		end
 	end
 	for name,item in pairs(myform.value) do
 		if nil == reverseorder[name] then
 			item.name = name
-			displayitem(item)
+			displayformitem(item)
 		end
 	end
-	io.write('<DT><input class="submit" type="submit"  value="' .. myform.submit .. '"></DT>\n')
+	io.write('<DT><input class="submit" type="submit" name="save" value="' .. myform.submit .. '"></DT>\n')
 	io.write('</DL>\n')
 	io.write('</FORM>')
 end

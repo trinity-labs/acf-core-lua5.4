@@ -60,7 +60,7 @@ local function build_menus(self)
 end
 
 -- This function is made available within the view to allow loading of components
-local dispatch_component = function(action, controller, prefix, clientdata)
+local dispatch_component = function(str, clientdata)
 	-- Before we call dispatch, we have to set up conf and clientdata like it was really called for this component
 	self = APP
 	local tempconf = self.conf
@@ -73,7 +73,10 @@ local dispatch_component = function(action, controller, prefix, clientdata)
 	self.clientdata = clientdata or {}
 	self.clientdata.sessionid = tempclientdata.sessionid
 
-	self.dispatch(self, prefix or self.conf.prefix, controller or self.conf.controller, action or "")
+	local prefix, controller, action = self.parse_path_info("/" .. str)
+	if prefix == "/" then prefix = self.conf.prefix end
+	if controller == "" then controller = self.conf.controller end
+	self.dispatch(self, prefix, controller, action)
 
 	-- Revert to the old conf and clientdata
 	self.conf = nil
@@ -321,18 +324,22 @@ exception_handler = function (self, message )
 	if type(message) == "table" then
 		if message.type == "redir" and self.conf.component == true then
 			io.write ("Component cannot be found")
-		elseif message.type == "redir" then
+		elseif message.type == "redir" or message.type == "redir_to_referrer" then
 			if sessiondata.id then logevent("Redirecting " .. sessiondata.id) end
 			io.write ("Status: 302 Moved\n")
-			io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
+			if message.type == "redir" then
+				io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
 				  	message.prefix .. message.controller ..
 					"/" .. message.action .. 
 					(message.extra or "" ) .. "\n")
-				if self.sessiondata.id then
-					io.write (html.cookie.set("sessionid", self.sessiondata.id))
-				else
-					io.write (html.cookie.unset("sessionid"))
-				end
+			else
+				io.write ("Location: " .. ENV.HTTP_REFERER .. "\n")
+			end
+			if self.sessiondata.id then
+				io.write (html.cookie.set("sessionid", self.sessiondata.id))
+			else
+				io.write (html.cookie.unset("sessionid"))
+			end
 			io.write ( "Content-Type: text/html\n\n" )
 		elseif message.type == "dispatch" then
 			parent_exception_handler(self, message)
@@ -360,4 +367,6 @@ logevent = function ( message )
 	conf.logfile:write (string.format("%s: %s\n", os.date(), message)) 
 end
 
-
+redirect_to_referrer = function(self)
+	error({type="redir_to_referrer"})
+end
