@@ -118,7 +118,7 @@ local find_view = function ( appdir, prefix, controller, action, viewtype )
 end
 
 -- This function is made available within the view to allow loading of components
-local dispatch_component = function(str, clientdata)
+local dispatch_component = function(str, clientdata, suppress_view)
 	-- Before we call dispatch, we have to set up conf and clientdata like it was really called for this component
 	self = APP
 	local tempconf = self.conf
@@ -127,6 +127,7 @@ local dispatch_component = function(str, clientdata)
 		self.conf[x] = y
 	end
 	self.conf.component = true
+	self.conf.suppress_view = suppress_view
 	local tempclientdata = self.clientdata
 	self.clientdata = clientdata or {}
 	self.clientdata.sessionid = tempclientdata.sessionid
@@ -134,13 +135,15 @@ local dispatch_component = function(str, clientdata)
 	local prefix, controller, action = self.parse_path_info("/" .. str)
 	if prefix == "/" then prefix = self.conf.prefix end
 	if controller == "" then controller = self.conf.controller end
-	self.dispatch(self, prefix, controller, action)
+	local viewtable = self.dispatch(self, prefix, controller, action)
 
 	-- Revert to the old conf and clientdata
 	self.conf = nil
 	if not (self.conf) then self.conf = tempconf end
 	self.clientdata = nil
 	if not (self.clientdata) then self.clientdata = tempclientdata end
+
+	return viewtable
 end
 
 local create_helper_library = function ( self )
@@ -172,42 +175,6 @@ local view_resolver = function(self)
 	viewname = find_view ( self.conf.appdir, self.conf.prefix,
 		self.conf.controller, self.conf.action, viewtype )
 
-	-- create the view helper library
-	viewlibrary = create_helper_library ( self )
-
-	-- ***************************************************
-	-- This is how to call another controller (APP or self
-	-- can be used... m will contain worker and model,
-	-- with conf, and other "missing" parts pointing back
-	-- to APP or self
-	-- ***************************************************
-
-	local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
-
-	-- If the worker and model loaded correctly, then
-	-- use the sub-controller
-	local h
-	if worker_loaded and model_loaded then
-		h = m.worker.read(m)
-	else
-		h = {}
-		h.hostname = { value = "unknown" }
-	end
-
-	local pageinfo =  { viewfile = viewname,
-				controller = m.conf.controller,
-				--          ^^^ see.. m.conf doesnt exist - but it works
-				-- the inheritance means self.conf is used instead
-				action = self.conf.action,
-				hostname = h.hostname.value,
-				-- alpineversion = alpineversion.worker.read(alpineversion),
-				prefix = self.conf.prefix,
-				script = self.conf.appuri, 
-				skin = self.conf.skin or ""
-				}
-
-	m:destroy()
-
 	local func = function() end
 	if template then
 		-- We have a template
@@ -216,6 +183,19 @@ local view_resolver = function(self)
 		-- No template, but have a view
 		func = haserl.loadfile (viewname)
 	end
+	
+	-- create the view helper library
+	viewlibrary = create_helper_library ( self )
+
+	local pageinfo =  { viewfile = viewname,
+				controller = self.conf.controller,
+				action = self.conf.action,
+				prefix = self.conf.prefix,
+				appuri = self.conf.appuri,
+				appname = self.conf.appname,
+				skin = self.conf.skin or ""
+				}
+
 	return func, viewlibrary, pageinfo, self.sessiondata
 end
 
@@ -344,6 +324,7 @@ end
 -- pass more parameters to the view
 dispatch = function (self, userprefix, userctlr, useraction) 
 	local controller = nil
+	local viewtable
 	local success, err = xpcall ( function () 
 
 	if userprefix == nil then
@@ -426,21 +407,23 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		controller.worker.mvc.pre_exec ( controller )
 	end
 
- 	-- run the action		
-	local viewtable = controller.worker[action](controller)
+	-- run the action		
+	viewtable = controller.worker[action](controller)
 
 	-- run the post_exec code
 	if  type(controller.worker.mvc.post_exec) == "function" then
 		controller.worker.mvc.post_exec ( controller )
 	end
 
-	local viewfunc, p1, p2, p3 = view_resolver(self)
+	if not self.conf.suppress_view then
+		local viewfunc, p1, p2, p3 = view_resolver(self)
+		viewfunc (viewtable, p1, p2, p3)
+	end
 
 	-- we're done with the controller, destroy it
 	controller:destroy()
 	controller = nil
 		
-	viewfunc (viewtable, p1, p2, p3)
 	end, 
 	self:soft_traceback(message)
 	)
@@ -458,6 +441,8 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			handler:exception_handler(err)
 		end
 	end
+
+	return viewtable
 end
 
 -- Cause a redirect to specified (or default) action

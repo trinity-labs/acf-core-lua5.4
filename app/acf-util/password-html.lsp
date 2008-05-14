@@ -1,4 +1,4 @@
-<? local form = ... ?>
+<? local form, viewlibrary, pageinfo = ... ?>
 <? require("viewfunctions") ?>
 <?
 --[[ DEBUG INFORMATION
@@ -18,7 +18,7 @@ io.write("</span>")
 		form.value.password_confirm.type = "password"
 	end
 	-- If not in newuser action, disable userid
-	if nil == string.find(ENV["PATH_INFO"], "/newuser") then
+	if pageinfo.action ~= "newuser" then
 		form.value.userid.contenteditable = false
 	end
 	local order = { "userid", "username", "roles", "password", "password_confirm" }

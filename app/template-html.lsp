@@ -13,7 +13,16 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title><?= pageinfo.hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
+<? 
+local hostname = ""
+if viewlibrary and viewlibrary.dispatch_component then
+	local result = viewlibrary.dispatch_component("alpine-baselayout/hostname/read", nil, true)
+	if result and result.value then
+		hostname = result.value
+	end
+end
+?>
+<title><?= hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
 <link rel="stylesheet" type="text/css" href="/static/reset.css">
 <link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?>">
 <!--[if IE]>
@@ -30,12 +39,12 @@ Content-Type: text/html
 		<div id="logo">
 			<div class="leader"></div>
 			<h1>AlpineLinux</h1>
-			<p><?= pageinfo.hostname or "unknown hostname" ?></p>
+			<p><?= hostname or "unknown hostname" ?></p>
 			<div class="tailer"></div>
 		</div>
 		<span class="mute">
 			<p>
-			<? local ctlr = pageinfo.script .. "/acf-util/logon/"
+			<? local ctlr = pageinfo.appuri .. "/acf-util/logon/"
 			
 			if session.userinfo and session.userinfo.userid then
 			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. session.userinfo.userid .. "'</a>\n", ctlr .. "logout" ) )
@@ -72,7 +81,7 @@ Content-Type: text/html
 						class=""
 					end
 					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
-						class,ENV.SCRIPT_NAME,group.prefix, group.controller, group.tabs[1].action, group.name ))
+						class,pageinfo.appuri,group.prefix, group.controller, group.tabs[1].action, group.name ))
 				end
 				io.write ( "\t\t\t\t\t</ul>" )
 			  end
