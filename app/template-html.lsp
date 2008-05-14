@@ -1,4 +1,4 @@
-<? local pageinfo , viewtable, session, viewlibrary = ... 
+<? local viewtable, viewlibrary, pageinfo, session = ... 
    html=require("html") ?>
 Status: 200 OK
 Content-Type: text/html
@@ -121,7 +121,7 @@ Content-Type: text/html
 	</div>
 
 	<? local func = haserl.loadfile(pageinfo.viewfile) ?>
-	<? func (viewtable, viewlibrary) ?>
+	<? func (viewtable, viewlibrary, pageinfo, session) ?>
 
 	<div class="tailer">
 	</div>

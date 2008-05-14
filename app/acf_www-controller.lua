@@ -20,11 +20,11 @@ local function build_menus(self)
 
 	-- Build the permissions table
 	local roles = {}
-	if sessiondata.userinfo and sessiondata.userinfo.roles then
-		roles = sessiondata.userinfo.roles
+	if self.sessiondata.userinfo and self.sessiondata.userinfo.roles then
+		roles = self.sessiondata.userinfo.roles
 	end
 	local permissions = roll.get_roles_perm(self.conf.appdir,roles)
-	sessiondata.permissions = permissions
+	self.sessiondata.permissions = permissions
 	
 	--Build the menu
 	local cats = m.get_menuitems(self.conf.appdir)
@@ -52,11 +52,69 @@ local function build_menus(self)
 			table.remove(cats, x)
 		end
 	end
-	sessiondata.menu = {}
-	sessiondata.menu.cats = cats
+	self.sessiondata.menu = {}
+	self.sessiondata.menu.cats = cats
 
 	-- Debug: Timestamp on menu creation
-	sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
+	self.sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
+end
+
+local check_permission = function(self, controller, action)
+	logevent("Trying " .. (controller or "nil") .. ":" .. (action or "nil"))
+	if nil == self.sessiondata.permissions then return false end
+	if controller then
+		if nil == self.sessiondata.permissions[controller] then return false end
+		if action and nil == self.sessiondata.permissions[controller][action] then return false end
+	end
+	return true
+end
+
+-- look for a template
+-- ctlr-action-view, then  ctlr-view, then action-view, then view
+-- cannot be local function because of recursion
+find_template = function ( appdir, prefix, controller, action, viewtype )
+	local targets = {
+			appdir .. prefix .. "template-" .. controller .. "-" .. 
+				action .. "-" .. viewtype .. ".lsp",
+			appdir .. prefix .. "template-" .. controller .. "-" .. 
+				viewtype .. ".lsp",
+			appdir .. prefix .. "template-" .. action .. "-" ..
+				viewtype .. ".lsp",
+			appdir .. prefix .. "template-" .. viewtype .. ".lsp"
+			}
+	local file
+	for k,v in pairs(targets) do
+		file = io.open (v)
+		if file then 
+			io.close (file)
+			return v
+		end
+	end
+	-- not found, so try one level higher
+	if prefix == "" then -- already at the top level - fail
+		return nil
+	end
+	prefix = dirname (prefix) 
+	return find_template ( appdir, prefix, controller, action, viewtype )
+end
+
+-- look for a view
+-- ctlr-action-view, then  ctlr-view
+local find_view = function ( appdir, prefix, controller, action, viewtype )
+	local names = { appdir .. prefix .. controller .. "-" ..
+				action .. "-" .. viewtype .. ".lsp",
+			appdir .. prefix .. controller .. "-" ..
+				viewtype .. ".lsp" }
+	local file
+	-- search for view
+	for i,filename in ipairs (names) do
+		file = io.open(filename)
+		if file then
+			file:close()
+			return filename
+		end
+	end
+	return nil
 end
 
 -- This function is made available within the view to allow loading of components
@@ -99,13 +157,75 @@ local create_helper_library = function ( self )
 	return library
 end
 
+-- Our local view resolver called by our dispatch
+local view_resolver = function(self)
+	local template, viewname, viewlibrary
+	local viewtype = self.conf.viewtype or "html"
+
+	-- search for template
+	if self.conf.component ~= true then
+		template = find_template ( self.conf.appdir, self.conf.prefix,
+			self.conf.controller, self.conf.action, viewtype )
+	end
+	
+	-- search for view
+	viewname = find_view ( self.conf.appdir, self.conf.prefix,
+		self.conf.controller, self.conf.action, viewtype )
+
+	-- create the view helper library
+	viewlibrary = create_helper_library ( self )
+
+	-- ***************************************************
+	-- This is how to call another controller (APP or self
+	-- can be used... m will contain worker and model,
+	-- with conf, and other "missing" parts pointing back
+	-- to APP or self
+	-- ***************************************************
+
+	local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
+
+	-- If the worker and model loaded correctly, then
+	-- use the sub-controller
+	local h
+	if worker_loaded and model_loaded then
+		h = m.worker.read(m)
+	else
+		h = {}
+		h.hostname = { value = "unknown" }
+	end
+
+	local pageinfo =  { viewfile = viewname,
+				controller = m.conf.controller,
+				--          ^^^ see.. m.conf doesnt exist - but it works
+				-- the inheritance means self.conf is used instead
+				action = self.conf.action,
+				hostname = h.hostname.value,
+				-- alpineversion = alpineversion.worker.read(alpineversion),
+				prefix = self.conf.prefix,
+				script = self.conf.appuri, 
+				skin = self.conf.skin or ""
+				}
+
+	m:destroy()
+
+	local func = function() end
+	if template then
+		-- We have a template
+		func = haserl.loadfile (template)
+	elseif viewname then
+		-- No template, but have a view
+		func = haserl.loadfile (viewname)
+	end
+	return func, viewlibrary, pageinfo, self.sessiondata
+end
+
 mvc = {}
 mvc.on_load = function (self, parent)
 	-- open the log file
 	self.conf.logfile = io.open ("/var/log/acf.log", "a+")
 
 	--logevent("acf_www-controller mvc.on_load")
-	
+
 	-- Make sure we have some kind of sane defaults for libdir and sessiondir
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
@@ -180,152 +300,22 @@ end
 
 mvc.on_unload = function (self)
 	sessionlib=require ("session")
-	if sessiondata.id then
-		sessionlib.save_session(conf.sessiondir, sessiondata)     
+	if self.sessiondata.id then
+		sessionlib.save_session(self.conf.sessiondir, self.sessiondata)
         end
 	-- Close the logfile
 	--logevent("acf_www-controller mvc.on_unload")
-	conf.logfile:close()
+	self.conf.logfile:close()
 end
 
-mvc.check_permission = function(self, controller, action)
-	logevent("Trying " .. (controller or "nil") .. ":" .. (action or "nil"))
-	if nil == self.sessiondata.permissions then return false end
-	if controller then
-		if nil == self.sessiondata.permissions[controller] then return false end
-		if action and nil == self.sessiondata.permissions[controller][action] then return false end
-	end
-	return true
-end
-
--- look for a template
--- ctlr-action-view, then  ctlr-view, then action-view, then view
-
-find_template = function ( appdir, prefix, controller, action, viewtype )
-	local targets = {
-			appdir .. prefix .. "template-" .. controller .. "-" .. 
-				action .. "-" .. viewtype .. ".lsp",
-			appdir .. prefix .. "template-" .. controller .. "-" .. 
-				viewtype .. ".lsp",
-			appdir .. prefix .. "template-" .. action .. "-" ..
-				viewtype .. ".lsp",
-			appdir .. prefix .. "template-" .. viewtype .. ".lsp"
-			}
-	local file
-	for k,v in pairs(targets) do
-		file = io.open (v)
-		if file then 
-			io.close (file)
-			return v
-		end
-	end
-	-- not found, so try one level higher
-	if prefix == "" then -- already at the top level - fail
-		return nil
-	end
-	prefix = dirname (prefix) 
-	return find_template ( appdir, prefix, controller, action, viewtype )
-end
-
--- look for a view
--- ctlr-action-view, then  ctlr-view
-
-find_view = function ( appdir, prefix, controller, action, viewtype )
-	local names = { appdir .. prefix .. controller .. "-" ..
-				action .. "-" .. viewtype .. ".lsp",
-			appdir .. prefix .. controller .. "-" ..
-				viewtype .. ".lsp" }
-	local file
-	-- search for view
-	for i,filename in ipairs (names) do
-		file = io.open(filename)
-		if file then
-			file:close()
-			return filename
-		end
-	end
-	return nil
-end
-
--- Overload the MVC's view resolver with our own
-
-view_resolver = function(self)
-	local template, viewname, viewlibrary
-	local viewtype = self.conf.viewtype or "html"
-
-	-- search for template
-	if self.conf.component ~= true then
-		template = find_template ( self.conf.appdir, self.conf.prefix,
-			self.conf.controller, self.conf.action, viewtype )
-	end
-	
-	-- search for view
-	viewname = find_view ( self.conf.appdir, self.conf.prefix,
-		self.conf.controller, self.conf.action, viewtype )
-
-	-- create the view helper library
-	viewlibrary = create_helper_library ( self )
-
-	-- We have a template
-	if template then
-		-- ***************************************************
-		-- This is how to call another controller (APP or self
-		-- can be used... m will contain worker and model,
-		-- with conf, and other "missing" parts pointing back
-		-- to APP or self
-		-- ***************************************************
-		
-		local m,worker_loaded,model_loaded  = self:new("alpine-baselayout/hostname")
-		--local alpineversion  = self:new("alpine-baselayout/alpineversion")
-		
-		-- If the worker and model loaded correctly, then
-		-- use the sub-controller
-		local h
-		if worker_loaded and model_loaded then
-			h = m.worker.read(m)
-		else
-			h = {}
-			h.hostname = { value = "unknown" }
-		end
-		
-		local pageinfo =  { viewfile = viewname,
-					controller = m.conf.controller,
-					--          ^^^ see.. m.conf doesnt exist - but it works
-					-- the inheritance means self.conf is used instead
-					action = self.conf.action,
-					hostname = h.hostname.value,
-					-- alpineversion = alpineversion.worker.read(alpineversion),
-					prefix = self.conf.prefix,
-					script = self.conf.appuri, 
-					skin = self.conf.skin or ""
-					}
-
-		m:destroy()
-		
-		return function (viewtable)
-			local template = haserl.loadfile (template)
-			return template ( pageinfo, viewtable, self.sessiondata, viewlibrary )
-		end
-	end
-
-	-- No template, but have a view
-	if viewname then
-		return function (viewtable)
-			local viewfunction = haserl.loadfile (viewname)
-			return viewfunction ( viewtable, viewlibrary )
-		end
-	else
-		return function() end 
-	end
-end
-
+-- Overload the MVC's exception handler with our own to handle redirection
 exception_handler = function (self, message )
 	local html = require ("html")
 	if type(message) == "table" then
 		if message.type == "redir" and self.conf.component == true then
 			io.write ("Component cannot be found")
 		elseif message.type == "redir" or message.type == "redir_to_referrer" then
-			if sessiondata.id then logevent("Redirecting " .. sessiondata.id) end
+			if self.sessiondata.id then logevent("Redirecting " .. self.sessiondata.id) end
 			io.write ("Status: 302 Moved\n")
 			if message.type == "redir" then
 				io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
@@ -349,6 +339,147 @@ exception_handler = function (self, message )
 	end
 end
 
+-- Overload the MVC's dispatch function with our own
+-- check permissions and redirect if not allowed to see
+-- pass more parameters to the view
+dispatch = function (self, userprefix, userctlr, useraction) 
+	local controller = nil
+	local success, err = xpcall ( function () 
+
+	if userprefix == nil then
+		self.conf.prefix, self.conf.controller, self.conf.action =
+			parse_path_info(ENV["PATH_INFO"])
+	else
+		self.conf.prefix = userprefix
+		self.conf.controller = userctlr or ""
+		self.conf.action = useraction or ""
+	end
+
+	-- Find the proper controller/action combo
+	local origconf = {controller = self.conf.controller, action = self.conf.action}
+	local action = ""
+	local default_prefix = self.conf.default_prefix or "/"
+	local default_controller = self.conf.default_controller or ""
+	if "" == self.conf.controller then
+		self.conf.prefix = default_prefix
+		self.conf.controller = default_controller
+		self.conf.action = ""
+	end
+	while "" ~= self.conf.controller do
+		-- We now know the controller / action combo, check if we're allowed to do it
+		local perm = check_permission(self, self.conf.controller)
+		local worker_loaded = false
+
+		if perm then
+			controller, worker_loaded = self:new(self.conf.prefix .. self.conf.controller)
+		end
+		if worker_loaded then
+			local default_action = rawget(controller.worker, "default_action") or ""
+			action = self.conf.action
+			if action == "" then action = default_action end
+			while "" ~= action do
+				local perm = check_permission(controller, self.conf.controller, action)
+				-- Because of the inheritance, normally the 
+				-- controller.worker.action will flow up, so that all children have
+				-- actions of all parents.  We use rawget to make sure that only
+				-- controller defined actions are used on dispatch
+				if perm and (type(rawget(controller.worker, action)) == "function") then
+					-- We have a valid and permissible controller / action
+					self.conf.action = action
+					break
+				end
+				if action ~= default_action then
+					action = default_action
+				else
+					action = ""
+				end
+			end
+			if "" ~= action then break end
+		end
+		if controller then
+			controller:destroy()
+			controller = nil
+		end
+		self.conf.action = ""
+		if self.conf.controller ~= default_controller then
+			self.conf.prefix = default_prefix
+			self.conf.controller = default_controller
+		else
+			self.conf.controller = ""
+		end
+	end
+
+	-- If the controller or action are missing, raise an error
+	if nil == controller then
+		origconf.type = "dispatch"
+		error (origconf)
+	end
+
+	-- If we have different controller / action, redirect
+	if self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
+		redirect(self, self.conf.action) -- controller and prefix already in self.conf
+	end
+
+	-- run the (first found) pre_exec code, starting at the controller 
+	-- and moving up the parents
+	if  type(controller.worker.mvc.pre_exec) == "function" then
+		controller.worker.mvc.pre_exec ( controller )
+	end
+
+ 	-- run the action		
+	local viewtable = controller.worker[action](controller)
+
+	-- run the post_exec code
+	if  type(controller.worker.mvc.post_exec) == "function" then
+		controller.worker.mvc.post_exec ( controller )
+	end
+
+	local viewfunc, p1, p2, p3 = view_resolver(self)
+
+	-- we're done with the controller, destroy it
+	controller:destroy()
+	controller = nil
+		
+	viewfunc (viewtable, p1, p2, p3)
+	end, 
+	self:soft_traceback(message)
+	)
+
+	if not success then
+		local handler
+		if controller then 
+			handler = controller.worker or controller
+			if handler then handler:exception_handler(err) end
+			controller:destroy()
+			controller = nil
+		end
+		if nil == handler then
+			handler = self.worker or mvc
+			handler:exception_handler(err)
+		end
+	end
+end
+
+-- Cause a redirect to specified (or default) action
+-- We use the self.conf table because it already has prefix,controller,etc
+-- The actual redirection is defined in exception_handler above
+redirect = function (self, str)
+	local prefix, controller, action = self.parse_path_info("/" .. (str or ""))
+	if prefix ~= "/" then self.conf.prefix = prefix end
+	if controller ~= "" then self.conf.controller = controller end
+	
+	if "" == action then
+		action = rawget(self.worker, "default_action") or ""
+	end
+	self.conf.action = action
+	self.conf.type = "redir"
+	error(self.conf)
+end
+
+redirect_to_referrer = function(self)
+	error({type="redir_to_referrer"})
+end
+
 -- create a Configuration Framework Entity (cfe)
 -- returns a table with at least "value", "type", and "label"
 cfe = function ( optiontable )
@@ -364,9 +495,5 @@ end
 
 -- FIXME - need to think more about this..
 logevent = function ( message )
-	conf.logfile:write (string.format("%s: %s\n", os.date(), message)) 
-end
-
-redirect_to_referrer = function(self)
-	error({type="redir_to_referrer"})
+	conf.logfile:write (string.format("%s: %s\n", os.date(), message or "")) 
 end

@@ -6,6 +6,8 @@
   ]]--
 module(..., package.seeall)
 
+mvc = {}
+
 -- the constructor
 --[[ Builds a new MVC object.  If "module" is given, then tries to load
 	self.conf.appdir ..  module "-controller.lua" in c.worker and
@@ -63,12 +65,13 @@ new = function (self, modname)
 	setmetatable (c.model, c.model )
 	c.model.__index = c.worker
 
-	-- the worker looks in the main table for missing 
+	-- the worker looks in the parent table for missing 
 	setmetatable (c.worker, c.worker)
-	c.worker.__index = c
+	c.worker.__index = self
 	
-	-- the table looks in the parent worker for missing
+	-- the table looks in the worker for missing
 	setmetatable (c, c)
+	c.__index = c.worker
 	
 	-- ensure an "mvc" table exists, even if empty
 	if (type(rawget(c.worker, "mvc")) ~= "table") then
@@ -79,13 +82,10 @@ new = function (self, modname)
 	-- If creating a new parent container, then 
 	-- we are the top of the chain.
 	if (modname)  then
-		c.__index = self.worker
 		c.worker.mvc.__index = self.worker.mvc
 	else
-		c.__index = self
 		c.worker.mvc.__index = self.mvc
 	end	
-	
 	
 	-- run the worker on_load code
 	if  type(rawget(c.worker.mvc, "on_load")) == "function" then
@@ -117,75 +117,35 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		self.conf.action = useraction or ""
 	end
 
-	-- Find the proper controller/action combo
-	local origconf = {controller = self.conf.controller, action = self.conf.action}
-	local action = ""
-	local default_prefix = self.conf.default_prefix or ""
-	local default_controller = self.conf.default_controller or ""
-	if "" == self.conf.controller then
-		self.conf.prefix = default_prefix
-		self.conf.controller = default_controller
-		self.conf.action = ""
-	end
-	while "" ~= self.conf.controller do
-		-- We now know the controller / action combo, check if we're allowed to do it
-		local perm = true
-		local worker_loaded = false
-		if type(self.worker.mvc.check_permission) == "function" then
-			perm = self.worker.mvc.check_permission(self, self.conf.controller)
-		end
-
-		if perm then
-			controller, worker_loaded = self:new(self.conf.prefix .. self.conf.controller)
-		end
-		if worker_loaded then
-			local default_action = rawget(controller.worker, "default_action") or ""
-			action = self.conf.action
-			if action == "" then action = default_action end
-			while "" ~= action do
-				local perm = true
-				if  type(controller.worker.mvc.check_permission) == "function" then
-					perm = controller.worker.mvc.check_permission(controller, self.conf.controller, action)
-				end
-				-- Because of the inheritance, normally the 
-				-- controller.worker.action will flow up, so that all children have
-				-- actions of all parents.  We use rawget to make sure that only
-				-- controller defined actions are used on dispatch
-				if perm and (type(rawget(controller.worker, action)) == "function") then
-					-- We have a valid and permissible controller / action
-					self.conf.action = action
-					break
-				end
-				if action ~= default_action then
-					action = default_action
-				else
-					action = ""
-				end
-			end
-			if "" ~= action then break end
-		end
-		if controller then
-			controller:destroy()
-			controller = nil
-		end
-		self.conf.action = ""
-		if self.conf.controller ~= default_controller then
-			self.conf.prefix = default_prefix
-			self.conf.controller = default_controller
-		else
-			self.conf.controller = ""
-		end
+	-- If they didn't provide a controller, and a default was specified
+	-- use it
+	if self.conf.controller == "" and self.conf.default_controller then
+		self.conf.controller = self.conf.default_controller
+		self.conf.prefix = self.conf.default_prefix or "/"
 	end
 
-	-- If the controller or action are missing, raise an error
-	if nil == controller then
-		origconf.type = "dispatch"
-		error (origconf)
+	local worker_loaded
+	controller, worker_loaded = self:new(self.conf.prefix .. self.conf.controller)
+
+	if not worker_loaded then
+		self.conf.type = "dispatch"
+		error(self.conf)
 	end
 
-	-- If we have different controller / action, redirect
-	if self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
-		redirect(self, self.conf.action)
+	if controller.conf.action == "" then
+		controller.conf.action = rawget(controller.worker, "default_action") or ""
+	end
+
+	local action = controller.conf.action
+
+	-- Because of the inheritance, normally the 
+	-- controller.worker.action will flow up, so that all children have
+	-- actions of all parents.  We use rawget to make sure that only
+	-- controller defined aictions are used on dispatch
+	-- If the action is missing, raise an error
+	if ( type(rawget(controller.worker, action)) ~= "function") then
+		self.conf.type = "dispatch"
+		error (self.conf)
 	end
 
 	-- run the (first found) pre_exec code, starting at the controller 
@@ -202,7 +162,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		controller.worker.mvc.post_exec ( controller )
 	end
 
-	local viewfunc  = controller.worker:view_resolver(viewtable)
+	local viewfunc  = controller:view_resolver()
 
 	-- we're done with the controller, destroy it
 	controller:destroy()
@@ -226,20 +186,6 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			handler:exception_handler(err)
 		end
 	end
-end
-
--- Cause a redirect to specified (or default) action
--- We use the self.conf table because it already has prefix,controller,etc
--- The actual redirection is defined in the application error handler (acf-controller)
-redirect = function (self, action, controller, prefix)
-	if prefix then self.conf.prefix = prefix end
-	if controller then self.conf.controller = controller end
-	if nil == action then
-		action = rawget(self.worker, "default_action") or ""
-	end
-	self.conf.action = action
-	self.conf.type = "redir"
-	error(self.conf)
 end
 
 -- Tries to see if name exists in the self.conf.appdir, and if so, it loads it.

@@ -13,8 +13,7 @@ logon = function(self)
 		local logon = self.model:logon(clientdata, conf.clientip, conf.sessiondir, sessiondata)
 		-- If successful logon, redirect to welcome-page, otherwise try again
 		if logon.value then
-			self.conf.controller = ""
-			redirect(self, "")
+			redirect(self, "/welcome/read")
 		else
 			cmdresult.errtxt = "Logon Attempt Failed"
 		end
