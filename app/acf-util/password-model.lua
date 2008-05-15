@@ -2,68 +2,89 @@ module(..., package.seeall)
 
 local auth=require("authenticator-plaintext")
 
-function update_user(self, clientdata, newuser)
+function create_user(self, clientdata)
+	return update_user(self, clientdata, true)
+end
+
+function read_user(self, user)
 	local config = {}
 	local errtxt
-	local descr
-	local errormessage = {}
 
-	-- Try to write new or update existing data
-	-- if clientdata.username exists, then pretty sure trying to write
-	if newuser == true then
-		if clientdata.username then
-			result, errormessage = auth.new_settings(self, clientdata.userid, clientdata.username, clientdata.password, clientdata.password_confirm, clientdata.roles)
-			if result == true then
-				descr = "Created new user"
-			else
-				errtxt = "Failed to create new user"
-			end
-		end
-	else
-		result, errormessage = auth.change_settings(self, clientdata.userid, clientdata.username, clientdata.password, clientdata.password_confirm, clientdata.roles)
-		if result == true and clientdata.username then
-			descr = "Saved changes"
-		elseif result == false and clientdata.username then
-			errtxt = "Failed to save changes"
-		elseif result == false then
-			errtxt = "Bad user id"
-		end
-	end
-	
-	-- Now, read the updated / existing data
+	-- Read the user data
 	local userinfo
-	if ( errtxt == nil ) and clientdata.userid and (#clientdata.userid > 0) then
-		userinfo = auth.get_userinfo(self,clientdata.userid)
+	if user and (#user > 0) then
+		userinfo = auth.get_userinfo(self,user)
+		if not userinfo then
+			errtxt = "User does not exist"
+		end
 	end
 	userinfo = userinfo or {}
 
 	config.userid =  cfe({
 		label="User id",
-		value=(userinfo.userid or clientdata.userid or ""),
-		errtxt = errormessage.userid
+		value=(userinfo.userid or user or ""),
+		errtxt = errtxt
 		})
 	config.username =  cfe({
 		label="Real name",
-		value=(userinfo.username or clientdata.username or ""),
-		errtxt = errormessage.username
+		value=(userinfo.username or ""),
 		})
 	config.roles =  cfe({
 		label="Roles",
-		value=(userinfo.roles or clientdata.roles or {}),
+		value=(userinfo.roles or {}),
 		type="multi",
 		option=auth.list_roles(),
-		errtxt = errormessage.roles
 		})
 	config.password =  cfe({
 		label="Password",
-		errtxt = errormessage.password
 		})
 	config.password_confirm =  cfe({
 		label="Password (confirm)",
-		errtxt = errormessage.password_confirm
 		})
 
-	return cfe({ type="form", value=config, errtxt = errtxt, descr = descr, label="User Config" })
+	return cfe({ type="group", value=config, errtxt = errtxt, label="User Config" })
+end
+
+function update_user(self, clientdata, newuser)
+	local config
+	local result
+	local errtxt
+	local errormessage = {}
+
+	-- Try to write new or update existing data
+	if newuser == true then
+		result, errormessage = auth.new_settings(self, clientdata.userid, clientdata.username, clientdata.password, clientdata.password_confirm, clientdata.roles)
+		if result == false then
+			errtxt = "Failed to create new user"
+		end
+	else
+		result, errormessage = auth.change_settings(self, clientdata.userid, clientdata.username, clientdata.password, clientdata.password_confirm, clientdata.roles)
+		if result == false then
+			errtxt = "Failed to save changes"
+		end
+	end
+	
+	if result == true then
+		config = read_user(self, clientdata.userid)
+	else
+		-- get a blank table
+		config = read_user(self)
+
+		-- now, copy in the user info and errors
+		config.value.userid.value = clientdata.userid or ""
+		config.value.userid.errtxt = errormessage.userid
+		config.value.username.value = clientdata.username or config.value.username.value
+		config.value.username.errtxt = errormessage.username
+		config.value.roles.value = clientdata.roles or config.value.roles.value
+		config.value.roles.errtxt = errormessage.roles
+		--config.value.password.value = clientdata.password or config.value.password.value
+		config.value.password.errtxt = errormessage.password
+		--config.value.password_confirm.value = clientdata.password_confirm or config.value.password_confirm.value
+		config.value.password_confirm.errtxt = errormessage.password_confirm
+		config.errtxt = errtxt
+	end
+
+	return config
 end
 
 function get_users(self)

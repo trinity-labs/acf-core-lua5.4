@@ -11,8 +11,6 @@ io.write("</span>")
 
 <H1><?= form.label ?></H1>
 <? 
-	form.action = ""
-	form.submit = "Save"
 	if form.value.password and form.value.password_confirm then
 		form.value.password.type = "password"
 		form.value.password_confirm.type = "password"

@@ -8,8 +8,8 @@ default_action = "status"
 logon = function(self)
 	local userid = cfe({ value=clientdata.userid or "", label="User ID" })
 	local password = cfe({ label="Password" })
-	local cmdresult = cfe({ type="form", value={userid=userid, password=password}, label="Logon" })
-	if clientdata.userid and clientdata.password then
+	local cmdresult = cfe({ type="form", value={userid=userid, password=password}, label="Logon", option="Logon" })
+	if clientdata.Logon then
 		local logon = self.model:logon(clientdata, conf.clientip, conf.sessiondir, sessiondata)
 		-- If successful logon, redirect to welcome-page, otherwise try again
 		if logon.value then

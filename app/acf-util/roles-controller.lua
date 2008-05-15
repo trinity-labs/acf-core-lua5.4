@@ -50,32 +50,42 @@ viewroles = function(self)
 end
 
 newrole = function(self)
-	local form = self.model.setpermissions(self, self.clientdata.role, self.clientdata.permissions, true)
+	local form
+	if self.clientdata.Save then
+		form = self.model.setpermissions(self, self.clientdata.role, self.clientdata.permissions, true)
+		if form.value.role.errtxt then
+			form.errtxt = "Failed to create role"
+		else
+			local cmdresult = cfe({ value="New role created", label="New role result" })
+			self.sessiondata.cmdresult = cmdresult
+			redirect(self, "viewroles")
+		end
+	else
+		form = self.model.getpermissions(self)
+	end
 	form.type = "form"
 	form.label = "Edit new role"
-	if form.value.role.errtxt then
-		form.errtxt = "Failed to create role"
-	elseif self.clientdata.permissions then
-		-- If we have permissions, we tried to set
-		local cmdresult = cfe({ value="New role created" })
-		self.sessiondata.cmdresult = cmdresult
-		redirect(self, "viewroles")
-	end
+	form.option = "Save"
 	return form
 end
 
 editrole = function(self)
-	local form = self.model.setpermissions(self, self.clientdata.role, self.clientdata.permissions, false)
+	local form
+	if self.clientdata.Save then
+		form = self.model.setpermissions(self, self.clientdata.role, self.clientdata.permissions, false)
+		if form.value.role.errtxt then
+			form.errtxt = "Failed to save role"
+		else
+			local cmdresult = cfe({ value="Role saved", label="Edit role result" })
+			self.sessiondata.cmdresult = cmdresult
+			redirect(self, "viewroles")
+		end
+	else
+		form = self.model.getpermissions(self, self.clientdata.role)
+	end
 	form.type = "form"
 	form.label = "Edit role"
-	if form.value.role.errtxt then
-		form.errtxt = "Failed to save role"
-	elseif self.clientdata.permissions then
-		-- If we have permissions, we tried to set
-		local cmdresult = cfe({ value="Role saved" })
-		self.sessiondata.cmdresult = cmdresult
-		redirect(self, "viewroles")
-	end
+	form.option = "Save"
 	return form
 end
 

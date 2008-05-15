@@ -108,7 +108,7 @@ function displayformitem(myitem, name, viewtype)
 		--myitem.type = "select"
 		--myitem.multiple = "true"
 		local tempname = myitem.name
-		local tempval = myitem.value
+		local tempval = myitem.value or {}
 		local reverseval = {}
 		for x,val in ipairs(tempval) do
 			reverseval[val] = x
@@ -137,7 +137,7 @@ function displayform(myform, order)
 	if not myform then return end
 	if myform.descr then io.write("<P CLASS='descr'>" .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
 	if myform.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
-	io.write('<form action="' .. myform.action .. '" method="POST">\n')
+	io.write('<form action="' .. (myform.action or "") .. '" method="POST">\n')
 	io.write('<DL>\n')
 	local reverseorder= {}
 	if order then
@@ -155,7 +155,7 @@ function displayform(myform, order)
 			displayformitem(item)
 		end
 	end
-	io.write('<DT><input class="submit" type="submit" name="save" value="' .. myform.submit .. '"></DT>\n')
+	io.write('<DT><input class="submit" type="submit" name="' .. myform.option .. '" value="' .. (myform.submit or myform.option) .. '"></DT>\n')
 	io.write('</DL>\n')
 	io.write('</FORM>')
 end

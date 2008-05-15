@@ -48,41 +48,47 @@ view_roles = function()
 	return cfe({ type="group", value={defined_roles=defined_roles_cfe, default_roles=default_roles_cfe} })
 end
 
-setpermissions = function(self, role, permissions, newrole)
-	local errtxt
+getpermissions = function(self, role)
 	local my_perms = {}
-	if permissions then
-		-- we're changing permissions
-		local result = true
-		if newrole then
-			-- make sure not overwriting role
-			for x,ro in ipairs(roles.list_roles()) do
-				if role==ro then
-					result = false
-					errtxt = "Role already exists"
-					break
-				end
-			end
-		end
-		if result==true then
-			result, errtxt = roles.set_role_perm(role, nil, permissions)
-		end
-		my_perms = self.clientdata.permissions
+
+	if role then
+		tmp, my_perms = roles.get_role_perm(self.conf.appdir, role)
+		my_perms = my_perms or {}
 	else
-		if role then
-			tmp, my_perms = roles.get_role_perm(self.conf.appdir, role)
-		else
-			role = ""
-		end
+		role = ""
 	end
 
 	local tmp, all_perms = get_all_permissions(self)
 	table.sort(all_perms)
 	
 	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions" })
-	local role_cfe = cfe({ value=role, label="Role", errtxt=errtxt })
+	local role_cfe = cfe({ value=role, label="Role" })
 
 	return cfe({ type="table", value={role=role_cfe, permissions=permissions_cfe} })
+end
+
+setpermissions = function(self, role, permissions, newrole)
+	local my_perms = getpermissions(self, role)
+	my_perms.value.permissions.value = permissions
+
+	-- Validate entries and create error strings
+	local result = true
+	if newrole then
+		-- make sure not overwriting role
+		for x,ro in ipairs(roles.list_roles()) do
+			if role==ro then
+				result = false
+				my_perms.value.role.errtxt = "Role already exists"
+				break
+			end
+		end
+	end
+	-- Try to set the value
+	if result==true then
+		result, my_perms.value.role.errtxt = roles.set_role_perm(role, nil, permissions)
+	end
+
+	return my_perms
 end
 
 delete_role = function(role)
