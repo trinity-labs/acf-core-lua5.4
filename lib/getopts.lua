@@ -141,8 +141,14 @@ end
 -- If filter is defined (and table is true), only list option matching filter
 function getoptsfromfile (file, search_section, search_name, to_table, filter)
 	local opts = nil
-	if not (fs.is_file(file)) then return nil end
-	local conf_file = fs.read_file_as_array ( file )
+	local conf_file = {}
+	if (fs.is_file(file)) then
+		conf_file = fs.read_file_as_array ( file )
+	else
+		for line in string.gmatch(file, "(.*)\n") do
+			conf_file[#conf_file + 1] = line
+		end
+	end
 	local section = ""
 	local skip_lines = 0
 	for i,l in ipairs(conf_file) do
