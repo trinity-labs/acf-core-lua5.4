@@ -9,7 +9,7 @@ mvc.on_load = function (self, parent)
 	-- Make sure we have some kind of sane defaults for libdir and sessiondir
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
-	self.conf.appuri = ""
+	self.conf.script = ""
 	self.conf.default_controller = "welcome"	
 
 	parent_exception_handler = parent.exception_handler

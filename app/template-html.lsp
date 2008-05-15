@@ -13,7 +13,7 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<? 
+<?
 local hostname = ""
 if viewlibrary and viewlibrary.dispatch_component then
 	local result = viewlibrary.dispatch_component("alpine-baselayout/hostname/read", nil, true)
@@ -44,7 +44,7 @@ end
 		</div>
 		<span class="mute">
 			<p>
-			<? local ctlr = pageinfo.appuri .. "/acf-util/logon/"
+			<? local ctlr = pageinfo.script .. "/acf-util/logon/"
 			
 			if session.userinfo and session.userinfo.userid then
 			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. session.userinfo.userid .. "'</a>\n", ctlr .. "logout" ) )
@@ -81,7 +81,7 @@ end
 						class=""
 					end
 					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
-						class,pageinfo.appuri,group.prefix, group.controller, group.tabs[1].action, group.name ))
+						class,pageinfo.script,group.prefix, group.controller, group.tabs[1].action, group.name ))
 				end
 				io.write ( "\t\t\t\t\t</ul>" )
 			  end

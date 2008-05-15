@@ -191,7 +191,7 @@ local view_resolver = function(self)
 				controller = self.conf.controller,
 				action = self.conf.action,
 				prefix = self.conf.prefix,
-				appuri = self.conf.appuri,
+				script = self.conf.script,
 				appname = self.conf.appname,
 				skin = self.conf.skin or ""
 				}
@@ -209,7 +209,7 @@ mvc.on_load = function (self, parent)
 	-- Make sure we have some kind of sane defaults for libdir and sessiondir
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
-	self.conf.appuri = "https://" .. ENV.HTTP_HOST .. ENV.SCRIPT_NAME
+	self.conf.script = ENV.SCRIPT_NAME
 	self.conf.default_prefix = "/"
 	self.conf.default_controller = "welcome"
 	self.clientdata = FORM
