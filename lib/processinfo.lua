@@ -5,7 +5,7 @@ require("posix")
 
 function package_version(packagename)
 	local cmderrors
-	local f = io.popen( "/sbin/apk_version -vs " .. packagename .." | egrep -v 'acf' 2>/dev/null" )
+	local f = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_version -vs " .. packagename .." | egrep -v 'acf' 2>/dev/null" )
 	local cmdresult = f:read("*l")
 	if (cmdresult) and (#cmdresult > 0) then
 		cmdresult = (string.match(cmdresult,"^%S*") or "Unknown")
