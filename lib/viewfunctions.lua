@@ -9,7 +9,12 @@ function displayinfo(myform,tags,viewtype)
 				io.write(" class='error'")
 			end
 			io.write(">" .. val.label .. "</DT>")
-			io.write("\n\t\t<DD>")
+			io.write("\n\t\t<DD")
+			if (val.errtxt) then 
+				val.class = "error"
+				io.write(" class='error'")
+			end
+			io.write(">")
 			if (viewtype == "viewonly") then
 				if (val.value == "") and (val.errtxt == nil) and ((val.descr) and (val.descr == "")) then val.value = "&nbsp;" end
 				io.write(val.value)
