@@ -77,10 +77,17 @@ end
 -- If the search_name is not found, we'll add it at the end of the section
 function setoptsinfile (file, search_section, search_name, value, to_table, optionvalue)
 	if not file or file == "" or not search_name or search_name == "" or (to_table == true and not value) then
-		return false, nil, "Invalid input for getopts.setoptsinfile()"
+		return false, nil, "Invalid input for getopts.setoptsinfile()", file
 	end
 	search_section = search_section or ""
-	local conf_file = fs.read_file_as_array ( file )
+	local conf_file = {}
+	if (fs.is_file(file)) then
+		conf_file = fs.read_file_as_array ( file )
+	else
+		for line in string.gmatch(file, "([^\n]*)\n") do
+			conf_file[#conf_file + 1] = line
+		end
+	end
 	local new_conf_file = {}
 	local section = ""
 	local done = false
@@ -130,8 +137,13 @@ function setoptsinfile (file, search_section, search_name, value, to_table, opti
 		new_conf_file[#new_conf_file + 1] = create_entry(search_name, value, to_table, optionvalue, nil)
 	end
 
-	fs.write_file(file, table.concat(new_conf_file, '\n'))
-	return true, "File '" .. file .. "' has been modified!", nil
+	if (fs.is_file(file)) then
+		fs.write_file(file, table.concat(new_conf_file, '\n'))
+	else
+		file = table.concat(new_conf_file, '\n')
+	end
+
+	return true, "File has been modified!", nil, file
 end
 
 -- Parse file for name=value pairs, returned in a table
@@ -140,12 +152,15 @@ end
 -- If to_table is true, attempt to convert value string to array of options
 -- If filter is defined (and table is true), only list option matching filter
 function getoptsfromfile (file, search_section, search_name, to_table, filter)
+	if not file or file == "" then
+		return nil
+	end
 	local opts = nil
 	local conf_file = {}
 	if (fs.is_file(file)) then
 		conf_file = fs.read_file_as_array ( file )
 	else
-		for line in string.gmatch(file, "(.*)\n") do
+		for line in string.gmatch(file, "([^\n]*)\n") do
 			conf_file[#conf_file + 1] = line
 		end
 	end
