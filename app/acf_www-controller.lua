@@ -193,6 +193,7 @@ local view_resolver = function(self)
 				prefix = self.conf.prefix,
 				script = self.conf.script,
 				appname = self.conf.appname,
+				skindir = self.conf.skindir or "",
 				skin = self.conf.skin or ""
 				}
 

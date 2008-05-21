@@ -23,10 +23,10 @@ if viewlibrary and viewlibrary.dispatch_component then
 end
 ?>
 <title><?= hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
-<link rel="stylesheet" type="text/css" href="/static/reset.css">
-<link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin..".css" ?>">
+<link rel="stylesheet" type="text/css" href="<?= pageinfo.skindir ?>static/reset.css">
+<link rel="stylesheet" type="text/css" href="<?= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin..".css" ?>">
 <!--[if IE]>
-<link rel="stylesheet" type="text/css" href="<?= "/"..pageinfo.skin.."/"..pageinfo.skin.."-ie.css" ?>">
+<link rel="stylesheet" type="text/css" href="<?= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin.."-ie.css" ?>">
 <![endif]-->
 </head>
 <body>
