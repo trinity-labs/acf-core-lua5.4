@@ -375,8 +375,9 @@ body {
 	border:			none;
 }
 #content table td {
-	padding-right:			10px;
-	white-space:			normal;
+	padding-right:		10px;
+	white-space:		normal;
+	border-bottom:		1px solid #ccc;
 }
 
 

@@ -33,8 +33,10 @@
 		controllers[#controllers + 1] = cont
 	   end
 	   table.sort(controllers)
+	   io.write("<TABLE>")
+	   io.write("<TR><TD CLASS='header'>Controller</TD><TD CLASS='header'>Action(s)</TD>")
 	   for x,cont in ipairs(controllers) do
-		print("<b>",cont,"</b>")
+		print("<TR><TD STYLE='font-weight:bold;'>",cont,"</TD><TD>")
 		-- Again, alphabetical order
 		local actions = {}
 		for act in pairs(view.value.permissions.value[cont]) do
@@ -44,7 +46,9 @@
 		for y,act in pairs(actions) do
 			print(act)
 		end
-		print("<br>")
-	end ?>
+		io.write("<TD></TR>")
+	    end
+	    io.write("</TABLE>")
+	    ?>
 <? end ?>
 <? --]] ?>
