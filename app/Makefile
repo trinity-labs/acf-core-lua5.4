@@ -22,6 +22,7 @@ APP_DIST= \
 	service-model.lua\
 	menuhints.menu\
 	template-html.lsp\
+	template-stream.lsp\
 	welcome-controller.lua\
 	welcome-html.lsp
 
