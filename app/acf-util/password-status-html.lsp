@@ -15,7 +15,7 @@ io.write("</span>")
 <H2>Existing account</H2>
 <DL>
 <? for name,user in pairs(form.value) do ?>
-	<DT><IMG SRC='/static/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> <?= name ?></DT>
+	<DT><IMG SRC='/skins/static/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> <?= name ?></DT>
 	<DD><TABLE>
 		<TR>
 			<TD STYLE='border:none;'><B><?= user.value.userid.label ?></B></TD>
