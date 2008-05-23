@@ -89,7 +89,7 @@ function displayitem(myitem)
 	end
 	io.write(">" .. myitem.label .. "</DT>\n")
 	io.write("<DD>")
-	io.write(myitem.value .. "\n")
+	io.write(string.gsub(myitem.value, "\n", "<BR>") .. "\n")
 	if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
 	if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
 	io.write("</DD>\n")
