@@ -110,6 +110,7 @@ end
 				<h3 class="hide">[Submenu]</h3>
 			</div>
 
+			<ul>
 			<? local class="" ?>
 			<? for x,tab in pairs(tabs or {})  do
 				if tab.action == pageinfo.action then
@@ -117,9 +118,11 @@ end
 				else
 					class=""
 				end
-				io.write (string.format('\t\t\t<a %s href="%s">%s</a>\n',class,tab.action,tab.name ))
+				io.write (string.format('<li %s><a %s href="%s">%s</a></li>\n',
+							class,class,tab.action,tab.name ))
 			end
 			?>
+			</ul>
 
 			<div class="tailer">
 			</div>
