@@ -3,12 +3,16 @@ function displayinfo(myform,tags,viewtype)
 	for k,v in pairs(tags) do 
 		if (myform[v]) and (myform[v]["value"]) then
 			local val = myform[v] 
+			local label = val.label
 			io.write("\n\t<DT")
 			if (val.errtxt) then 
 				val.class = "error"
 				io.write(" class='error'")
 			end
-			io.write(">" .. val.label .. "</DT>")
+			if val.id then
+				label = "<label for=\"" .. val.id .."\">" .. val.label .. "</label>"
+			end
+			io.write(">" .. label .. "</DT>")
 			io.write("\n\t\t<DD")
 			if (val.errtxt) then 
 				val.class = "error"
