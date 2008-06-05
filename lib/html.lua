@@ -183,6 +183,7 @@ function form.select ( v )
 			reverseval[val]=x
 		end
 	end
+	local selected = false
 	for i, k in ipairs ( v.option ) do
 		local val = k
 		local txt = nil
@@ -194,12 +195,17 @@ function form.select ( v )
 		if type(v.value) == "table" then
 			if reverseval[val] then
 				str = str .. " selected"
+				selected = true
 			end
 		elseif ( v.value == val ) then
 			str = str .. " selected"
+			selected = true
 		end
 		str = str .. nv_pair("value", val) .. ">" .. k .. "</option>"
-	end 
+	end
+	if not selected then
+		str = str .. '<option selected value="' .. v.value ..'">[' .. v.value .. ']</option>'
+	end
 	str = str .. "</select>"
 	return (str)
 end
