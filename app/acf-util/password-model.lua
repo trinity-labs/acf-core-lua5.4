@@ -2,8 +2,8 @@ module(..., package.seeall)
 
 local auth=require("authenticator-plaintext")
 
-function create_user(self, clientdata)
-	return update_user(self, clientdata, true)
+function create_user(self, userdata)
+	return update_user(self, userdata, true)
 end
 
 function read_user(self, user)
@@ -45,46 +45,42 @@ function read_user(self, user)
 	return cfe({ type="group", value=config, errtxt = errtxt, label="User Config" })
 end
 
-function update_user(self, clientdata, newuser)
-	local config
+function update_user(self, userdata, newuser)
 	local result
-	local errtxt
 	local errormessage = {}
 
 	-- Try to write new or update existing data
 	if newuser == true then
-		result, errormessage = auth.new_settings(self, clientdata.userid, clientdata.username, clientdata.password, clientdata.password_confirm, clientdata.roles)
+		result, errormessage = auth.new_settings(self, userdata.value.userid.value, userdata.value.username.value, userdata.value.password.value, userdata.value.password_confirm.value, userdata.value.roles.value)
 		if result == false then
-			errtxt = "Failed to create new user"
+			userdata.errtxt = "Failed to create new user"
 		end
 	else
-		result, errormessage = auth.change_settings(self, clientdata.userid, clientdata.username, clientdata.password, clientdata.password_confirm, clientdata.roles)
+		-- As a special case, settings that don't change are nil
+		result, errormessage = auth.change_settings(self, userdata.value.userid.value, userdata.value.username.value, userdata.value.password.value, userdata.value.password_confirm.value, userdata.value.roles.value)
 		if result == false then
-			errtxt = "Failed to save changes"
+			userdata.errtxt = "Failed to save changes"
+		end
+		-- We can't return any nil values, so set then
+		local olduserdata = read_user(self, userdata.value.userid.value)
+		for name,value in pairs(userdata.value) do
+			if value.value == nil then
+				value.value = olduserdata.value[name].value
+			end
 		end
 	end
 	
-	if result == true then
-		config = read_user(self, clientdata.userid)
-	else
-		-- get a blank table
-		config = read_user(self)
+	userdata.value.password.value = ""
+	userdata.value.password_confirm.value = ""
 
-		-- now, copy in the user info and errors
-		config.value.userid.value = clientdata.userid or ""
-		config.value.userid.errtxt = errormessage.userid
-		config.value.username.value = clientdata.username or config.value.username.value
-		config.value.username.errtxt = errormessage.username
-		config.value.roles.value = clientdata.roles or config.value.roles.value
-		config.value.roles.errtxt = errormessage.roles
-		--config.value.password.value = clientdata.password or config.value.password.value
-		config.value.password.errtxt = errormessage.password
-		--config.value.password_confirm.value = clientdata.password_confirm or config.value.password_confirm.value
-		config.value.password_confirm.errtxt = errormessage.password_confirm
-		config.errtxt = errtxt
+	if result == false then
+		-- now, copy in the errors
+		for name,value in pairs(userdata.value) do
+			value.errtxt = errormessage[name]
+		end
 	end
 
-	return config
+	return userdata
 end
 
 function get_users(self)
