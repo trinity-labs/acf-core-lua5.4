@@ -10,9 +10,10 @@ logon = function(self)
 	local password = cfe({ label="Password" })
 	local cmdresult = cfe({ type="form", value={userid=userid, password=password}, label="Logon", option="Logon" })
 	if clientdata.Logon then
-		local logon = self.model:logon(clientdata, conf.clientip, conf.sessiondir, sessiondata)
+		local logon = self.model:logon(clientdata.userid, clientdata.password, conf.clientip, conf.sessiondir, sessiondata)
 		-- If successful logon, redirect to welcome-page, otherwise try again
 		if logon.value then
+			cmdresult.descr = "Logon Successful"
 			redirect(self, "/welcome/read")
 		else
 			cmdresult.errtxt = "Logon Attempt Failed"
