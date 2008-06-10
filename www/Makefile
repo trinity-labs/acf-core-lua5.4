@@ -4,6 +4,7 @@ WWW_DIST=cgi-bin/acf\
 	cgi-bin/mvc.lua\
 	index.html\
 	sample.html\
+	js/*\
 
 EXTRA_DIST=Makefile
 DISTFILES=$(WWW_DIST) $(EXTRA_DIST)
