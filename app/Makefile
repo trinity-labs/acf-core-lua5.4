@@ -24,7 +24,9 @@ APP_DIST= \
 	template-html.lsp\
 	template-stream.lsp\
 	welcome-controller.lua\
-	welcome-html.lsp
+	welcome-html.lsp\
+	dispatcherror-html.lsp\
+	exception-html.lsp\
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(APP_DIST) $(EXTRA_DIST)

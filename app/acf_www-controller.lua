@@ -292,6 +292,7 @@ end
 -- Overload the MVC's exception handler with our own to handle redirection
 exception_handler = function (self, message )
 	local html = require ("html")
+	local viewtable
 	if type(message) == "table" then
 		if message.type == "redir" and self.conf.component == true then
 			io.write ("Component cannot be found")
@@ -313,10 +314,33 @@ exception_handler = function (self, message )
 			end
 			io.write ( "Content-Type: text/html\n\n" )
 		elseif message.type == "dispatch" then
+			viewtable = message
+			self.conf.prefix = "/"
+			self.conf.controller = "dispatcherror"
+			self.conf.action = ""
+		else
 			parent_exception_handler(self, message)
 		end
 	else
-		parent_exception_handler( self, message)
+		viewtable = {message = message}
+		self.conf.prefix = "/"
+		self.conf.controller = "exception"
+		self.conf.action = ""
+	end
+
+	if viewtable then
+		if not self.conf.suppress_view then
+			local success, err = xpcall ( function () 
+				local viewfunc, p1, p2, p3 = view_resolver(self)
+				viewfunc (viewtable, p1, p2, p3)
+			end, 
+			self:soft_traceback()
+			)
+
+			if not success then
+				parent_exception_handler(self, err)
+			end
+		end
 	end
 end
 
@@ -338,16 +362,14 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	end
 
 	-- Find the proper controller/action combo
-	local origconf = {controller = self.conf.controller, action = self.conf.action}
-	local action = ""
-	local default_prefix = self.conf.default_prefix or "/"
-	local default_controller = self.conf.default_controller or ""
+	local origconf = {}
+	for name,value in pairs(self.conf) do origconf[name]=value end
 	if "" == self.conf.controller then
-		self.conf.prefix = default_prefix
-		self.conf.controller = default_controller
+		self.conf.prefix = self.conf.default_prefix or "/"
+		self.conf.controller = self.conf.default_controller or ""
 		self.conf.action = ""
 	end
-	while "" ~= self.conf.controller do
+	if "" ~= self.conf.controller then
 		-- We now know the controller / action combo, check if we're allowed to do it
 		local perm = check_permission(self, self.conf.controller)
 		local worker_loaded = false
@@ -357,49 +379,33 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		end
 		if worker_loaded then
 			local default_action = rawget(controller.worker, "default_action") or ""
-			action = self.conf.action
-			if action == "" then action = default_action end
-			while "" ~= action do
-				local perm = check_permission(controller, self.conf.controller, action)
+			if self.conf.action == "" then self.conf.action = default_action end
+			if "" ~= self.conf.action then
+				local perm = check_permission(controller, self.conf.controller, self.conf.action)
 				-- Because of the inheritance, normally the 
 				-- controller.worker.action will flow up, so that all children have
 				-- actions of all parents.  We use rawget to make sure that only
 				-- controller defined actions are used on dispatch
-				if perm and (type(rawget(controller.worker, action)) == "function") then
-					-- We have a valid and permissible controller / action
-					self.conf.action = action
-					break
-				end
-				if action ~= default_action then
-					action = default_action
-				else
-					action = ""
+				if (not perm) or (type(rawget(controller.worker, self.conf.action)) ~= "function") then
+					controller:destroy()
+					controller = nil
 				end
 			end
-			if "" ~= action then break end
-		end
-		if controller then
+		elseif controller then
 			controller:destroy()
 			controller = nil
 		end
-		self.conf.action = ""
-		if self.conf.controller ~= default_controller then
-			self.conf.prefix = default_prefix
-			self.conf.controller = default_controller
-		else
-			self.conf.controller = ""
-		end
-	end
-
-	-- If the controller or action are missing, raise an error
-	if nil == controller then
-		origconf.type = "dispatch"
-		error (origconf)
 	end
 
 	-- If we have different controller / action, redirect
 	if self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
 		redirect(self, self.conf.action) -- controller and prefix already in self.conf
+	end
+
+	-- If the controller or action are missing, display an error view
+	if nil == controller then
+		origconf.type = "dispatch"
+		error (origconf)
 	end
 
 	-- run the (first found) pre_exec code, starting at the controller 
@@ -409,37 +415,33 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	end
 
 	-- run the action		
-	viewtable = controller.worker[action](controller)
+	viewtable = controller.worker[self.conf.action](controller)
 
 	-- run the post_exec code
 	if  type(controller.worker.mvc.post_exec) == "function" then
 		controller.worker.mvc.post_exec ( controller )
 	end
 
+	-- we're done with the controller, destroy it
+	controller:destroy()
+	controller = nil
+
 	if not self.conf.suppress_view then
 		local viewfunc, p1, p2, p3 = view_resolver(self)
 		viewfunc (viewtable, p1, p2, p3)
 	end
-
-	-- we're done with the controller, destroy it
-	controller:destroy()
-	controller = nil
 		
 	end, 
 	self:soft_traceback(message)
 	)
 
 	if not success then
-		local handler
 		if controller then 
-			handler = controller.worker or controller
-			if handler then handler:exception_handler(err) end
+			controller:exception_handler(err)
 			controller:destroy()
 			controller = nil
-		end
-		if nil == handler then
-			handler = self.worker or mvc
-			handler:exception_handler(err)
+		else
+			self:exception_handler(err)
 		end
 	end
 
