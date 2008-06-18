@@ -164,7 +164,7 @@ function displayform(myform, order)
 			displayformitem(item)
 		end
 	end
-	io.write('<DT><input class="submit" type="submit" name="' .. myform.option .. '" value="' .. (myform.submit or myform.option) .. '"></DT>\n')
+	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. myform.option .. '" value="' .. (myform.submit or myform.option) .. '"></DD>\n')
 	io.write('</DL>\n')
 	io.write('</FORM>')
 end

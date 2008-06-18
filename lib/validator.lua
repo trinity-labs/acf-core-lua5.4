@@ -71,7 +71,7 @@ end
 --
 function is_ipv4(ipv4)
 	local retval = false;
-	local nums = { "", "", "", ""};
+	local nums = {};
 	local iplen = string.len(ipv4);
 
 	-- check the ipv4's length
@@ -82,11 +82,11 @@ function is_ipv4(ipv4)
 	-- NC: Split the string into an array. separate with '.' (dots)
 	-- ^	beginning of string
 	-- ()	capture
-	-- \.	litteral '.' The \ neutralizes the . character class.
+	-- %.	litteral '.' The % neutralizes the . character class.
 	-- %d+	one or more digits
 	-- $	end of string
-	nums = { ipv4:match ("^(%d+)\.(%d+)\.(%d+)\.(%d+)$"	) }
-
+	nums = {ipv4:match ("^(%d+)%.(%d+)%.(%d+)%.(%d+)$")}
+	
 	-- check if all nums are filled
 	if ( nums[1] == nil or
 		nums[2] == nil or
