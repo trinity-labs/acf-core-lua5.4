@@ -60,7 +60,7 @@ local function build_menus(self)
 end
 
 local check_permission = function(self, controller, action)
-	logevent("Trying " .. (controller or "nil") .. ":" .. (action or "nil"))
+	--logevent("Trying " .. (controller or "nil") .. ":" .. (action or "nil"))
 	if nil == self.sessiondata.permissions then return false end
 	if controller then
 		if nil == self.sessiondata.permissions[controller] then return false end
@@ -245,7 +245,7 @@ mvc.on_load = function (self, parent)
 	self.sessiondata = nil
 	self.sessiondata = {}
 	if nil ~= self.clientdata.sessionid then
-		logevent("Found session id = " .. self.clientdata.sessionid)
+		--logevent("Found session id = " .. self.clientdata.sessionid)
 		-- Load existing session data
 		local timestamp
 		timestamp, self.sessiondata = 
@@ -255,12 +255,12 @@ mvc.on_load = function (self, parent)
 			-- invalid session id, report event and create new one
 			sessionlib.record_event(self.conf.sessiondir,
 				sessionlib.hash_ip_addr(self.conf.clientip))
-			logevent("Didn't find session")
+			--logevent("Didn't find session")
 		else
-			logevent("Found session")
+			--logevent("Found session")
 			-- We read in a valid session, check if it's ok
 			if sessionlib.count_events(self.conf.sessiondir,self.conf.userid or "", sessionlib.hash_ip_addr(self.conf.clientip)) then
-				logevent("Bad session, erasing")
+				--logevent("Bad session, erasing")
 				-- Too many events on this id / ip, kill the session
 				sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)
 				self.sessiondata.id = nil
@@ -271,10 +271,10 @@ mvc.on_load = function (self, parent)
 	if nil == self.sessiondata.id then
 		self.sessiondata = {}
 		self.sessiondata.id = sessionlib.random_hash(512)
-		logevent("New session = " .. self.sessiondata.id)
+		--logevent("New session = " .. self.sessiondata.id)
 	end
 	if nil == self.sessiondata.permissions or nil == self.sessiondata.menu then
-		logevent("Build menus")
+		--logevent("Build menus")
 		build_menus(self)
 	end
 end
@@ -297,7 +297,7 @@ exception_handler = function (self, message )
 		if message.type == "redir" and self.conf.component == true then
 			io.write ("Component cannot be found")
 		elseif message.type == "redir" or message.type == "redir_to_referrer" then
-			if self.sessiondata.id then logevent("Redirecting " .. self.sessiondata.id) end
+			--if self.sessiondata.id then logevent("Redirecting " .. self.sessiondata.id) end
 			io.write ("Status: 302 Moved\n")
 			if message.type == "redir" then
 				io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
