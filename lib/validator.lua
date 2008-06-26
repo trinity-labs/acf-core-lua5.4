@@ -108,6 +108,37 @@ function is_ipv4(ipv4)
 	return true, validator.msg.err.Success[lang.Current]
 end
 
+--
+-- This function validates a partial ipv4 address.
+-- On success it returns 1 otherwise a negative value
+--
+function is_partial_ipv4(ipv4)
+	local retval = false;
+	local nums = {};
+	
+	-- Check to see if any invalid characters
+	if not ipv4 or not ipv4:match("^[%d%.]+$") then
+		return false, validator.msg.err.InvalidFormat[lang.Current]
+	end
+
+	-- NC: Split the string into an array. separate with '.' (dots)
+	-- %d+	one or more digits
+	for num in ipv4:gmatch("%d+") do
+		nums[#nums+1] = num
+		-- too big?
+		if tonumber(num) > 255 then
+			return false, validator.msg.err.InvalidFormat[lang.Current]
+		end
+	end
+
+	-- too many numbers
+	if #nums > 4 then
+		return false, validator.msg.err.InvalidFormat[lang.Current]
+	end
+
+	return true, validator.msg.err.Success[lang.Current]
+end
+
 function is_mac(mac)
 
 	local tmpmac = string.upper(mac)

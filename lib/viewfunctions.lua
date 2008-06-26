@@ -134,6 +134,9 @@ function displayformitem(myitem, name, viewtype)
 		if (myitem.value == true) then myitem.checked = "" end
 		myitem.value = "true"
 		io.write(html.form.checkbox(myitem) .. "\n")
+	elseif myitem.type == "list" then
+		myitem.value = table.concat(myitem.value, "\n")
+		io.write(html.form.longtext(myitem) .. "\n")
 	else
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
