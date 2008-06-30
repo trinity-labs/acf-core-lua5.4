@@ -105,7 +105,7 @@ function displayformitem(myitem, name, viewtype)
 	io.write("<DT")
 	if myitem.errtxt then 
 		myitem.class = "error"
-		io.write(" class='error'")
+		io.write(' class="error"')
 	end
 	io.write(">" .. myitem.label .. "</DT>\n")
 	io.write("<DD>")
@@ -140,15 +140,15 @@ function displayformitem(myitem, name, viewtype)
 	else
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
-	if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
-	if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
+	if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
+	if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
 	io.write("</DD>\n")
 end
 
 function displayform(myform, order)
 	if not myform then return end
-	if myform.descr then io.write("<P CLASS='descr'>" .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
-	if myform.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
+	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
+	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
 	io.write('<form action="' .. (myform.action or "") .. '" method="POST">\n')
 	io.write('<DL>\n')
 	local reverseorder= {}
