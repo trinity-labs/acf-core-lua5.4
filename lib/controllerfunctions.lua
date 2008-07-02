@@ -1,6 +1,6 @@
 module(..., package.seeall)
 
-function handle_form(self, getFunction, setFunction, clientdata, option, label, descr)
+function handle_form(self, getFunction, setFunction, clientdata, option, label, descr, redirectOnSuccess)
 	local form = getFunction()
 
 	if clientdata[option] then
@@ -25,6 +25,9 @@ function handle_form(self, getFunction, setFunction, clientdata, option, label, 
 			form.descr = descr
 		end
 		form = self:redirect_to_referrer(form)
+		if redirectOnSuccess and not form.errtxt then
+			self:redirect(redirectOnSuccess)
+		end
 	else
 		form = self:redirect_to_referrer() or form
 	end

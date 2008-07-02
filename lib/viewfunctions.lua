@@ -171,3 +171,20 @@ function displayform(myform, order)
 	io.write('</DL>\n')
 	io.write('</FORM>')
 end
+
+function displaycommandresults(commands, session)
+	local cmdresult = {}
+	for i,cmd in ipairs(commands) do
+		if session[cmd.."result"] then
+			cmdresult[#cmdresult + 1] = session[cmd.."result"]
+			session[cmd.."result"] = nil
+		end
+	end
+	if #cmdresult > 0 then
+		io.write("<H1>Command Result</H1>\n<DL>\n")
+		for i,result in ipairs(cmdresult) do
+			io.write(result.value:gsub("\n", "<BR>") .. "\n")
+		end
+		io.write("</DL>\n")
+	end
+end
