@@ -234,6 +234,7 @@ mvc.on_load = function (self, parent)
 	
 	-- this sets the package path for us and our children
 	package.path=  self.conf.libdir .. "?.lua;" .. package.path
+	require ("cfe")
 	
 	sessionlib=require ("session")
 
@@ -464,21 +465,22 @@ redirect = function (self, str)
 	error(self.conf)
 end
 
-redirect_to_referrer = function(self)
-	error({type="redir_to_referrer"})
-end
-
--- create a Configuration Framework Entity (cfe)
--- returns a table with at least "value", "type", and "label"
-cfe = function ( optiontable )
-	optiontable = optiontable or {}
-	me = { 	value="",
-		type="text",
-		label="" }
-	for key,value in pairs(optiontable) do
-		me[key] = value
+-- If we've done something, cause a redirect to the referring page (assuming it's different)
+-- Also handles retrieving the result of a previously redirected action
+redirect_to_referrer = function(self, result)
+	-- If we have a result, then we did something, so we might have to redirect
+	if result then
+		local prefix, controller, action = self.parse_path_info(ENV.HTTP_REFERER)
+		if controller ~= self.conf.controller or action ~= self.conf.action then
+			self.sessiondata[self.conf.action.."result"] = result
+			error({type="redir_to_referrer"})
+		end
+	-- If we don't have a result, then we might be a component redirected as above
+	elseif self.sessiondata[self.conf.action.."result"] then
+		result = self.sessiondata[self.conf.action.."result"]
+		self.sessiondata[self.conf.action.."result"] = nil
 	end
-	return me
+	return result
 end
 
 -- FIXME - need to think more about this..

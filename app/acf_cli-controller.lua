@@ -16,6 +16,7 @@ mvc.on_load = function (self, parent)
 	
 	-- this sets the package path for us and our children
 	package.path=  self.conf.libdir .. "?.lua;" .. package.path
+	require ("cfe")
 
 	self.session = {}
 	local x=require("session")
@@ -37,20 +38,6 @@ end
 exception_handler = function (self, message )
     print(message)
 end
-
--- create a Configuration Framework Entity (cfe) 
--- returns a table with at least "value", "type", and "label"
-cfe = function ( optiontable )
-	optiontable = optiontable or {}
-	me = { 	value="",
-		type="text",
-		label="" }
-	for key,value in pairs(optiontable) do
-		me[key] = value
-	end
-	return me
-end
-
 
 -- syslog something
 logit = function ( ... )

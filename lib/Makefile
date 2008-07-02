@@ -19,7 +19,9 @@ LIB_DIST=fs.lua\
 	roles.lua\
 	processinfo.lua\
 	viewfunctions.lua\
-
+	controllerfunctions.lua\
+	modelfunctions.lua\
+	cfe.lua\
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(LIB_DIST) $(EXTRA_DIST)
