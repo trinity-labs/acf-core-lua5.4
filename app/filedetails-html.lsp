@@ -1,8 +1,12 @@
 <? local form, viewlibrary, page_info = ... ?>
 <? require("viewfunctions") ?>
 
+<? if form.type == "form" then ?>
 <H1>Configuration</H1>
 <H2>Expert Configuration</H2>
+<? else ?>
+<H1>View File</H1>
+<? end ?>
 <H3>File Details</H3>
 <DL>
 <? 
@@ -21,5 +25,7 @@ displayitem(form.value.mtime)
 </textarea>
 <? if form.value.filecontent.errtxt then ?><P CLASS='error'><?= string.gsub(form.value.filecontent.errtxt, "\n", "<BR>") ?></P><? end ?>
 
+<? if form.type == "form" then ?>
 <DL><DT></DT><DD><input class="submit" type="submit" name="<?= form.option ?>" value="<?= form.option ?>"></DD></DL>
+<? end ?>
 </form>
