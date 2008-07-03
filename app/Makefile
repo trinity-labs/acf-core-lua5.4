@@ -31,6 +31,7 @@ APP_DIST= \
 	startstop-html.lsp\
 	filedetails-html.lsp\
 	expert-html.lsp\
+	debug-html.lsp\
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(APP_DIST) $(EXTRA_DIST)

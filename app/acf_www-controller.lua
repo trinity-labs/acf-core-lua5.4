@@ -468,15 +468,22 @@ end
 -- If we've done something, cause a redirect to the referring page (assuming it's different)
 -- Also handles retrieving the result of a previously redirected action
 redirect_to_referrer = function(self, result)
-	-- If we have a result, then we did something, so we might have to redirect
 	if result then
-		local prefix, controller, action = self.parse_path_info(ENV.HTTP_REFERER)
-		if controller ~= self.conf.controller or action ~= self.conf.action then
-			self.sessiondata[self.conf.action.."result"] = result
-			error({type="redir_to_referrer"})
+		-- If we have a result, then we did something, so we might have to redirect
+		if not ENV.HTTP_REFERER then
+			-- If no referrer, we have a problem.  Can't let it go through, because action
+			-- might not have view.  So redirect to default action for this controller.
+			self:redirect()
+		else
+			local prefix, controller, action = self.parse_path_info(ENV.HTTP_REFERER)
+			if controller ~= self.conf.controller or action ~= self.conf.action then
+				self.sessiondata[self.conf.action.."result"] = result
+				error({type="redir_to_referrer"})
+			end
 		end
-	-- If we don't have a result, then we might be a component redirected as above
 	elseif self.sessiondata[self.conf.action.."result"] then
+		-- If we don't have a result, but there's a result in the session data,
+		-- then we're a component redirected as above.  Return the last result.
 		result = self.sessiondata[self.conf.action.."result"]
 		self.sessiondata[self.conf.action.."result"] = nil
 	end
