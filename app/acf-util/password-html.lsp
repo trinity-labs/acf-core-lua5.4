@@ -22,11 +22,3 @@ io.write("</span>")
 	local order = { "userid", "username", "roles", "password", "password_confirm" }
 	displayform(form, order)
 ?>
-
-<?
---[[ DEBUG INFORMATION
-io.write("<H1>DEBUGGING</H1><span style='color:red'><H2>DEBUG INFO: CFE</H2>")
-io.write(html.cfe_unpack(form))
-io.write("</span>")
---]]
-?>

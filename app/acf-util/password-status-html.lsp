@@ -1,4 +1,5 @@
-<? local form, viewlibrary, pageinfo = ... ?>
+<? local form, viewlibrary, pageinfo, session = ... ?>
+<? require("viewfunctions") ?>
 <?
 --[[ DEBUG INFORMATION
 io.write("<H1>DEBUGGING</H1><span style='color:red'><H2>DEBUG INFO: CFE</H2>")
@@ -7,10 +8,12 @@ io.write("</span>")
 --]]
 ?>
 
-<H1>USER ACCOUNTS</H1>
+<? displaycommandresults({"deleteuser"}, session) ?>
+
+<H1>User Accounts</H1>
 <H2>Create new account</H2>
 <form action="newuser" method="POST">
-<dl><dt><input class="submit" type="submit" value="New User"></dt></dl>
+<dl><dt></dt><dd><input class="submit" type="submit" value="New User"></dd></dl>
 </form>
 <H2>Existing account</H2>
 <DL>
@@ -37,12 +40,3 @@ io.write("</span>")
 	</TABLE></DD>
 <? end ?>
 </DL>
-
-<?
---[[ DEBUG INFORMATION
-io.write("<H1>DEBUGGING</H1><span style='color:red'><H2>DEBUG INFO: CFE</H2>")
-io.write(html.cfe_unpack(form))
-io.write("</span>")
---]]
-?>
-

@@ -116,5 +116,10 @@ function get_users(self)
 end
 
 function delete_user(self, userid)
-	auth.delete_user(self, userid)
+	local result, errmessages = auth.delete_user(self, userid)
+	local value
+	if result then value = "User Deleted" else value = "Failed to Delete User" end
+	local errtxt
+	if #errmessages > 0 then errtxt = errmessages:concat("\n") end
+	return cfe({ value=value, errtxt=errtxt, label="Delete User Result" })
 end

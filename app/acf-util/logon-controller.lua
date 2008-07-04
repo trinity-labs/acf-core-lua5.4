@@ -14,10 +14,15 @@ logon = function(self)
 		-- If successful logon, redirect to welcome-page, otherwise try again
 		if logon.value then
 			cmdresult.descr = "Logon Successful"
-			redirect(self, "/welcome/read")
 		else
 			cmdresult.errtxt = "Logon Attempt Failed"
 		end
+		cmdresult = self:redirect_to_referrer(cmdresult)
+		if logon.value then
+			redirect(self, "/welcome/read")
+		end
+	else
+		cmdresult = self:redirect_to_referrer() or cmdresult
 	end
 	return cmdresult
 end

@@ -24,10 +24,12 @@ function editme(self)
 
 		-- Update userinfo
 		output = self.model.update_user(self, output)
-
 		if not output.errtxt then
 			output.descr = "Saved user"
 		end
+		output = self:redirect_to_referrer(output)
+	else
+		output = self:redirect_to_referrer() or output
 	end
 
 	-- Don't allow changing of roles for yourself
@@ -53,11 +55,12 @@ function edituser(self)
 
 		-- Update userinfo
 		output = self.model.update_user(self, output)
-
-		-- result
 		if not output.errtxt then
 			redirect(self, "status")
 		end
+		output = self:redirect_to_referrer(output)
+	else
+		output = self:redirect_to_referrer() or output
 	end
 
 	output.type = "form"
@@ -77,11 +80,12 @@ function newuser(self)
 
 		-- Update userinfo
 		output = self.model.create_user(self, output)
-		
-		-- result
 		if not output.errtxt then
 			redirect(self, "status")
 		end
+		output = self:redirect_to_referrer(output)
+	else
+		output = self:redirect_to_referrer() or output
 	end
 
 	output.type = "form"
@@ -91,6 +95,5 @@ function newuser(self)
 end
 
 function deleteuser(self)
-	self.model.delete_user(self, self.clientdata.userid)
-	redirect(self, "status")
+	return self:redirect_to_referrer(self.model.delete_user(self, self.clientdata.userid))
 end
