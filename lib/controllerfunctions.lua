@@ -21,7 +21,7 @@ function handle_form(self, getFunction, setFunction, clientdata, option, label, 
 			end
 		end
 		form = setFunction(form)
-		if not form.errtxt then
+		if not form.errtxt and descr then
 			form.descr = descr
 		end
 		form = self:redirect_to_referrer(form)
