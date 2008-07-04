@@ -47,7 +47,7 @@ function handle_startstop(self, startstopfunction, getstatusfunction, clientdata
 	result = self:redirect_to_referrer(result)
 
 	local status = getstatusfunction()
-	status = status.value.status
+	if status.value.status then status = status.value.status end
 
 	return cfe({ type="group", value={status=status, result=result} })
 end

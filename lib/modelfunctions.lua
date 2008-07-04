@@ -5,13 +5,15 @@ require("procps")
 require("daemoncontrol")
 require("processinfo")
 
-local function process_status_text(procname)
-	local t = procps.pidof(procname)
+function getenabled(processname)
+	local result = cfe({ label = "Program status" })
+	local t = procps.pidof(processname)
 	if (t) and (#t > 0) then
-		return "Enabled"
+		result.value = "Enabled"
 	else
-		return "Disabled"
+		result.value = "Disabled"
 	end
+	return result
 end
 
 function startstop_service(processname, action)
@@ -30,10 +32,7 @@ function getstatus(processname, packagename, label)
 		errtxt=errtxt,
 		})
 
-	status.status = cfe({
-		label="Program status",
-		value=process_status_text(processname),
-		})
+	status.status = getenabled(processname)
 
 	local autostart_sequence, autostart_errtxt = processinfo.process_botsequence(processname)
 	status.autostart = cfe({

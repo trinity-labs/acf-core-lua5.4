@@ -6,7 +6,8 @@
 end ?>
 
 <?
-local func = haserl.loadfile(page_info.viewfile:gsub(page_info.prefix..page_info.controller..".*$", "/") .. "filedetails-html.lsp")
+local pattern = string.gsub(page_info.prefix..page_info.controller, "[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
+local func = haserl.loadfile(page_info.viewfile:gsub(pattern..".*$", "/") .. "filedetails-html.lsp")
 func(form, viewlibrary, page_info, session)
 ?>
 
