@@ -61,7 +61,7 @@ install_package = function(package)
 	for i,pack in pairs(available) do
 		if pack == package then
 			success = true
-			local cmd = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_get install " .. package .. " 2>&1"
+			local cmd = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_add " .. package .. " 2>&1"
 			local f = io.popen( cmd )
 			cmdresult = f:read("*a")
 			f:close()
