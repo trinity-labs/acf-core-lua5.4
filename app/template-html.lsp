@@ -144,7 +144,7 @@ end
 	<div id="footer">
 		<div class="leader">
 		</div>
-		Made with care by webconf
+		<p>Page generated in <?= os.clock() ?> seconds on <?= os.date() ?>.</p>
 		<div class="tailer">
 		</div>
 	</div> <!-- footer -->
