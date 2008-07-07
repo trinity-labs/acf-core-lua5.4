@@ -183,7 +183,9 @@ function displaycommandresults(commands, session)
 	if #cmdresult > 0 then
 		io.write("<H1>Command Result</H1>\n<DL>\n")
 		for i,result in ipairs(cmdresult) do
-			io.write(result.value:gsub("\n", "<BR>") .. "\n")
+			if result.value ~= "" then io.write(result.value:gsub("\n", "<BR>") .. "\n") end
+			if result.descr then io.write('<P CLASS="descr">' .. string.gsub(result.descr, "\n", "<BR>") .. "</P>\n") end
+			if result.errtxt then io.write('<P CLASS="error">' .. string.gsub(result.errtxt, "\n", "<BR>") .. "</P>\n") end
 		end
 		io.write("</DL>\n")
 	end

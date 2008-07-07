@@ -59,3 +59,27 @@ function getfiledetails(file)
 	end
 	return cfe({ type="group", value={filename=filename, filecontent=filecontent, filesize=filesize, mtime=mtime}, label="Config file details" })
 end
+
+function validateselect(select)
+	for i,option in ipairs(select.option) do
+	 	if option == select.value then
+			return true
+		end
+	end
+	select.errtxt = "Invalid selection"
+	return false
+end
+
+function validatemulti(multi)
+	local reverseoption = {}
+	for i,option in ipairs(multi.option) do
+		reverseoption[option] = i
+	end
+	for i,value in ipairs(multi.value) do
+		if not reverseoption[value] then
+			multi.errtxt = "Invalid selection"
+			return false
+		end
+	end
+	return true
+end
