@@ -117,6 +117,11 @@ local find_view = function ( appdir, prefix, controller, action, viewtype )
 	return nil
 end
 
+local has_view = function(self)
+	require("fs")
+	return fs.is_file(self.conf.appdir .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. (self.conf.viewtype or "html") .. ".lsp")
+end
+
 -- This function is made available within the view to allow loading of components
 local dispatch_component = function(str, clientdata, suppress_view)
 	-- Before we call dispatch, we have to set up conf and clientdata like it was really called for this component
@@ -348,6 +353,7 @@ end
 -- Overload the MVC's dispatch function with our own
 -- check permissions and redirect if not allowed to see
 -- pass more parameters to the view
+-- allow display of views without actions
 dispatch = function (self, userprefix, userctlr, useraction) 
 	local controller = nil
 	local viewtable
@@ -405,27 +411,34 @@ dispatch = function (self, userprefix, userctlr, useraction)
 
 	-- If the controller or action are missing, display an error view
 	if nil == controller then
-		origconf.type = "dispatch"
-		error (origconf)
+		-- If we have a view w/o an action, just display the view (passing in the clientdata)
+		if (not self.conf.suppress_view) and has_view(self) and check_permission(self, self.conf.controller, self.conf.action) then
+			viewtable = self.clientdata
+		else
+			origconf.type = "dispatch"
+			error (origconf)
+		end
 	end
 
-	-- run the (first found) pre_exec code, starting at the controller 
-	-- and moving up the parents
-	if  type(controller.worker.mvc.pre_exec) == "function" then
-		controller.worker.mvc.pre_exec ( controller )
+	if controller then
+		-- run the (first found) pre_exec code, starting at the controller 
+		-- and moving up the parents
+		if  type(controller.worker.mvc.pre_exec) == "function" then
+			controller.worker.mvc.pre_exec ( controller )
+		end
+
+		-- run the action		
+		viewtable = controller.worker[self.conf.action](controller)
+
+		-- run the post_exec code
+		if  type(controller.worker.mvc.post_exec) == "function" then
+			controller.worker.mvc.post_exec ( controller )
+		end
+
+		-- we're done with the controller, destroy it
+		controller:destroy()
+		controller = nil
 	end
-
-	-- run the action		
-	viewtable = controller.worker[self.conf.action](controller)
-
-	-- run the post_exec code
-	if  type(controller.worker.mvc.post_exec) == "function" then
-		controller.worker.mvc.post_exec ( controller )
-	end
-
-	-- we're done with the controller, destroy it
-	controller:destroy()
-	controller = nil
 
 	if not self.conf.suppress_view then
 		local viewfunc, p1, p2, p3 = view_resolver(self)
@@ -468,7 +481,7 @@ end
 -- If we've done something, cause a redirect to the referring page (assuming it's different)
 -- Also handles retrieving the result of a previously redirected action
 redirect_to_referrer = function(self, result)
-	if result then
+	if result and not self.conf.component then
 		-- If we have a result, then we did something, so we might have to redirect
 		if not ENV.HTTP_REFERER then
 			-- If no referrer, we have a problem.  Can't let it go through, because action

@@ -20,6 +20,7 @@ displayitem(form.value.mtime)
 <? if form.descr then ?><P CLASS='descr'><?= string.gsub(form.descr, "\n", "<BR>") ?></P><? end ?>
 <? if form.errtxt then ?><P CLASS='error'><?= string.gsub(form.errtxt, "\n", "<BR>") ?></P><? end ?>
 <form action="<?= page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action ?>" method="POST">
+<input type="hidden" name="filename" value="<?= form.value.filename.value ?>">
 <textarea name="filecontent">
 <?= form.value.filecontent.value ?>
 </textarea>
