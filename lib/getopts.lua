@@ -87,6 +87,10 @@ function setoptsinfile (file, search_section, search_name, value, to_table, opti
 		for line in string.gmatch(file, "([^\n]*)\n") do
 			conf_file[#conf_file + 1] = line
 		end
+		local extra = string.match(file,"([^\n]*)$")
+		if extra ~= "" then
+			conf_file[#conf_file + 1] = extra
+		end
 	end
 	local new_conf_file = {}
 	local section = ""
@@ -162,6 +166,10 @@ function getoptsfromfile (file, search_section, search_name, to_table, filter)
 	else
 		for line in string.gmatch(file, "([^\n]*)\n") do
 			conf_file[#conf_file + 1] = line
+		end
+		local extra = string.match(file,"([^\n]*)$")
+		if extra ~= "" then
+			conf_file[#conf_file + 1] = extra
 		end
 	end
 	local section = ""

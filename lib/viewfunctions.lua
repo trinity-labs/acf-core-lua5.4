@@ -145,7 +145,7 @@ function displayformitem(myitem, name, viewtype)
 	io.write("</DD>\n")
 end
 
-function displayform(myform, order)
+function displayform(myform, order, finishingorder)
 	if not myform then return end
 	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
 	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
@@ -161,10 +161,24 @@ function displayform(myform, order)
 			end
 		end
 	end
+	local reversefinishingorder = {}
+	if finishingorder then
+		for x,name in ipairs(finishingorder) do
+			reversefinishingorder[name] = x
+		end
+	end
 	for name,item in pairs(myform.value) do
-		if nil == reverseorder[name] then
+		if nil == reverseorder[name] and nil == reversefinishingorder[name] then
 			item.name = name
 			displayformitem(item)
+		end
+	end
+	if finishingorder then
+		for x,name in ipairs(finishingorder) do
+			if myform.value[name] then
+				myform.value[name].name = name
+				displayformitem(myform.value[name])
+			end
 		end
 	end
 	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. myform.option .. '" value="' .. (myform.submit or myform.option) .. '"></DD>\n')
