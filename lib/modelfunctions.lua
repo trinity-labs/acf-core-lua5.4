@@ -44,7 +44,7 @@ function getstatus(processname, packagename, label)
 	return cfe({ type="group", value=status, label=label })
 end
 
-function getfiledetails(file)
+function getfiledetails(file, validatefunction)
 	local filename = cfe({ value=file, label="File name" })
 	local filecontent = cfe({ type="longtext", label="File content" })
 	local filesize = cfe({ value="0", label="File size" })
@@ -57,7 +57,28 @@ function getfiledetails(file)
 	else
 		filename.errtxt = "File not found"
 	end
-	return cfe({ type="group", value={filename=filename, filecontent=filecontent, filesize=filesize, mtime=mtime}, label="Config file details" })
+	local filedetails = cfe({ type="group", value={filename=filename, filecontent=filecontent, filesize=filesize, mtime=mtime}, label="Config file details" })
+	local success = true
+	if validatefunction then
+		success, filedetails = validatefunction(filedetails)
+	end
+	return filedetails
+end
+
+function setfiledetails(filedetails, validatefunction)
+	filedetails.value.filecontent.value = string.gsub(format.dostounix(filedetails.value.filecontent.value), "\n+$", "")
+	local success = true
+	if validatefunction then
+		success, filedetails = validatefunction(filedetails)
+	end
+	if success then
+		fs.write_file(filedetails.value.filename.value, filedetails.value.filecontent.value)
+		filedetails = getfiledetails(filedetails.value.filename.value)
+	else
+		filedetails.errtxt = "Failed to set file"
+	end
+
+	return filedetails
 end
 
 function validateselect(select)
