@@ -1,17 +1,17 @@
-<? local form, viewtable, pageinfo = ... ?> 
+<? local form, viewtable, page_info = ... ?> 
+<? require("viewfunctions") ?>
+
 <? --[[
 	io.write(html.cfe_unpack(form))
 --]] ?>
 
-<? ---[[ ?>
 <H1><?= form.label ?></H1>
 <?
-	require("viewfunctions")
+	form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
 	-- If editing existing role, disable role
-	if pageinfo.action ~= "newrole" then
+	if page_info.action ~= "newrole" then
 		form.value.role.contenteditable = false
 	end
 	local order = { "role", "permissions" }
 	displayform(form, order)
 ?>
-<? --]] ?>

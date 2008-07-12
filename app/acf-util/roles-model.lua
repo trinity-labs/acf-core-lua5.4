@@ -1,6 +1,7 @@
 -- Roles/Group functions
 module (..., package.seeall)
 
+require("modelfunctions")
 auth = require("authenticator-plaintext")
 require("roles")
 
@@ -67,28 +68,30 @@ getpermissions = function(self, role)
 	return cfe({ type="table", value={role=role_cfe, permissions=permissions_cfe} })
 end
 
-setpermissions = function(self, role, permissions, newrole)
-	local my_perms = getpermissions(self, role)
-	my_perms.value.permissions.value = permissions
-
+setpermissions = function(self, permissions, newrole)
 	-- Validate entries and create error strings
 	local result = true
 	if newrole then
 		-- make sure not overwriting role
-		for x,ro in ipairs(roles.list_roles()) do
-			if role==ro then
-				result = false
-				my_perms.value.role.errtxt = "Role already exists"
-				break
-			end
+		local defined_roles, default_roles = roles.list_roles()
+		local reverseroles = {}
+		for i,role in ipairs(defined_roles) do reverseroles[role] = i end
+		for i,role in ipairs(default_roles) do reverseroles[role] = i end
+		if reverseroles[permissions.value.role.value] then
+			result = false
+			permissions.value.role.errtxt = "Role already exists"
+			permissions.errtxt = "Failed to create role"
 		end
 	end
 	-- Try to set the value
 	if result==true then
-		result, my_perms.value.role.errtxt = roles.set_role_perm(role, nil, permissions)
+		result, permissions.value.role.errtxt = roles.set_role_perm(permissions.value.role.value, nil, permissions.value.permissions.value)
+		if not result then
+			permissions.errtxt = "Failed to save role"
+		end
 	end
 
-	return my_perms
+	return permissions
 end
 
 delete_role = function(role)

@@ -1,19 +1,16 @@
-<? local view= ... ?> 
+<? local view, viewlibrary, page_info, session= ... ?>
+<? require("viewfunctions") ?>
+
 <? --[[
 	io.write(html.cfe_unpack(view))
 --]] ?>
 
-<? ---[[ ?>
-<H1>ROLES</H1>
+<? displaycommandresults({"deleterole"}, session) ?>
 
-<? if view.value.cmdresult then ?>
-<H2>Command Result</H2>
-<dl><?= view.value.cmdresult.value ?></dl>
-<? end ?>
-
+<H1>Roles</H1>
 <H2>Create new role</H2>
-<form action="newrole" method="POST">
-<dl><dt><input class="submit" type="submit" value="New Role"></dt></dl>
+<form action="<?= page_info.script .. page_info.prefix .. page_info.controller ?>/newrole" method="POST">
+<dl><dt></dt><dd><input class="submit" type="submit" value="New Role"></dd></dl>
 </form>
 
 <H2>Existing roles</H2>
@@ -40,4 +37,3 @@
 	<? end ?>
 	</dl>
 <? end ?>
-<? --]] ?>

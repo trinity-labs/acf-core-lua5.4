@@ -1,6 +1,7 @@
 -- Roles/Group functions
-
 module (..., package.seeall)
+
+require("controllerfunctions")
 
 default_action = "read"
 
@@ -39,57 +40,23 @@ getpermslist = function(self)
 end
 
 viewroles = function(self)
-	-- Get command result out of session data
-	local cmdresult = self.sessiondata.cmdresult
-	self.sessiondata.cmdresult = nil
-
-	local roles = self.model.view_roles()
-	roles.value.cmdresult = cmdresult
-
-	return roles
+	return self.model.view_roles()
 end
 
 newrole = function(self)
-	local form
-	if self.clientdata.Save then
-		form = self.model.setpermissions(self, self.clientdata.role, self.clientdata.permissions, true)
-		if form.value.role.errtxt then
-			form.errtxt = "Failed to create role"
-		else
-			local cmdresult = cfe({ value="New role created", label="New role result" })
-			self.sessiondata.cmdresult = cmdresult
-			redirect(self, "viewroles")
-		end
-	else
-		form = self.model.getpermissions(self)
-	end
-	form.type = "form"
-	form.label = "Edit new role"
-	form.option = "Save"
-	return form
+	return controllerfunctions.handle_form(self, 
+		function() return self.model.getpermissions(self) end, 
+		function(value) return self.model.setpermissions(self, value, true) end, 
+		self.clientdata, "Save", "Create New Role", "New Role Created", "viewroles")
 end
 
 editrole = function(self)
-	local form
-	if self.clientdata.Save then
-		form = self.model.setpermissions(self, self.clientdata.role, self.clientdata.permissions, false)
-		if form.value.role.errtxt then
-			form.errtxt = "Failed to save role"
-		else
-			local cmdresult = cfe({ value="Role saved", label="Edit role result" })
-			self.sessiondata.cmdresult = cmdresult
-			redirect(self, "viewroles")
-		end
-	else
-		form = self.model.getpermissions(self, self.clientdata.role)
-	end
-	form.type = "form"
-	form.label = "Edit role"
-	form.option = "Save"
-	return form
+	return controllerfunctions.handle_form(self, 
+		function() return self.model.getpermissions(self, self.clientdata.role) end, 
+		function(value) return self.model.setpermissions(self, value, false) end, 
+		self.clientdata, "Save", "Edit Role", "Role Saved", "viewroles")
 end
 
 deleterole = function(self)
-	self.sessiondata.cmdresult = self.model.delete_role(self.clientdata.role)
-	redirect(self, "viewroles")
+	return self:redirect_to_referrer(self.model.delete_role(self.clientdata.role))
 end
