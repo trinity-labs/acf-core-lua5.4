@@ -1,71 +1,137 @@
 -- apk library
 module (..., package.seeall)
 
-get_all_packages = function()
-	-- read in all of the packages
-	local cmd = "/sbin/apk_fetch -l 2>/dev/null"
-	local f = io.popen( cmd )
+local repo = nil
+local path = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin "
+local install_cache = false
+
+local reload_installed = function()
+	if repo then
+		-- clear out installed info
+		for name,value in pairs(repo) do
+			if value then
+				value.installed = nil
+				value.comment = nil
+			end
+		end
+		-- read in which are installed
+		local f = io.popen(path.."/sbin/apk_info 2>/dev/null")
+		local line
+		for line in f:lines() do
+			local name, ver, comment = string.match(line, "(%S+)%-(%d+%S*)%s+(.*)")
+			if not repo[name] then
+				repo[name] = {}
+			end
+			repo[name].installed = ver
+			repo[name].comment = comment
+		end
+		install_cache = true
+	end
+	return repo
+end
+
+
+repository = function()
+	if not repo then
+		-- read in all of the packages
+		local f = io.popen(path.."/sbin/apk_fetch -lvq 2>/dev/null")
+		repo = {}
+		install_cache = false
+		for line in f:lines() do
+			local name, ver = string.match(line, "(.*)%-(%d+.*)")
+			if name then
+				repo[name] = {}
+				repo[name].version = ver
+			end
+		end
+		f:close()
+	end
+	if not install_cache then
+		reload_installed()
+	end
+	return repo
+end
+
+get_all = function()
+	repo = repository()
+	-- read in all of the available packages
 	local all = {}
-	for line in f:lines() do all[#all + 1] = line end
-	f:close()
+	for name,value in pairs(repo) do
+		if value.version then
+			local temp = {}
+			temp.name = name
+			temp.version = value.version
+			all[#all + 1] = temp
+		end
+	end
+	table.sort(all, function(a,b) return (a.name < b.name) end)
 	return all
 end
 
-get_loaded_packages = function()
+get_loaded = function()
+	repo = repository()
 	-- read in the loaded packages
-	local cmd = "/sbin/apk_info 2>/dev/null"
-	local f = io.popen( cmd )
 	local loaded = {}
-	for line in f:lines() do
-		local temp = {}
-		temp.name = string.match(line, "(.-)-%d+.*")
-		temp.version, temp.description = string.match(line, "([^ ]+) %- (.+)")
-		loaded[#loaded+1] = temp
+	for name,value in pairs(repo) do
+		if value.installed then 
+			local temp = {}
+			temp.name = name
+			temp.version = value.installed
+			temp.description = value.comment
+			loaded[#loaded+1] = temp
+		end
 	end
+	table.sort(loaded, function(a,b) return (a.name < b.name) end)
 	return loaded
 end
 
-get_available_packages = function(_loaded, _all)
-	-- available are all except loaded
-	local loaded = _loaded or get_loaded_packages()
-	local all = _all or get_all_packages()
+get_available = function()
+	repo = repository()
+	-- available are all except same version installed
 	local available = {}
-	local reverseloaded = {}
-	for i,packagetable in ipairs(loaded) do reverseloaded[packagetable.name] = i end
-	for i,package in ipairs(all) do
-		if (reverseloaded[package]==nil) then available[#available + 1] = package end
+	for name,value in pairs(repo) do
+		if value.version ~= value.installed then
+			local temp = {}
+			temp.name = name
+			temp.version = value.version
+			available[#available + 1] = temp
+		end
 	end
+	table.sort(available, function(a,b) return (a.name < b.name) end)
 	return available
 end
 
-delete_package = function(package)
+delete = function(package)
+	repo = repository()
 	local success = false
 	local cmdresult = "Delete failed - Invalid package"
-	local loaded = get_loaded_packages()
-	for i,pack in pairs(loaded) do
-		if pack.name == package then
-			success = true
-			local cmd = "/sbin/apk_delete " .. package .. " 2>&1"
-			local f = io.popen( cmd )
-			cmdresult = f:read("*a") or ""
-			f:close()
-		end
+	if package and repo[package] then
+		success = true
+		local cmd = path .. "apk_delete " .. package .. " 2>&1"
+		local f = io.popen( cmd )
+		cmdresult = f:read("*a") or ""
+		f:close()
+		install_cache = false
 	end
 	return success, cmdresult
 end
 
-install_package = function(package)
+install = function(package)
+	repo = repository()
 	local success = false
 	local cmdresult = "Install failed - Invalid package"
-	local available = get_available_packages()
-	for i,pack in pairs(available) do
-		if pack == package then
-			success = true
-			local cmd = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_add " .. package .. " 2>&1"
-			local f = io.popen( cmd )
-			cmdresult = f:read("*a")
-			f:close()
-		end
+	if package and repo[package] then
+		success = true
+		local cmd = path .. "apk_add " .. package .. " 2>&1"
+		local f = io.popen( cmd )
+		cmdresult = f:read("*a")
+		f:close()
+		install_cache = false
 	end
 	return success, cmdresult
+end
+
+is_installed = function(package)
+	repo = repository()
+	return package and repo[package] and repo[package].installed
 end
