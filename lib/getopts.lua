@@ -233,3 +233,85 @@ function getoptsfromfile (file, search_section, search_name, to_table, filter)
 	end	
 	return opts
 end
+
+function getsection (file, search_section)
+	if not file or file == "" then
+		return nil
+	end
+	search_section = search_section or ""
+	local conf_file = {}
+	if (fs.is_file(file)) then
+		conf_file = fs.read_file_as_array ( file )
+	else
+		for line in string.gmatch(file, "([^\n]*)\n") do
+			conf_file[#conf_file + 1] = line
+		end
+		local extra = string.match(file,"([^\n]*)$")
+		if extra ~= "" then
+			conf_file[#conf_file + 1] = extra
+		end
+	end
+	local sectionlines = {}
+	local section = ""
+	for i,l in ipairs(conf_file) do
+		-- find section name
+		local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
+		if a then
+			if (search_section == section) then break end
+			section = a
+		elseif (search_section == section) then
+			sectionlines[#sectionlines + 1] = l
+		end
+	end
+
+	return table.concat(sectionlines, "\n")
+end
+
+function setsection (file, search_section, section_content)
+	if not file or file == "" then
+		return false, nil, "Invalid input for getopts.setoptsinfile()", file
+	end
+	search_section = search_section or ""
+	local conf_file = {}
+	if (fs.is_file(file)) then
+		conf_file = fs.read_file_as_array ( file )
+	else
+		for line in string.gmatch(file, "([^\n]*)\n") do
+			conf_file[#conf_file + 1] = line
+		end
+		local extra = string.match(file,"([^\n]*)$")
+		if extra ~= "" then
+			conf_file[#conf_file + 1] = extra
+		end
+	end
+	local new_conf_file = {}
+	local done = false
+	local section = ""
+	for i,l in ipairs(conf_file) do
+		-- find section name
+		if not done then
+			local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
+			if a then
+				if (search_section == section) then
+					done = true
+				else
+					section = a
+					if (search_section == section) then
+						l = l .. "\n" .. (section_content or "")
+					end
+				end 
+			elseif (search_section == section) then
+				l = nil
+			end
+		end
+		new_conf_file[#new_conf_file + 1] = l
+	end
+
+	if (fs.is_file(file)) then
+		fs.write_file(file, table.concat(new_conf_file, '\n'))
+	else
+		file = table.concat(new_conf_file, '\n')
+	end
+
+	return true, "File has been modified!", nil, file
+end
