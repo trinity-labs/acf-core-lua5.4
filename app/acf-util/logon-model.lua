@@ -6,18 +6,7 @@ require ("session")
 require ("html")
 require ("fs")
 require ("roles")
-
---varibles for time in case of logons,expired,lockouts
-
--- load an authenticator
--- FIXME: use an "always true" as default?
-
-local auth 
-if authenticator then
-	auth = require ("authenticator-" .. conf.authenticator)
-else
-	auth = require ("authenticator-plaintext")
-end
+require ("authenticator")
 
 -- Logoff the user by deleting session data
 logoff = function (sessiondir, sessiondata)
@@ -42,7 +31,7 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 	end
 
 	if false == countevent and userid and password then
-		if auth.authenticate (self, userid, password) then
+		if authenticator.authenticate (self, userid, password) then
 			-- We have a successful login, change sessiondata
 			-- for some reason, can't call this function or it skips rest of logon
 			-- logout(sessiondir, sessiondata)
@@ -54,8 +43,11 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 			end
 			--]]
 			sessiondata.id = session.random_hash(512)
-			local t = auth.get_userinfo (self, userid)
-			sessiondata.userinfo = t or {}
+			local t = authenticator.get_userinfo (self, userid)
+			sessiondata.userinfo = {}
+			for name,value in pairs(t.value) do
+				sessiondata.userinfo[name] = value.value
+			end
 			return cfe({ type="boolean", value=true, label="Logon Success" })
 		else
 			-- We have a bad login, log the event

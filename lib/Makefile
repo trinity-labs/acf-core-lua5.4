@@ -13,6 +13,7 @@ LIB_DIST=fs.lua\
 	split.lua\
 	validator.lua\
 	web_elements.lua\
+	authenticator.lua\
 	authenticator-plaintext.lua\
 	daemoncontrol.lua\
 	getopts.lua\

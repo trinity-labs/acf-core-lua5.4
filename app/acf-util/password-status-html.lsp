@@ -30,6 +30,9 @@ io.write("</span>")
 			<TD STYLE='border:none;'><B><?= user.value.roles.label ?></B></TD>
 			<TD STYLE='border:none;'><?= table.concat(user.value.roles.value, " / ") ?></TD>
 		</TR><TR>
+			<TD STYLE='border:none;'><B><?= user.value.dnsfiles.label ?></B></TD>
+			<TD STYLE='border:none;'><?= table.concat(user.value.dnsfiles.value, "<br>") ?></TD>
+		</TR><TR>
 			<TD STYLE='border:none;'><B>Option</B></TD>
 			<TD STYLE='border:none;'>
 			[<A HREF='edituser?userid=<?= name ?>'>Edit this account</A>]

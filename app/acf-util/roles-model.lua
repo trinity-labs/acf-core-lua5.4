@@ -2,7 +2,7 @@
 module (..., package.seeall)
 
 require("modelfunctions")
-auth = require("authenticator-plaintext")
+require("authenticator")
 require("roles")
 
 local get_all_permissions = function(self)
@@ -26,7 +26,7 @@ end
 
 -- Return roles/permissions for specified user
 get_user_roles = function(self, userid)
-	rls = cfe({ type="list", value=auth.get_userinfo_roles(self, userid), label="Roles" })
+	rls = cfe({ type="list", value=authenticator.get_userinfo_roles(self, userid).value, label="Roles" })
 	permissions = cfe({ type="table", value=roles.get_roles_perm(self.conf.appdir, rls.value), label="Permissions" })
 	return cfe({ type="group", value={roles=rls, permissions=permissions} })
 end
