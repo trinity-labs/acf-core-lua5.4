@@ -53,8 +53,8 @@ local weak_password = function(password)
 end
 
 local write_settings = function(self, settings, id)
-	load_auth()
-	id = id or {}
+	load_database()
+	id = id or get_id(settings.value.userid.value) or {}
 	-- Password, password_confirm, roles, dnsfiles are allowed to not exist, just leave the same
 	id.userid = settings.value.userid.value
 	id.username = settings.value.username.value
@@ -197,7 +197,6 @@ list_users = function (self)
 	return output
 end
 
--- UNTESTED
 -- This function will change one user setting by name
 -- Cannot be used for password or userid
 change_setting = function (self, userid, parameter, value) 
@@ -214,7 +213,7 @@ change_setting = function (self, userid, parameter, value)
 	-- Check if user entered available commands
 	if not value then
 		errtxt = "Invalid value"
-	elseif not (pvt.availablefields(parameter)) then
+	elseif not (availablefields[parameter]) then
 		errtxt = "Invalid parameter"
 	elseif parameter == "userid" or parameter == "password" then
 		errtxt = "Cannot change "..parameter.." with this function"
@@ -225,7 +224,7 @@ change_setting = function (self, userid, parameter, value)
 		if not validate_settings(userinfo) then
 			errtxt = userinfo.value[parameter].errtxt
 		else
-			success = write_settings(settings)
+			success = write_settings(self, userinfo)
 		end
 	end
 
@@ -273,7 +272,7 @@ new_settings = function (self, settings)
 	end
 
 	if success then
-		success = write_settings(self, settings, id)
+		success = write_settings(self, settings)
 	end
 
 	if not success then
