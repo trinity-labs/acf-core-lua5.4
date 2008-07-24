@@ -2,39 +2,30 @@
 	Copyright (c) 2007 Nathan Angelacos
 	GPL2 license
 
-
-The password file is in the format:
-
-userid:password:username:role1[,role2...]:dnsfile1[,dnsfile2...]
+Rather than come up with a way to name fields in the plaintext files, we
+create a different file for each field.
 
 ]]--
 
 module (..., package.seeall)
 
-load_database = function(self)
-	local row = {}
+read_field = function(self, tabl, field)
+	if not tabl or tabl == "" or not field then
+		return nil
+	end
 
+	local row = {}
 	-- open our password file
-	local passwd_path = self.conf.confdir .. "/passwd"
+	local passwd_path = self.conf.confdir .. tabl .. field
 	local f = io.open(passwd_path)
 	if f then
 		local m = (f:read("*all")  or "" ).. "\n"
 		f:close()
 
 		for l in string.gmatch(m, "([^\n]+)\n?") do
-			local fields = {}
-			for x in string.gmatch(l, "([^:]*):?") do
-				fields[#fields + 1] = x
-			end
-			if fields[1] and fields[1] ~= "" then
-				local a = {} 
-				a.userid = fields[1] or ""
-				a.password = fields[2] or ""
-				a.username = fields[3] or ""
-				a.roles = fields[4] or ""
-				a.dnsfiles = fields[5] or ""
-				table.insert (row, a)
-			end
+			local a = {}
+			a.id, a.entry = string.match(l, "^([^:]*):(.*)")
+			table.insert(row, a)
 		end
 		return row
 	else	
@@ -42,24 +33,57 @@ load_database = function(self)
 	end
 end
 
-write_entry = function(self, entry)
-	delete_entry(self, entry.userid)
-
-	-- Set path to passwordfile
-	local passwd_path = self.conf.confdir .. "/passwd"
-	-- Write the newline into the file
-	fs.write_line_file(passwd_path, (entry.userid or "") .. ":" .. (entry.password or "") .. ":" .. (entry.username or "") .. ":" .. (entry.roles or "") .. ":" .. (entry.dnsfiles or "") )
+delete_field = function(self, tabl, field)
+	if not tabl or tabl == "" or not field then
+		return false
+	end
+	local passwd_path = self.conf.confdir .. tabl .. field
+	os.remove(passwd_path)
 	return true
 end
 
-delete_entry = function (self, userid)
+write_entry = function(self, tabl, field, id, entry)
+	if not self or not tabl or tabl == "" or not field or not id or not entry then
+		return false
+	end
+	delete_entry(self, tabl, field, id)
+
+	-- Set path to passwordfile
+	local passwd_path = self.conf.confdir .. tabl .. field
+	-- Write the newline into the file
+	if fs.is_file(passwd_path) == false then fs.create_file(passwd_path) end
+	if fs.is_file(passwd_path) == false then return false end
+	fs.write_line_file(passwd_path, id .. ":" .. entry)
+	return true
+end
+
+read_entry = function(self, tabl, field, id)
+	if not self or not tabl or tabl == "" or not field or not id then
+		return nil
+	end
+	-- Set path to passwordfile
+	local passwd_path = self.conf.confdir .. tabl .. field
+	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
+	local entry
+	for k,v in pairs(passwdfilecontent) do
+		if string.match(v, "^".. id .. ":") then
+			return string.match(v, "^"..id..":(.*)")
+		end
+	end
+	return nil
+end
+
+delete_entry = function (self, tabl, field, id)
+	if not self or not tabl or tabl == "" or not field or not id then
+		return false
+	end
 	local result = false
 	
-	local passwd_path = self.conf.confdir .. "/passwd"
-	local passwdfilecontent = fs.read_file_as_array(passwd_path)
+	local passwd_path = self.conf.confdir .. tabl .. field
+	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local output = {}
 	for k,v in pairs(passwdfilecontent) do
-		if not ( string.match(v, "^".. userid .. ":") ) and not string.match(v, "^%s*$") then
+		if not ( string.match(v, "^".. id .. ":") ) and not string.match(v, "^%s*$") then
 			table.insert(output, v)
 		else
 			result = true

@@ -1,4 +1,6 @@
 -- ACF Authenticator - does validation and loads sub-authenticator to read/write database
+-- We store the login info in the passwd table, "" field.  It looks like
+--	password:username:ROLE1[,ROLE2...]
 module (..., package.seeall)
 
 require("modelfunctions")
@@ -11,13 +13,12 @@ local authstruct
 -- This is a list of fields in the database that we are allowed to use.
 -- Could be used to check that right variable-name is used.
 local availablefields = {
-	['userid']=true, 
+	--['userid']=true, 
 	['password']=true, 
 	['username']=true, 
 	['roles']=true, 
-	['dnsfiles']=true, 
 	}
-
+local passwdtable = "passwd"
 
 local load_auth = function(self)
 	-- For now, just loads the plaintext version
@@ -26,7 +27,24 @@ end
 
 local load_database = function(self)
 	load_auth(self)
-	authstruct = authstruct or auth.load_database(self)
+	if not authstruct then
+		local authtable = auth.read_field(self, passwdtable, "")
+		authstruct = {}
+		for i,value in ipairs(authtable) do
+			if value.id ~= "" then
+				local fields = {}
+				for x in string.gmatch(value.entry, "([^:]*):?") do
+					fields[#fields + 1] = x
+				end
+				local a = {}
+				a.userid = value.id
+				a.password = fields[1] or ""
+				a.username = fields[2] or ""
+				a.roles = fields[3] or ""
+				table.insert(authstruct, a)
+			end
+		end
+	end
 end
 	
 local get_id = function(userid)
@@ -55,19 +73,18 @@ end
 local write_settings = function(self, settings, id)
 	load_database()
 	id = id or get_id(settings.value.userid.value) or {}
-	-- Password, password_confirm, roles, dnsfiles are allowed to not exist, just leave the same
+	-- Password, password_confirm, roles are allowed to not exist, just leave the same
 	id.userid = settings.value.userid.value
 	id.username = settings.value.username.value
 	if settings.value.password then id.password = fs.md5sum_string(settings.value.password.value) end
 	if settings.value.roles then id.roles = table.concat(settings.value.roles.value, ",") end
-	if settings.value.dnsfiles then id.dnsfiles = table.concat(settings.value.dnsfiles.value, ",") end
 
-	return auth.write_entry(self, id)
+	return auth.write_entry(self, passwdtable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or ""))
 end
 	
 -- validate the settings (ignore password if it's nil)
 local validate_settings = function(settings)
-	-- Password, password_confirm, roles, dnsfiles are allowed to not exist, just leave the same
+	-- Password, password_confirm, roles are allowed to not exist, just leave the same
 	-- Set errtxt when entering invalid values
 	if (#settings.value.userid.value == 0) then settings.value.userid.errtxt = "You need to enter a valid userid!" end
 	if string.find(settings.value.userid.value, "[^%w_]") then settings.value.userid.errtxt = "Can only contain letters, numbers, and '_'" end
@@ -83,7 +100,6 @@ local validate_settings = function(settings)
 		end
 	end
 	if settings.value.roles then modelfunctions.validatemulti(settings.value.roles) end
-	if settings.value.dnsfiles then modelfunctions.validatemulti(settings.value.dnsfiles) end
 
 	-- Return false if any errormessages are set
 	for name,value in pairs(settings.value) do
@@ -107,7 +123,7 @@ authenticate = function(self, userid, password)
 	else
 		load_database(self)
 
-		if authstruct == false then
+		if not authstruct then
 			errtxt = "Could not load authentication database"
 		else	
 			local id = get_id(userid)
@@ -136,9 +152,8 @@ get_userinfo = function(self, userid)
 	local password = cfe({ label="Password" })
 	local password_confirm = cfe({ label="Password (confirm)" })
 	local roles = get_userinfo_roles(self, userid)
-	local dnsfiles = get_userinfo_dnsfiles(self, userid)
 
-	return cfe({ type="group", value={ userid=user, username=username, password=password, password_confirm=password_confirm, roles=roles, dnsfiles=dnsfiles }, label="User Config" })
+	return cfe({ type="group", value={ userid=user, username=username, password=password, password_confirm=password_confirm, roles=roles }, label="User Config" })
 end
 
 get_userinfo_roles = function(self, userid)
@@ -166,26 +181,6 @@ get_userinfo_roles = function(self, userid)
 	return roles
 end
 
-get_userinfo_dnsfiles = function(self, userid)
-	load_database(self)
-	local id = get_id(userid)
-	local dnsfiles = cfe({ type="multi", value={}, label="DNS Files", option={} })
-	if id then
-		for x in string.gmatch(id.dnsfiles or "", "([^,]+),?") do
-			dnsfiles.value[#dnsfiles.value + 1] = x
-		end
-	elseif userid then
-		dnsfiles.errtxt = "Could not load DNS files"
-	end
-	local dns = self:new("tinydns/tinydns")
-	if dns then
-		local avail_files = dns.model.getfilelist()
-		dnsfiles.option = avail_files.value
-		dns:destroy()
-	end
-	return dnsfiles
-end
-
 list_users = function (self)
 	load_database(self)
 	local output = {}
@@ -195,42 +190,6 @@ list_users = function (self)
 		end
 	end
 	return output
-end
-
--- This function will change one user setting by name
--- Cannot be used for password or userid
-change_setting = function (self, userid, parameter, value) 
-	local success = false
-	local cmdresult = "Failed to change setting"
-	local errtxt
-
-	-- Get the current user info
-	local userinfo = get_userinfo(self, userid)
-	if not userinfo then
-		errtxt = "This userid does not exist"
-	end
-
-	-- Check if user entered available commands
-	if not value then
-		errtxt = "Invalid value"
-	elseif not (availablefields[parameter]) then
-		errtxt = "Invalid parameter"
-	elseif parameter == "userid" or parameter == "password" then
-		errtxt = "Cannot change "..parameter.." with this function"
-	else
-		userinfo.value[parameter].value = value
-		userinfo.value.password = nil
-		userinfo.value.password_confirm = nil
-		if not validate_settings(userinfo) then
-			errtxt = userinfo.value[parameter].errtxt
-		else
-			success = write_settings(self, userinfo)
-		end
-	end
-
-	if success then cmdresult = "Changed setting" end
-
-	return cfe({ value=cmdresult, label="Change setting result", errtxt=errtxt })
 end
 
 -- For an existing user, change the settings that are non-nil
@@ -285,8 +244,48 @@ end
 delete_user = function (self, userid)
 	load_auth(self)
 	local cmdresult = "Failed to delete user"
-	if auth.delete_entry(self, userid) then
+	if auth.delete_entry(self, passwdtable, "", userid) then
 		cmdresult = "User deleted"
 	end
 	return cfe({ value=cmdresult, label="Delete user result" })
+end
+
+read_userfield = function(self, name)
+	load_auth(self)
+	if auth and name ~= "" then
+		return auth.read_field(self, passwdtable, name)
+	end
+	return nil
+end
+
+delete_userfield = function(self, name)
+	load_auth(self)
+	if auth and name ~= "" then
+		return auth.delete_field(self, passwdtable, name)
+	end
+	return false
+end
+
+write_userentry = function(self, name, userid, entry)
+	load_auth(self)
+	if auth and name ~= "" then
+		return auth.write_entry(self, passwdtable, name, userid, entry)
+	end
+	return false
+end
+
+read_userentry = function(self, name, userid)
+	load_auth(self)
+	if auth and name ~= "" then
+		return auth.read_entry(self, passwdtable, name, userid)
+	end
+	return nil
+end
+
+delete_userentry = function (self, name, userid)
+	load_auth(self)
+	if auth and name ~= "" then
+		return auth.delete_entry(self, passwdtable, name, userid)
+	end
+	return false
 end

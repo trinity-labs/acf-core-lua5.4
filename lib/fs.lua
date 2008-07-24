@@ -23,7 +23,14 @@ function is_link ( pathstr )
 end
 
 
-	
+-- Creates a blank file
+function create_file ( path )
+	local cmd = "touch "..path
+	local f = io.popen(cmd)
+	f:close()
+	return is_file(path)
+end
+
 -- Returns the contents of a file as a string
 function read_file ( path )
 	local file = io.open(path)
