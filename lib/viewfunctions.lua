@@ -116,17 +116,35 @@ function displayformitem(myitem, name, viewtype)
 		-- FIXME multiple select doesn't work in haserl, so use series of checkboxes
 		--myitem.type = "select"
 		--myitem.multiple = "true"
+		myitem.class = nil
 		local tempname = myitem.name
 		local tempval = myitem.value or {}
 		local reverseval = {}
 		for x,val in ipairs(tempval) do
 			reverseval[val] = x
 		end
+		local reverseopt = {}
 		for x,val in ipairs(myitem.option) do
+			reverseopt[val] = x
 			myitem.value = val
 			myitem.checked = reverseval[val]
 			myitem.name = tempname .. "." .. x
 			io.write(html.form.checkbox(myitem) .. val .. "<br>\n")
+		end
+		-- Check for values not in options
+		if myitem.errtxt then
+			myitem.class = "error"
+			io.write('<p class="error">\n')
+		end
+		for x,val in ipairs(tempval) do
+			if not reverseopt[val] then
+				myitem.value = val
+				myitem.checked = true
+				io.write(html.form.checkbox(myitem) .. val .. "<br>\n")
+			end
+		end
+		if myitem.errtxt then
+			io.write('</p>\n')
 		end
 		myitem.name = tempname
 		myitem.value = tempval

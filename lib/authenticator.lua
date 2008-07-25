@@ -19,6 +19,7 @@ local availablefields = {
 	['roles']=true, 
 	}
 local passwdtable = "passwd"
+local roletable = "roles"
 
 local load_auth = function(self)
 	-- For now, just loads the plaintext version
@@ -286,6 +287,46 @@ delete_userentry = function (self, name, userid)
 	load_auth(self)
 	if auth and name ~= "" then
 		return auth.delete_entry(self, passwdtable, name, userid)
+	end
+	return false
+end
+
+read_rolefield = function(self, name)
+	load_auth(self)
+	if auth then
+		return auth.read_field(self, roletable, name)
+	end
+	return nil
+end
+
+delete_rolefield = function(self, name)
+	load_auth(self)
+	if auth then
+		return auth.delete_field(self, roletable, name)
+	end
+	return false
+end
+
+write_roleentry = function(self, name, role, entry)
+	load_auth(self)
+	if auth then
+		return auth.write_entry(self, roletable, name, role, entry)
+	end
+	return false
+end
+
+read_roleentry = function(self, name, role)
+	load_auth(self)
+	if auth then
+		return auth.read_entry(self, roletable, name, role)
+	end
+	return nil
+end
+
+delete_roleentry = function (self, name, role)
+	load_auth(self)
+	if auth then
+		return auth.delete_entry(self, roletable, name, role)
 	end
 	return false
 end

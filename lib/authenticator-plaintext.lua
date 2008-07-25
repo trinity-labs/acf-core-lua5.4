@@ -16,7 +16,7 @@ read_field = function(self, tabl, field)
 
 	local row = {}
 	-- open our password file
-	local passwd_path = self.conf.confdir .. tabl .. field
+	local passwd_path = self.conf.confdir .. field .. tabl
 	local f = io.open(passwd_path)
 	if f then
 		local m = (f:read("*all")  or "" ).. "\n"
@@ -37,7 +37,7 @@ delete_field = function(self, tabl, field)
 	if not tabl or tabl == "" or not field then
 		return false
 	end
-	local passwd_path = self.conf.confdir .. tabl .. field
+	local passwd_path = self.conf.confdir .. field .. tabl
 	os.remove(passwd_path)
 	return true
 end
@@ -49,7 +49,7 @@ write_entry = function(self, tabl, field, id, entry)
 	delete_entry(self, tabl, field, id)
 
 	-- Set path to passwordfile
-	local passwd_path = self.conf.confdir .. tabl .. field
+	local passwd_path = self.conf.confdir .. field .. tabl
 	-- Write the newline into the file
 	if fs.is_file(passwd_path) == false then fs.create_file(passwd_path) end
 	if fs.is_file(passwd_path) == false then return false end
@@ -62,7 +62,7 @@ read_entry = function(self, tabl, field, id)
 		return nil
 	end
 	-- Set path to passwordfile
-	local passwd_path = self.conf.confdir .. tabl .. field
+	local passwd_path = self.conf.confdir .. field .. tabl
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local entry
 	for k,v in pairs(passwdfilecontent) do
@@ -79,7 +79,7 @@ delete_entry = function (self, tabl, field, id)
 	end
 	local result = false
 	
-	local passwd_path = self.conf.confdir .. tabl .. field
+	local passwd_path = self.conf.confdir .. field .. tabl
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local output = {}
 	for k,v in pairs(passwdfilecontent) do
