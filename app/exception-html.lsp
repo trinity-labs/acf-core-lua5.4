@@ -1,7 +1,7 @@
-<? view = ... ?>
-<? --[[
+<% view = ... %>
+<% --[[
 	io.write(html.cfe_unpack(view))
---]] ?>
+--]] %>
 
 <style type="text/css">
 	p.hiddendetail {
@@ -27,4 +27,4 @@
 
 <h1>Alpine Configuration Framework</h1>
 <p class="errordetail">Application error occured</p>
-<p class="hiddendetail"><?= view.message ?></p>
+<p class="hiddendetail"><%= view.message %></p>

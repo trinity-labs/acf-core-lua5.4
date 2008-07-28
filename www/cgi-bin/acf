@@ -1,5 +1,5 @@
 #!/usr/bin/haserl --shell=lua --upload-limit=32
-<? 
+<% 
 require("mvc")
 
 -- create a new container
@@ -18,4 +18,4 @@ APP=FRAMEWORK:new("acf_www")
 APP:dispatch()
 APP:destroy()
 FRAMEWORK:destroy()
-?>
+%>

@@ -1,19 +1,19 @@
-<? local viewtable, viewlibrary, pageinfo, session = ... 
-   html=require("html") ?>
+<% local viewtable, viewlibrary, pageinfo, session = ... 
+   html=require("html") %>
 Status: 200 OK
 Content-Type: text/html
-<? if (session.id) then 
+<% if (session.id) then 
 	io.write( html.cookie.set("sessionid", session.id) ) 
   else
 	io.write (html.cookie.unset("sessionid"))
   end
-?>
+%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<?
+<%
 local hostname = ""
 if viewlibrary and viewlibrary.dispatch_component then
 	local result = viewlibrary.dispatch_component("alpine-baselayout/hostname/read", nil, true)
@@ -21,12 +21,12 @@ if viewlibrary and viewlibrary.dispatch_component then
 		hostname = result.value
 	end
 end
-?>
-<title><?= hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action ?></title>
-<link rel="stylesheet" type="text/css" href="<?= pageinfo.skindir ?>static/reset.css">
-<link rel="stylesheet" type="text/css" href="<?= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin..".css" ?>">
+%>
+<title><%= hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action %></title>
+<link rel="stylesheet" type="text/css" href="<%= pageinfo.skindir %>static/reset.css">
+<link rel="stylesheet" type="text/css" href="<%= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin..".css" %>">
 <!--[if IE]>
-<link rel="stylesheet" type="text/css" href="<?= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin.."-ie.css" ?>">
+<link rel="stylesheet" type="text/css" href="<%= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin.."-ie.css" %>">
 <![endif]-->
 </head>
 <body>
@@ -39,18 +39,18 @@ end
 		<div id="logo">
 			<div class="leader"></div>
 			<h1>AlpineLinux</h1>
-			<p><?= hostname or "unknown hostname" ?></p>
+			<p><%= hostname or "unknown hostname" %></p>
 			<div class="tailer"></div>
 		</div>
 		<span class="mute">
 			<p>
-			<? local ctlr = pageinfo.script .. "/acf-util/logon/"
+			<% local ctlr = pageinfo.script .. "/acf-util/logon/"
 			
 			if session.userinfo and session.userinfo.userid then
 			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. session.userinfo.userid .. "'</a>\n", ctlr .. "logout" ) )
 			else
 			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", ctlr .. "logon" ) )
-			end ?>
+			end %>
 			 | 
 			<a href="/">home</a> | 
 			<a href="http://wiki.alpinelinux.org">about</a>
@@ -67,7 +67,7 @@ end
 				<h3 class="hide">[Main menu]</h3>
 			</div>
 
-			<? 
+			<% 
 			local class
 			local tabs
 			io.write ( "<ul>")
@@ -86,7 +86,7 @@ end
 				io.write ( "\t\t\t\t\t</ul>" )
 			  end
 			io.write ( "\n\t\t\t\t</li>\n\t\t\t</ul>\n")
-			?>
+			%>
 
 			<div class="tailer">
 			</div>
@@ -96,7 +96,7 @@ end
 		<div id="postnav">
 			<div class="leader">
 			</div>
-			<h2><?= pageinfo.controller ?> : <?= pageinfo.action ?></h2>
+			<h2><%= pageinfo.controller %> : <%= pageinfo.action %></h2>
 			<!-- FIXME: Next row is 'dead' data! Remove 'class=hide' when done! -->
 			<p class='hide'>[ welcome ] > [ login ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
 			<div class="tailer">
@@ -111,8 +111,8 @@ end
 			</div>
 
 			<ul>
-			<? local class="" ?>
-			<? for x,tab in pairs(tabs or {})  do
+			<% local class="" %>
+			<% for x,tab in pairs(tabs or {})  do
 				if tab.action == pageinfo.action then
 					class="class='selected'"
 				else
@@ -121,7 +121,7 @@ end
 				io.write (string.format('<li %s><a %s href="%s">%s</a></li>\n',
 							class,class,tab.action,tab.name ))
 			end
-			?>
+			%>
 			</ul>
 
 			<div class="tailer">
@@ -132,8 +132,8 @@ end
 	<div class="leader">
 	</div>
 
-	<? local func = haserl.loadfile(pageinfo.viewfile) ?>
-	<? func (viewtable, viewlibrary, pageinfo, session) ?>
+	<% local func = haserl.loadfile(pageinfo.viewfile) %>
+	<% func (viewtable, viewlibrary, pageinfo, session) %>
 
 	<div class="tailer">
 	</div>
@@ -144,7 +144,7 @@ end
 	<div id="footer">
 		<div class="leader">
 		</div>
-		<p>Page generated in <?= os.clock() ?> seconds on <?= os.date() ?>.</p>
+		<p>Page generated in <%= os.clock() %> seconds on <%= os.date() %>.</p>
 		<div class="tailer">
 		</div>
 	</div> <!-- footer -->
