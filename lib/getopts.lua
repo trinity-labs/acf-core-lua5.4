@@ -76,7 +76,7 @@ end
 -- If the search_section is not found, we'll add it at the end of the file
 -- If the search_name is not found, we'll add it at the end of the section
 function setoptsinfile (file, search_section, search_name, value, to_table, optionvalue)
-	if not file or file == "" or not search_name or search_name == "" or (to_table == true and not value) then
+	if not file or not search_name or search_name == "" or (to_table == true and not value) then
 		return false, nil, "Invalid input for getopts.setoptsinfile()", file
 	end
 	search_section = search_section or ""
@@ -268,7 +268,7 @@ function getsection (file, search_section)
 end
 
 function setsection (file, search_section, section_content)
-	if not file or file == "" then
+	if not file then
 		return false, nil, "Invalid input for getopts.setoptsinfile()", file
 	end
 	search_section = search_section or ""
@@ -305,6 +305,11 @@ function setsection (file, search_section, section_content)
 			end
 		end
 		new_conf_file[#new_conf_file + 1] = l
+	end
+
+	if not done then
+		-- we didn't find the section, add it now
+		new_conf_file[#new_conf_file + 1] = '[' .. search_section .. ']\n' .. (section_content or "")
 	end
 
 	if (fs.is_file(file)) then
