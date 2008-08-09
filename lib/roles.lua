@@ -63,7 +63,7 @@ get_controllers_func = function(self,controller_info)
 	temp = require (controller_info.name)
 	temp1 = {}
 	for a,b in pairs(temp) do 
-		local c = string.match(a,"mvc") or string.match(a,"^_") 
+		local c = string.match(a,"^mvc") or string.match(a,"^_") 
 		if c == nil and type(temp[a])=="function" then
 			temp1[#temp1 +1] = a
 		end
@@ -72,6 +72,15 @@ get_controllers_func = function(self,controller_info)
 	--we need to go through bobo and take out the mvc func and locals and --
 	return temp1
 	end
+end
+
+-- Find all views for a controller
+get_controllers_view = function(self,controller_info)
+	local temp = {}
+	for file in fs.find(controller_info.sname.."%-[^%.]+%-html%.lsp", controller_info.path) do
+		temp[#temp + 1] = string.match(file, controller_info.sname.."%-([^%./]+)%-html%.lsp")
+	end
+	return temp	
 end
 
 list_default_roles = function()
