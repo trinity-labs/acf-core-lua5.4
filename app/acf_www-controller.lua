@@ -119,7 +119,8 @@ end
 
 local has_view = function(self)
 	require("fs")
-	return fs.is_file(self.conf.appdir .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. (self.conf.viewtype or "html") .. ".lsp")
+	local file = posix.stat(self.conf.appdir .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. (self.conf.viewtype or "html") .. ".lsp", "type")
+	return file == "regular" or file == "link"
 end
 
 -- This function is made available within the view to allow loading of components
