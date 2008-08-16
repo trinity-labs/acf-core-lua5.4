@@ -36,11 +36,11 @@ end
 
 -- Return list of all permissions
 getpermslist = function(self)
-	return cfe({ type="group", value={permissions=self.model.get_perms_list()} })
+	return cfe({ type="group", value={permissions=self.model.get_perms_list(self)} })
 end
 
 viewroles = function(self)
-	return self.model.view_roles()
+	return self.model.view_roles(self)
 end
 
 newrole = function(self)
@@ -58,5 +58,5 @@ editrole = function(self)
 end
 
 deleterole = function(self)
-	return self:redirect_to_referrer(self.model.delete_role(self.clientdata.role))
+	return self:redirect_to_referrer(self.model.delete_role(self, self.clientdata.role))
 end

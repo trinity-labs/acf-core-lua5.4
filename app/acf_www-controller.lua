@@ -23,7 +23,7 @@ local function build_menus(self)
 	if self.sessiondata.userinfo and self.sessiondata.userinfo.roles then
 		roles = self.sessiondata.userinfo.roles
 	end
-	local permissions = roll.get_roles_perm(self.conf.appdir,roles)
+	local permissions = roll.get_roles_perm(self,roles)
 	self.sessiondata.permissions = permissions
 	
 	--Build the menu

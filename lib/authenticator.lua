@@ -170,7 +170,7 @@ get_userinfo_roles = function(self, userid)
 	end
 	local rol = require("roles")
 	if rol then
-		local avail_roles = rol.list_all_roles()
+		local avail_roles = rol.list_all_roles(self)
 		for x,role in ipairs(avail_roles) do
 			if role=="ALL" then
 				table.remove(avail_roles,x)
@@ -251,6 +251,14 @@ delete_user = function (self, userid)
 	return cfe({ value=cmdresult, label="Delete user result" })
 end
 
+list_userfields = function(self)
+	load_auth(self)
+	if auth then
+		return auth.list_fields(self, passwdtable)
+	end
+	return nil
+end
+
 read_userfield = function(self, name)
 	load_auth(self)
 	if auth and name ~= "" then
@@ -289,6 +297,14 @@ delete_userentry = function (self, name, userid)
 		return auth.delete_entry(self, passwdtable, name, userid)
 	end
 	return false
+end
+
+list_rolefields = function(self)
+	load_auth(self)
+	if auth then
+		return auth.list_fields(self, roletable)
+	end
+	return nil
 end
 
 read_rolefield = function(self, name)

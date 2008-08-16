@@ -1,6 +1,6 @@
 --this module is for authorization help and group/role management
 
-
+require ("authenticator")
 require ("posix")
 require ("fs")
 require ("format")
@@ -87,7 +87,7 @@ list_default_roles = function()
 	return default_roles
 end
 
-list_roles = function()
+list_roles = function(self)
 	local defined_roles = {}
 	local reverseroles = {}
 	for x,role in ipairs(default_roles) do
@@ -106,8 +106,8 @@ list_roles = function()
 	return defined_roles, default_roles
 end
 
-list_all_roles = function()
-	local defined_roles, default_roles = list_roles()
+list_all_roles = function(self)
+	local defined_roles, default_roles = list_roles(self)
 	for x,role in ipairs(defined_roles) do
 		default_roles[#default_roles + 1] = role
 	end
@@ -115,12 +115,12 @@ list_all_roles = function()
 end	
 
 -- Go through the roles files and determine the permissions for the specified roles
-get_roles_perm = function(startdir,roles)
+get_roles_perm = function(self,roles)
 	permissions = {}
 	permissions_array = {}
 
 	-- find all of the roles files and add in the master file
-	local rolesfiles = get_roles_candidates(startdir)
+	local rolesfiles = get_roles_candidates(self.conf.appdir)
 	rolesfiles[#rolesfiles + 1]  = roles_file
 
 	local reverseroles = {}
@@ -154,12 +154,12 @@ get_roles_perm = function(startdir,roles)
 end
 
 -- Go through the roles files and determine the permissions for the specified role
-get_role_perm = function(startdir,role)
+get_role_perm = function(self,role)
 	permissions = {}
 	permissions_array = {}
 
 	-- find all of the roles files and add in the master file
-	local rolesfiles = get_roles_candidates(startdir)
+	local rolesfiles = get_roles_candidates(self.conf.appdir)
 	rolesfiles[#rolesfiles + 1]  = roles_file
 
 	for x,file in ipairs(rolesfiles) do
@@ -187,7 +187,7 @@ get_role_perm = function(startdir,role)
 end
 
 -- Delete a role from role file
-delete_role = function(role)
+delete_role = function(self, role)
 	for x,ro in ipairs(default_roles) do
 		if role==ro then
 			return false, "Cannot delete default roles"
@@ -208,13 +208,18 @@ delete_role = function(role)
 
 	if result == true then
 		fs.write_file(roles_file, table.concat(output,"\n"))
+		-- also need to delete any other roles fields for this role
+		local fields = authenticator.list_rolefields(self) or {}
+		for x,field in ipairs(fields) do
+			authenticator.delete_roleentry(self, field, role)
+		end
 	end
 
 	return result, cmdresult
 end
 
 -- Set permissions for a role in role file
-set_role_perm = function(role, permissions, permissions_array)
+set_role_perm = function(self, role, permissions, permissions_array)
 	if role==nil or role=="" then
 		return false, "Invalid Role"
 	end
@@ -238,7 +243,7 @@ set_role_perm = function(role, permissions, permissions_array)
 		return false, "No permissions set"
 	end
 
-	delete_role(role)
+	delete_role(self, role)
 	fs.write_line_file(roles_file, role .. "=" .. table.concat(permissions_array,","))
 	return true
 end

@@ -9,8 +9,23 @@ create a different file for each field.
 
 module (..., package.seeall)
 
+list_fields = function(self, tabl)
+	if not self or not tabl or tabl == "" then
+		return {}
+	end
+
+	local fields = {}
+	for file in fs.find(".*"..tabl, self.conf.confdir) do
+		local field = string.match(file, "([^/]*)"..tabl.."$") or ""
+		if fs.is_file(file) and field ~= "" then
+			fields[#fields + 1] = field
+		end
+	end
+	return fields
+end
+
 read_field = function(self, tabl, field)
-	if not tabl or tabl == "" or not field then
+	if not self or not tabl or tabl == "" or not field then
 		return nil
 	end
 
@@ -34,7 +49,7 @@ read_field = function(self, tabl, field)
 end
 
 delete_field = function(self, tabl, field)
-	if not tabl or tabl == "" or not field then
+	if not self or not tabl or tabl == "" or not field then
 		return false
 	end
 	local passwd_path = self.conf.confdir .. field .. tabl
@@ -93,6 +108,14 @@ delete_entry = function (self, tabl, field, id)
 	--Save the updated table
 	if result == true then
 		fs.write_file(passwd_path, table.concat(output,"\n"))
+	end
+
+	-- If deleting the main field, delete all other fields also
+	if field == "" then
+		local fields = list_fields(self, tabl)
+		for i,fld in ipairs(fields) do
+			delete_entry(self, tabl, fld, id)
+		end
 	end
 
 	return result

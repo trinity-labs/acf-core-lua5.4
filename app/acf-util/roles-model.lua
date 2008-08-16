@@ -34,22 +34,22 @@ end
 -- Return roles/permissions for specified user
 get_user_roles = function(self, userid)
 	rls = cfe({ type="list", value=authenticator.get_userinfo_roles(self, userid).value, label="Roles" })
-	permissions = cfe({ type="table", value=roles.get_roles_perm(self.conf.appdir, rls.value), label="Permissions" })
+	permissions = cfe({ type="table", value=roles.get_roles_perm(self, rls.value), label="Permissions" })
 	return cfe({ type="group", value={roles=rls, permissions=permissions} })
 end
 
 -- Return permissions for specified role
 get_role_perms = function(self, role)
-	return cfe({ type="table", value=roles.get_role_perm(self.conf.appdir, role), label="Permissions" })
+	return cfe({ type="table", value=roles.get_role_perm(self, role), label="Permissions" })
 end
 	
 -- Return list of all permissions
-get_perms_list = function()
+get_perms_list = function(self)
 	return cfe({ type="table", value=get_all_permissions(self), label="All Permissions" })
 end
 
-view_roles = function()
-	local defined_roles, default_roles = roles.list_roles()
+view_roles = function(self)
+	local defined_roles, default_roles = roles.list_roles(self)
 	local defined_roles_cfe=cfe({ type="list", value=defined_roles, label="Locally-defined roles" })
 	local default_roles_cfe=cfe({ type="list", value=default_roles, label="System-defined roles" })
 
@@ -60,7 +60,7 @@ getpermissions = function(self, role)
 	local my_perms = {}
 
 	if role then
-		tmp, my_perms = roles.get_role_perm(self.conf.appdir, role)
+		tmp, my_perms = roles.get_role_perm(self, role)
 		my_perms = my_perms or {}
 	else
 		role = ""
@@ -80,7 +80,7 @@ setpermissions = function(self, permissions, newrole)
 	local result = true
 	if newrole then
 		-- make sure not overwriting role
-		local defined_roles, default_roles = roles.list_roles()
+		local defined_roles, default_roles = roles.list_roles(self)
 		local reverseroles = {}
 		for i,role in ipairs(defined_roles) do reverseroles[role] = i end
 		for i,role in ipairs(default_roles) do reverseroles[role] = i end
@@ -92,7 +92,7 @@ setpermissions = function(self, permissions, newrole)
 	end
 	-- Try to set the value
 	if result==true then
-		result, permissions.value.role.errtxt = roles.set_role_perm(permissions.value.role.value, nil, permissions.value.permissions.value)
+		result, permissions.value.role.errtxt = roles.set_role_perm(self, permissions.value.role.value, nil, permissions.value.permissions.value)
 		if not result then
 			permissions.errtxt = "Failed to save role"
 		end
@@ -101,7 +101,7 @@ setpermissions = function(self, permissions, newrole)
 	return permissions
 end
 
-delete_role = function(role)
-	local result, cmdresult = roles.delete_role(role)
+delete_role = function(self, role)
+	local result, cmdresult = roles.delete_role(self, role)
 	return cfe({ value=cmdresult })
 end
