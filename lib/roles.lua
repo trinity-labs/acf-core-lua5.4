@@ -7,7 +7,6 @@ require ("format")
 
 module (..., package.seeall)
 
-local roles_file = "/etc/acf/roles"
 local default_roles = { "CREATE", "UPDATE", "DELETE", "READ", "ALL" }
 
 -- returns a table of the *.roles files
@@ -95,11 +94,10 @@ list_roles = function(self)
 	end
 
 	-- Open the roles file and parse for defined roles
-	f = fs.read_file_as_array(roles_file)
-	for x,line in pairs(f) do
-		temprole = string.match(line,"^[%w_]+")
-		if not reverseroles[temprole] then
-			defined_roles[#defined_roles + 1] = temprole
+	local entries = authenticator.read_rolefield(self, "") or {}
+	for x,entry in ipairs(entries) do
+		if not reverseroles[entry.id] then
+			defined_roles[#defined_roles + 1] = entry.id
 		end
 	end
 
@@ -121,7 +119,6 @@ get_roles_perm = function(self,roles)
 
 	-- find all of the roles files and add in the master file
 	local rolesfiles = get_roles_candidates(self.conf.appdir)
-	rolesfiles[#rolesfiles + 1]  = roles_file
 
 	local reverseroles = {}
 	for x,role in ipairs(roles) do
@@ -149,6 +146,25 @@ get_roles_perm = function(self,roles)
 			end
 		end
 	end
+
+	local entries = authenticator.read_rolefield(self, "") or {}
+	for x,entry in ipairs(entries) do
+		if reverseroles[entry.id] then
+			temp = format.string_to_table(entry.entry, ",")
+			for z,perm in pairs(temp) do
+				local control,action = string.match(perm,"(%a+):(%a+)")
+				if control then
+					if nil == permissions[control] then
+						permissions[control] = {}
+					end
+					if action then
+						permissions[control][action] = {}
+						permissions_array[#permissions_array + 1] = control .. ":" .. action
+					end
+				end
+			end
+		end
+	end
 	
 	return permissions, permissions_array
 end
@@ -160,7 +176,6 @@ get_role_perm = function(self,role)
 
 	-- find all of the roles files and add in the master file
 	local rolesfiles = get_roles_candidates(self.conf.appdir)
-	rolesfiles[#rolesfiles + 1]  = roles_file
 
 	for x,file in ipairs(rolesfiles) do
 		f = fs.read_file_as_array(file)
@@ -183,6 +198,23 @@ get_role_perm = function(self,role)
 		end
 	end
 	
+	local entry = authenticator.read_roleentry(self, "", role)
+	if entry then
+		temp = format.string_to_table(entry, ",")
+		for z,perm in pairs(temp) do
+			local control,action = string.match(perm,"(%a+):(%a+)")
+			if control then
+				if nil == permissions[control] then
+					permissions[control] = {}
+				end
+				if action then
+					permissions[control][action] = {}
+					permissions_array[#permissions_array + 1] = control .. ":" .. action
+				end
+			end
+		end
+	end
+
 	return permissions, permissions_array
 end
 
@@ -193,27 +225,10 @@ delete_role = function(self, role)
 			return false, "Cannot delete default roles"
 		end
 	end
-	local rolecontent = fs.read_file_as_array(roles_file)
-	local output = {}
-	local result = false
+	
+	local result = authenticator.delete_roleentry(self, "", role)
 	local cmdresult = "Role entry not found"
-	for x,line in pairs(rolecontent) do
-		if not string.match(line, "^" .. role .. "=") then
-			table.insert(output,line)
-		else
-			result = true
-			cmdresult = "Role deleted"
-		end
-	end
-
-	if result == true then
-		fs.write_file(roles_file, table.concat(output,"\n"))
-		-- also need to delete any other roles fields for this role
-		local fields = authenticator.list_rolefields(self) or {}
-		for x,field in ipairs(fields) do
-			authenticator.delete_roleentry(self, field, role)
-		end
-	end
+	if result then cmdresult = "Role deleted" end
 
 	return result, cmdresult
 end
@@ -242,8 +257,6 @@ set_role_perm = function(self, role, permissions, permissions_array)
 	if permissions_array==nil or #permissions_array==0 then
 		return false, "No permissions set"
 	end
-
-	delete_role(self, role)
-	fs.write_line_file(roles_file, role .. "=" .. table.concat(permissions_array,","))
-	return true
+	
+	return authenticator.write_roleentry(self, "", role, table.concat(permissions_array,","))
 end

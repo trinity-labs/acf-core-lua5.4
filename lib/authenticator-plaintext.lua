@@ -39,7 +39,7 @@ read_field = function(self, tabl, field)
 
 		for l in string.gmatch(m, "([^\n]+)\n?") do
 			local a = {}
-			a.id, a.entry = string.match(l, "^([^:]*):(.*)")
+			a.id, a.entry = string.match(l, "^([^:=]*)[:=](.*)")
 			table.insert(row, a)
 		end
 		return row
@@ -81,8 +81,8 @@ read_entry = function(self, tabl, field, id)
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local entry
 	for k,v in pairs(passwdfilecontent) do
-		if string.match(v, "^".. id .. ":") then
-			return string.match(v, "^"..id..":(.*)")
+		if string.match(v, "^".. id .. "[:=]") then
+			return string.match(v, "^"..id.."[:=](.*)")
 		end
 	end
 	return nil
@@ -98,7 +98,7 @@ delete_entry = function (self, tabl, field, id)
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local output = {}
 	for k,v in pairs(passwdfilecontent) do
-		if not ( string.match(v, "^".. id .. ":") ) and not string.match(v, "^%s*$") then
+		if not ( string.match(v, "^".. id .. "[:=]") ) and not string.match(v, "^%s*$") then
 			table.insert(output, v)
 		else
 			result = true
