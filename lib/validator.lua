@@ -217,7 +217,7 @@ function is_port(numstr)
 end
 
 function is_valid_filename ( path, restriction )
-	if not (path) or ((restriction) and (string.find (path, "^" .. restriction ) == nil)) then
+	if not (path) or ((restriction) and (string.find (path, "^" .. restriction ) == nil or string.find (path, "/", #restriction+2) )) then
 		return false, "* " .. validator.msg.err.FileInvalidPath1[lang.Current] .. "\n* ".. 
 			validator.msg.err.FileInvalidPath2[lang.Current] .. ":" .. string.format(restriction)
 	end
