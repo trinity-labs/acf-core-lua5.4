@@ -27,6 +27,7 @@ displayitem(form.value.mtime)
 <% if form.value.filecontent.errtxt then %><P CLASS='error'><%= string.gsub(form.value.filecontent.errtxt, "\n", "<BR>") %></P><% end %>
 
 <% if form.type == "form" then %>
-<DL><DT></DT><DD><input class="submit" type="submit" name="<%= form.option %>" value="<%= form.option %>"></DD></DL>
+<H3>Save</H3>
+<DL><DT>Submit and save above changes</DT><DD><input class="submit" type="submit" name="<%= form.option %>" value="<%= form.option %>"></DD></DL>
 <% end %>
 </form>
