@@ -6,7 +6,8 @@
 
 <h1><%= form.label %></h1>
 <%
-   form.value.password.type = "password"
-   local order = { "userid", "password" }
-   displayform(form, order)
+	form.value.password.type = "password"
+	form.value.redir.type = "hidden"
+	local order = { "userid", "password" }
+	displayform(form, order)
 %>

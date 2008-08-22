@@ -287,9 +287,14 @@ exception_handler = function (self, message )
 	local html = require ("html")
 	local viewtable
 	if type(message) == "table" then
-		if message.type == "redir" and self.conf.component == true then
+		if self.conf.component == true then
 			io.write ("Component cannot be found")
-		elseif message.type == "redir" or message.type == "redir_to_referrer" then
+		elseif message.type == "dispatch" and self.sessiondata.userinfo and self.sessiondata.userinfo.userid then
+			viewtable = message
+			self.conf.prefix = "/"
+			self.conf.controller = "dispatcherror"
+			self.conf.action = ""
+		elseif message.type == "redir" or message.type == "redir_to_referrer" or message.type == "dispatch" then
 			--if self.sessiondata.id then logevent("Redirecting " .. self.sessiondata.id) end
 			io.write ("Status: 302 Moved\n")
 			if message.type == "redir" then
@@ -297,6 +302,8 @@ exception_handler = function (self, message )
 				  	message.prefix .. message.controller ..
 					"/" .. message.action .. 
 					(message.extra or "" ) .. "\n")
+			elseif message.type == "dispatch" then
+				io.write ("Location: " .. ENV["SCRIPT_NAME"] .. "/acf-util/logon/logon?redir="..message.prefix..message.controller.."/"..message.action.."\n")
 			else
 				io.write ("Location: " .. ENV.HTTP_REFERER .. "\n")
 			end
@@ -306,11 +313,6 @@ exception_handler = function (self, message )
 				io.write (html.cookie.unset("sessionid"))
 			end
 			io.write ( "Content-Type: text/html\n\n" )
-		elseif message.type == "dispatch" then
-			viewtable = message
-			self.conf.prefix = "/"
-			self.conf.controller = "dispatcherror"
-			self.conf.action = ""
 		else
 			parent_exception_handler(self, message)
 		end

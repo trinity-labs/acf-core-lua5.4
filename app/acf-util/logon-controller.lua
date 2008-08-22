@@ -8,7 +8,8 @@ default_action = "status"
 logon = function(self)
 	local userid = cfe({ value=clientdata.userid or "", label="User ID" })
 	local password = cfe({ label="Password" })
-	local cmdresult = cfe({ type="form", value={userid=userid, password=password}, label="Logon", option="Logon" })
+	local redir = cfe({ value=clientdata.redir or "/welcome/read", label="" })
+	local cmdresult = cfe({ type="form", value={userid=userid, password=password, redir=redir}, label="Logon", option="Logon" })
 	if clientdata.Logon then
 		local logon = self.model:logon(clientdata.userid, clientdata.password, conf.clientip, conf.sessiondir, sessiondata)
 		-- If successful logon, redirect to welcome-page, otherwise try again
@@ -19,7 +20,7 @@ logon = function(self)
 		end
 		cmdresult = self:redirect_to_referrer(cmdresult)
 		if logon.value then
-			redirect(self, "/welcome/read")
+			redirect(self, cmdresult.value.redir.value)
 		end
 	else
 		cmdresult = self:redirect_to_referrer() or cmdresult
