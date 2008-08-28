@@ -14,8 +14,8 @@
 <% if data.value.result then %>
 <DT>Previous action result</DT>
 <DD>
-<% if data.value.result.descr then %>
-<P CLASS='descr'><%= string.gsub(data.value.result.descr, "\n", "<BR>") %></P>
+<% if data.value.result.value ~= "" then %>
+<P CLASS='descr'><%= string.gsub(data.value.result.value, "\n", "<BR>") %></P>
 <% end if data.value.result.errtxt then %>
 <P CLASS='error'><%= string.gsub(data.value.result.errtxt, "\n", "<BR>") %></P>
 <% end end %>

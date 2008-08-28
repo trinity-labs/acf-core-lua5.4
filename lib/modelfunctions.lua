@@ -19,7 +19,7 @@ end
 function startstop_service(processname, action)
 	-- action is validated in daemoncontrol
 	local cmdresult,cmdmessage,cmderror,cmdaction = daemoncontrol.daemoncontrol(processname, action)
-	return cfe({ type="boolean", value=cmdresult, descr=cmdmessage, errtxt=cmderror, label="Start/Stop result" })
+	return cfe({ value=cmdmessage or "", errtxt=cmderror, label="Start/Stop result" })
 end
 
 function getstatus(processname, packagename, label)
