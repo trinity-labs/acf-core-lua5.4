@@ -22,7 +22,7 @@ displayitem(form.value.mtime)
 <form action="<%= page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>" method="POST">
 <input type="hidden" name="filename" value="<%= form.value.filename.value %>">
 <textarea name="filecontent">
-<%= form.value.filecontent.value %>
+<%= html.html_escape(form.value.filecontent.value) %>
 </textarea>
 <% if form.value.filecontent.errtxt then %><P CLASS='error'><%= string.gsub(form.value.filecontent.errtxt, "\n", "<BR>") %></P><% end %>
 
