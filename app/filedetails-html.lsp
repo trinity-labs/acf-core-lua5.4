@@ -25,6 +25,7 @@ displayitem(form.value.mtime)
 <%= html.html_escape(form.value.filecontent.value) %>
 </textarea>
 <% if form.value.filecontent.errtxt then %><P CLASS='error'><%= string.gsub(form.value.filecontent.errtxt, "\n", "<BR>") %></P><% end %>
+<% if form.value.filecontent.descr then %><P CLASS='descr'><%= string.gsub(form.value.filecontent.descr, "\n", "<BR>") %></P><% end %>
 
 <% if form.type == "form" then %>
 <H3>Save</H3>

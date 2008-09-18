@@ -24,6 +24,7 @@ LIB_DIST=fs.lua\
 	modelfunctions.lua\
 	cfe.lua\
 	apk.lua\
+	parser.lua\
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(LIB_DIST) $(EXTRA_DIST)
