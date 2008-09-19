@@ -1,149 +1,161 @@
 --[[
-	module for format changes in table,string,files...
+	module for format changes in tables and strings
 	try to keep non input specific
 ]]--
 
 module (..., package.seeall)
 
-require ("posix")
-require ("fs")
-require ("session")
-
 -- find all return characters and removes them, may get this from a browser
 -- that is why didn't do file specific
 
-function dostounix ( a )
-	local data = string.gsub(a, "\r", "")
+function dostounix ( str )
+	local data = string.gsub(str, "\r", "")
 	return data
 end
 
--- search and remove all blank lines and commented lines in a file or table
-
-function remove_blanks_comments ( path )
-	if type(path) == "string" then
-		if fs.is_file == "false" then 
-		error("Invalid file!") 
-		else
-		f = fs.read_file_as_array(path)
-		end
-	elseif type(path) == "table" then
-		f = path
-	end	
-	local lines = {}
-	for a,b in ipairs(f) do
-	local c = string.match(b, "^$") or string.match(b, "^%#") 
-	--this does not take care of lua comments with -- or --[[
-	if c == nil then lines[#lines + 1] = b end
-	end
+-- search and remove all blank and commented lines from a string or table of lines
 -- returns a table to iterate over without the blank or commented lines
-return lines
-end
 
---great for search and replace through a file or table.
---string is easy string.gsub(string, find, replace)
---path can be either a file or a table
-
-function search_replace (path, find, replace)
-	--would be a string if is a path to a file
-	if type(path) == "string" then
-		if fs.is_file == "false" then 
-		error("Invalid file!") 
-		else
-		f = fs.read_file_as_array(path)
-		end
-	elseif type(path) == "table" then
-		f = path
-	end	
-		local lines = {}
-		for a,b in ipairs(f) do
-		local c = string.gsub(b, find, replace)
-		lines[#lines + 1] = c end
-		return lines
-end
-
---great for line searches through a file. /etc/conf.d/ ???
---might be looking for more than one thing so will return a table
---will likely want to match whole line entries
---so we change find to include the rest of the line
--- say want all the _OPTS from a file format.search_for_lines ("/etc/conf.d/cron", "OPT")
-
-function search_for_lines (path, find )
-	find = "^.*" .. find .. ".*$"
-	if type(path) == "string" then
-		if fs.is_file == "false" then 
-		error("Invalid file!") 
-		else
-		f = format.remove_blanks_comments(path)
-		end
-	elseif type(path) == "table" then
-		f = path
-	end	
-	--don't want to match commented out lines
+function parse_lines ( input )
 	local lines = {}
-	for a,b in ipairs(f) do 
-		local c = string.match(b, find)
-		lines[#lines +1 ] = c end
+
+	function parse(line)
+		if not string.match(line, "^%s*$") and not string.match(line, "^%s*#") then
+			lines[#lines + 1] = line
+		end
+	end
+
+	if type(input) == "string" then
+		for line in string.gmatch(input, "([^\n]*)\n?") do
+			parse(line)
+		end
+	elseif type(input) == "table" then
+		for i,line in ipairs(input) do
+			parse(line)
+		end
+	end	
+	
 	return lines
 end
 
---string format function to cap the beginging of each word. 
+-- search and remove all blank and commented lines from a string or table of lines
+-- parse the lines for words, looking for quotes and removing comments
+-- returns a table with an array of words for each line
+
+function parse_linesandwords ( input )
+	local lines = {}
+	local linenum = 0
+
+	function parse(line)
+		linenum = linenum + 1
+		if not string.match(line, "^%s*$") and not string.match(line, "^%s*#") then
+			local linetable = {linenum=linenum, line=line}
+			local offset = 1
+			while string.find(line, "%S", offset) do
+				local word = string.match(line, "%S+", offset)
+				local endword
+				if string.find(word, "^#") then
+					break
+				elseif string.find(word, "^\"") then
+					endword = select(2, string.find(line, "\"[^\"]*\"", offset))
+					word = string.sub(line, string.find(line, "\"", offset), endword)
+				else
+					endword = select(2, string.find(line, "%S+", offset))
+				end
+				table.insert(linetable, word)
+				offset = endword + 1
+			end
+			lines[#lines + 1] = linetable
+		end
+	end
+
+	if type(input) == "string" then
+		for line in string.gmatch(input, "([^\n]*)\n?") do
+			parse(line)
+		end
+	elseif type(input) == "table" then
+		for i,line in ipairs(input) do
+			parse(line)
+		end
+	end	
+	
+	return lines
+end
+
+-- search and replace through a table
+-- string is easy string.gsub(string, find, replace)
+
+function search_replace (input, find, replace)
+	local lines = {}
+	for i,line in ipairs(input) do
+		lines[#lines + 1] = string.gsub(line, find, replace)
+	end
+	return lines
+end
+
+-- great for line searches through a file. /etc/conf.d/ ???
+-- might be looking for more than one thing so will return a table
+-- will likely want to match whole line entries
+-- so we change find to include the rest of the line
+-- say want all the _OPTS from a file format.search_for_lines (fs.read_file("/etc/conf.d/cron"), "OPT")
+-- if want to avoid commented lines, call parse_lines first
+
+function search_for_lines (input, find)
+	local lines = {}
+
+	function findfn(line)
+		if string.find(line, find) then
+			lines[#lines + 1] = line
+		end
+	end
+
+	if type(input) == "string" then
+		for line in string.gmatch(input, "([^\n]*)\n?") do
+			findfn(line)
+		end
+	elseif type(input) == "table" then
+		for i,line in ipairs(input) do
+			findfn(line)
+		end
+	end	
+	
+	return lines
+end
+
+--string format function to capitalize the beginging of each word. 
 function cap_begin_word ( str )
 	--first need to do the first word
 	local data = string.gsub(str, "^%l", string.upper)
 	--word is any space cause no <> regex
-	data = string.gsub(data, " %l", string.upper)
+	data = string.gsub(data, "%s%l", string.upper)
 	return data
 end
 
---give a table of ipairs and turn it into a string
-
-function ipairs_to_string ( t )
-	for a,b in ipairs(t) do 
-		if a == 1 then
-		d = b
-		else
-		d = d .. "\n" .. b
-		end
-	end
-	return d
-end
-
-
--- This code comes from http://lua-users.org/wiki/SplitJoin
--- -- example: format.table_to_string( {"Anna", "Bob", "Charlie", "Dolores"}, ",")
-function table_to_string (list, delimiter)
-	local len = #(list)
-	if len == 0 then 
-		return "" 
-	end
-	local string = list[1]
-	for i = 2, len do 
-		string = string .. delimiter .. list[i] 
-	end
-	return string
-end
-
 --for cut functionality do something like
---print(format.string_to_table(" ", "This is a test")[2])
+--print(format.string_to_table("This is a test", " ")[2])
 --gives you the second field which is .... is
 
 -- This code comes from http://lua-users.org/wiki/SplitJoin
 -- example: format.string_to_table( "Anna, Bob, Charlie,Dolores", ",%s*")
 function string_to_table ( text, delimiter)
 	local list = {}
-	local pos = 1
 	-- this would result in endless loops
-	if string.find("", delimiter, 1) then 
-		error("delimiter matches empty string!")
-	end
-	while 1 do
-		local first, last = string.find(text, delimiter, pos)
-		if first then -- found?
-			table.insert(list, string.sub(text, pos, first-1))
-			pos = last+1
-		else
-			table.insert(list, string.sub(text, pos))
-			break
+	if string.find("", delimiter) then 
+		-- delimiter matches empty string!
+		for i=1,#text do
+			list[#list + 1] = string.sub(text, i, i)
+		end
+	else
+		local pos = 1
+		while 1 do
+			local first, last = string.find(text, delimiter, pos)
+			if first then -- found?
+				table.insert(list, string.sub(text, pos, first-1))
+				pos = last+1
+			else
+				table.insert(list, string.sub(text, pos))
+				break
+			end
 		end
 	end
 	return list
@@ -182,4 +194,48 @@ expand_bash_syntax_vars = function ( str )
  return (str)
 end
 
+-- Removes the linenum line from str and replaces it with line.
+-- Do nothing if doesn't exist
+-- Set line to nil to remove the line
+function replace_line(str, linenum, line)
+	-- Split the str to remove the line
+	local startchar, endchar = string.match(str, "^" .. string.rep("[^\n]*\n", linenum-1) .. "()[^\n]*\n?()")
+	if startchar and endchar then
+		local lines = {}
+		lines[1] = string.sub(str, 1, startchar-1)
+		lines[2] = string.sub(str, endchar, -1)
+		if line then
+			table.insert(lines, 2, line .. "\n")
+		end
+		str = table.concat(lines)
+	end
+	return str
+end
 
+-- Inserts the line into the str after the linenum (or at the end)
+function insert_line(str, linenum, line)
+	-- Split the str to remove the line
+	local startchar = string.match(str, "^" .. string.rep("[^\n]*\n", linenum) .. "()")
+	local lines = {}
+	if startchar then
+		lines[1] = string.sub(str, 1, startchar-1)
+		lines[2] = string.sub(str, startchar, -1)
+	else
+		lines[1] = str
+	end
+	if line then
+		table.insert(lines, 2, line .. "\n")
+	end
+	str = table.concat(lines)
+	return str
+end
+
+function get_line(str, linenum)
+	-- Split the str to remove the line
+	local startchar, endchar = string.match(str, "^" .. string.rep("[^\n]*\n", linenum-1) .. "()[^\n]*()")
+	local line
+	if startchar and endchar then
+		line = string.sub(str, startchar, endchar-1)
+	end
+	return line
+end
