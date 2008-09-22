@@ -1,6 +1,7 @@
 module(..., package.seeall)
 
 -- Load libraries
+require("fs")
 require("procps")
 require("daemoncontrol")
 require("processinfo")
