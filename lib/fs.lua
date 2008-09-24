@@ -117,14 +117,16 @@ function find ( what, where )
 		where = where or posix.getcwd()
 		f = f or ".*"
 		t =  t or {}
-		for d in posix.files ( where ) do
-			if fs.is_dir ( where .. "/" ..  d ) and (d ~= ".") and ( d ~= "..") then
-				find_files_as_array (f, where .. "/" .. d, t )
-			end
-			if (string.match (d, "^" .. f .. "$" ))  then
-				table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
+		if fs.is_dir(where) then
+			for d in posix.files ( where ) do
+				if fs.is_dir ( where .. "/" ..  d ) and (d ~= ".") and ( d ~= "..") then
+					find_files_as_array (f, where .. "/" .. d, t )
+				end
+				if (string.match (d, "^" .. f .. "$" ))  then
+					table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
 				end
 			end
+		end
 		return (t)
 	end
 
