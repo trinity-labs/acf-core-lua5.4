@@ -82,6 +82,18 @@ function parse_linesandwords ( input )
 	return lines
 end
 
+-- returns a table with label value pairs
+
+function parse_configfile( input )
+	local config = {}
+	local lines = parse_linesandwords(input)
+
+	for i,linetable in ipairs(lines) do
+		config[linetable[1]] = table.concat(linetable, " ", 2) or ""
+	end
+	return config
+end
+
 -- search and replace through a table
 -- string is easy string.gsub(string, find, replace)
 
