@@ -13,7 +13,6 @@ authenticator-plaintext.lua - Used to parse through the username:password file a
 validator.lua - Validate web input for ACF. 
 html.lua - Helps with form building in ACF.
 menubuilder.lua -Helps create the menus on left window in ACF
-web_elements.lua - More web functionality for ACF.
 privsep.lua - Helps with authorization with ACF
 session.lua -Helps with Session mangement in ACF
 

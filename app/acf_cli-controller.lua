@@ -16,7 +16,6 @@ mvc.on_load = function (self, parent)
 	
 	-- this sets the package path for us and our children
 	package.path=  self.conf.libdir .. "?.lua;" .. package.path
-	require ("cfe")
 
 	self.session = {}
 	local x=require("session")

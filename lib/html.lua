@@ -107,7 +107,7 @@ end
 	
 	
 --[[ Form functions ]]------------------------------------------------------
--- These expect something like a cfe to work (see acf_www-controller.lua)
+-- These expect something like a cfe to work (see mvc.lua)
 
 form = {}
 form.text = function ( v )
