@@ -2,7 +2,6 @@ include ../config.mk
 
 LIB_DIST=fs.lua\
 	html.lua\
-	join.lua\
 	date.lua\
 	debugs.lua\
 	format.lua\
@@ -10,7 +9,6 @@ LIB_DIST=fs.lua\
 	procps.lua\
 	privsep.lua\
 	session.lua\
-	split.lua\
 	validator.lua\
 	web_elements.lua\
 	authenticator.lua\

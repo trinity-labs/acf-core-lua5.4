@@ -7,7 +7,7 @@ Also we use Lua Posix for the rest of the functionality.
 date.lua - Date and Time functions
 fs.lua - File and filesystem library
 pidof.lua - Process libraries not provided by LPOSIX
-format.lua - Library to help reformat string,tables,files or any input. Good place for split and join
+format.lua - Library to help reformat strings and tables.
 
 authenticator-plaintext.lua - Used to parse through the username:password file and for permission help 
 validator.lua - Validate web input for ACF. 
@@ -16,11 +16,4 @@ menubuilder.lua -Helps create the menus on left window in ACF
 web_elements.lua - More web functionality for ACF.
 privsep.lua - Helps with authorization with ACF
 session.lua -Helps with Session mangement in ACF
-
-*** THESE MAY GO AWAY. PUT IN format.lua ***
-
-join.lua - Takes a table and given a delimeter makes it into a string 
-*** Added to format.lua as format.table_to_string ***
-split.lua - Take a delimeted string and makes it into a table 
-*** Added to format.lua as format.string_to_table ***
 
