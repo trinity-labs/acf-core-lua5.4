@@ -3,14 +3,11 @@ include ../config.mk
 LIB_DIST=fs.lua\
 	html.lua\
 	date.lua\
-	debugs.lua\
 	format.lua\
 	menubuilder.lua\
 	procps.lua\
-	privsep.lua\
 	session.lua\
 	validator.lua\
-	web_elements.lua\
 	authenticator.lua\
 	authenticator-plaintext.lua\
 	daemoncontrol.lua\
