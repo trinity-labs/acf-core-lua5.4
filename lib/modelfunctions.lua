@@ -2,13 +2,11 @@ module(..., package.seeall)
 
 -- Load libraries
 require("fs")
-require("procps")
-require("daemoncontrol")
 require("processinfo")
 
 function getenabled(processname)
 	local result = cfe({ label = "Program status" })
-	local t = procps.pidof(processname)
+	local t = processinfo.pidof(processname)
 	if (t) and (#t > 0) then
 		result.value = "Enabled"
 	else
@@ -19,7 +17,7 @@ end
 
 function startstop_service(processname, action)
 	-- action is validated in daemoncontrol
-	local cmdresult,cmdmessage,cmderror,cmdaction = daemoncontrol.daemoncontrol(processname, action)
+	local cmdresult,cmdmessage,cmderror,cmdaction = processinfo.daemoncontrol(processname, action)
 	return cfe({ value=cmdmessage or "", errtxt=cmderror, label="Start/Stop result" })
 end
 

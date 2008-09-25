@@ -5,12 +5,10 @@ LIB_DIST=fs.lua\
 	date.lua\
 	format.lua\
 	menubuilder.lua\
-	procps.lua\
 	session.lua\
 	validator.lua\
 	authenticator.lua\
 	authenticator-plaintext.lua\
-	daemoncontrol.lua\
 	getopts.lua\
 	roles.lua\
 	processinfo.lua\
