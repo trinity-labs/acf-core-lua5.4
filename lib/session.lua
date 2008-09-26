@@ -13,7 +13,6 @@
 module (..., package.seeall)
 
 require "posix"
-require "format"
 
 minutes_expired_events=30
 minutes_count_events=30

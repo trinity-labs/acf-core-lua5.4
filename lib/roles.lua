@@ -1,7 +1,6 @@
 --this module is for authorization help and group/role management
 
 require ("authenticator")
-require ("posix")
 require ("fs")
 require ("format")
 

@@ -245,7 +245,7 @@ mvc.on_load = function (self, parent)
 				self.clientdata.sessionid)
 		if timestamp == nil then 
 			-- invalid session id, report event and create new one
-			sessionlib.record_event(self.conf.sessiondir,
+			sessionlib.record_event(self.conf.sessiondir, nil,
 				sessionlib.hash_ip_addr(self.conf.clientip))
 			--logevent("Didn't find session")
 		else

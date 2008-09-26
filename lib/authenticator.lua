@@ -4,7 +4,7 @@
 module (..., package.seeall)
 
 require("modelfunctions")
-require("fs")
+require("format")
 
 -- This will be the sub-authenticator
 local auth
@@ -77,7 +77,7 @@ local write_settings = function(self, settings, id)
 	-- Password, password_confirm, roles are allowed to not exist, just leave the same
 	id.userid = settings.value.userid.value
 	id.username = settings.value.username.value
-	if settings.value.password then id.password = fs.md5sum_string(settings.value.password.value) end
+	if settings.value.password then id.password = format.md5sum_string(settings.value.password.value) end
 	if settings.value.roles then id.roles = table.concat(settings.value.roles.value, ",") end
 
 	return auth.write_entry(self, passwdtable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or ""))
@@ -130,7 +130,7 @@ authenticate = function(self, userid, password)
 			local id = get_id(userid)
 			if not id then
 				errtxt = "Userid not found"
-			elseif id.password ~= fs.md5sum_string(password) then
+			elseif id.password ~= format.md5sum_string(password) then
 				errtxt = "Invalid password"
 			end
 		end

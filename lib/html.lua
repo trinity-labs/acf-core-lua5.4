@@ -43,7 +43,7 @@ function html_escape (text )
 end
 
 --  return a name,value pair as a string.  
-nv_pair = function ( name, value)
+local nv_pair = function ( name, value)
 	if ( name == nil ) then
 		return ( value or "" )
 	end

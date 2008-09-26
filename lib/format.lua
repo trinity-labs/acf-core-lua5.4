@@ -179,7 +179,7 @@ function md5sum_string ( str)
 	local checksum =  {}
 	for line in f:lines() do
 		checksum[#checksum + 1] = line
-		end
+	end
 	f:close()
 	return checksum[1]
 end
@@ -189,21 +189,20 @@ end
 -- ex: a="foo"; print(expand_bash_syntax_vars("a=${a}) - > "a=foo"
 
 expand_bash_syntax_vars = function ( str )
+	local deref = function ( f)
+		local v = _G
+		for w in string.gfind(f, "[%w_]+") do
+			v = v[w]
+		end
+		return v
+	end
 
-  local deref = function ( f)
-    local v = _G
-    for w in string.gfind(f, "[%w_]+") do
-      v = v[w]
-    end
-  return v
-  end
-
-  for w in string.gmatch (str, "${[^}]*}" ) do
-        local rvar = string.sub(w,3,-2)
-        local rval = ( deref(rvar) or "nil" )
-        str = string.gsub (str, w, rval)
-  end
- return (str)
+	for w in string.gmatch (str, "${[^}]*}" ) do
+		local rvar = string.sub(w,3,-2)
+		local rval = ( deref(rvar) or "nil" )
+		str = string.gsub (str, w, rval)
+	end
+	return (str)
 end
 
 -- Removes the linenum line from str and replaces it with line.
