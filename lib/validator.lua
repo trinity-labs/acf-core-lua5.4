@@ -3,71 +3,20 @@
 --------------------------------------------------
 module (..., package.seeall)
 
--- setup the 'language' table
-lang = {}
-lang.English = 1
-lang.German  = 2
-lang.French  = 3
-lang.Current = lang.English
-
--- setup the 'validator' tables
-validator = {}
-validator.msg = {}
-validator.msg.err = {}
-
--- setup error messages
-validator.msg.err.Success = {}
-validator.msg.err.Success[lang.English]        = "Ok."
-validator.msg.err.Success[lang.German]         = "Ok."
-validator.msg.err.InvalidChars = {}
-validator.msg.err.InvalidChars[lang.English]   = "Invalid characters!"
-validator.msg.err.InvalidChars[lang.German]    = "Ungültige Zeichen!"
-validator.msg.err.InvalidLength = {}
-validator.msg.err.InvalidLength[lang.English]  = "Invalid length!"
-validator.msg.err.InvalidLength[lang.German]   = "Ungültige Länge!"
-validator.msg.err.InvalidFormat = {}
-validator.msg.err.InvalidFormat[lang.English]  = "Invalid format!"
-validator.msg.err.InvalidFormat[lang.German]   = "Ungültiges Format!"
-validator.msg.err.InvalidValue = {}
-validator.msg.err.InvalidValue[lang.English]   = "Invalid Value!"
-validator.msg.err.InvalidValue[lang.German]    = "Ungültiger Wert!"
-validator.msg.err.OutOfRange = {}
-validator.msg.err.OutOfRange[lang.English]     = "Value out of range!"
-validator.msg.err.OutOfRange[lang.German]      = "Wert ausserhalb des Bereichs!"
-
-validator.msg.err.FileInvalidPath1 = {}
-validator.msg.err.FileInvalidPath1[lang.English]	= "Not a valid path!"
-validator.msg.err.FileInvalidPath2 = {}
-validator.msg.err.FileInvalidPath2[lang.English]	= "You are restrected to"
-
-
 function is_string ( str )
-	if type(str) == "string" then
-	return true, str, "Is a string."
-	else
-	return false, str, "Is not a string."
-	end
+	return (type(str) == "string")
 end
 
 function is_boolean ( str )
-	if type(str) == "boolean" then
-	return true, str, "Is a boolean."
-	else
-	return false, str, "Is not a boolean."
-	end
+	return (type(str) == "boolean")
 end
 
 function is_number ( str )
-	if type(str) == "number" then
-	return true, str, "Is a number."
-	else
-	return false, str, "Is not a number."
-	end
+	return (type(str) == "number")
 end
 
 --
 -- This function validates an ipv4 address.
--- On success it returns 1 otherwise a negative value
 --
 function is_ipv4(ipv4)
 	local retval = false;
@@ -76,7 +25,7 @@ function is_ipv4(ipv4)
 
 	-- check the ipv4's length
 	if (iplen < 7 or iplen > 15) then
-		return false, validator.msg.err.InvalidLength[lang.Current]
+		return false, "Invalid Length"
 	end
 
 	-- NC: Split the string into an array. separate with '.' (dots)
@@ -93,7 +42,7 @@ function is_ipv4(ipv4)
 		nums[3] == nil or
 		nums[4] == nil) then
 		-- we have an empty number
-		return false, validator.msg.err.InvalidFormat[lang.Current]
+		return false, "Invalid Format"
 	end
 
 	-- too big?
@@ -102,15 +51,14 @@ function is_ipv4(ipv4)
 			tonumber(nums[3]) > 255 or
 			tonumber(nums[4]) > 255) then
 		-- at least one number is too big
-		return false, validator.msg.err.InvalidValue[lang.Current]
+		return false, "Invalid Value"
 	end
 	
-	return true, validator.msg.err.Success[lang.Current]
+	return true
 end
 
 --
 -- This function validates a partial ipv4 address.
--- On success it returns 1 otherwise a negative value
 --
 function is_partial_ipv4(ipv4)
 	local retval = false;
@@ -118,7 +66,7 @@ function is_partial_ipv4(ipv4)
 	
 	-- Check to see if any invalid characters
 	if not ipv4 or not ipv4:match("^[%d%.]+$") then
-		return false, validator.msg.err.InvalidFormat[lang.Current]
+		return false, "Invalid Format"
 	end
 
 	-- NC: Split the string into an array. separate with '.' (dots)
@@ -127,16 +75,16 @@ function is_partial_ipv4(ipv4)
 		nums[#nums+1] = num
 		-- too big?
 		if tonumber(num) > 255 then
-			return false, validator.msg.err.InvalidFormat[lang.Current]
+			return false, "Invalid Format"
 		end
 	end
 
 	-- too many numbers
 	if #nums > 4 then
-		return false, validator.msg.err.InvalidFormat[lang.Current]
+		return false, "Invalid Format"
 	end
 
-	return true, validator.msg.err.Success[lang.Current]
+	return true
 end
 
 function is_mac(mac)
@@ -144,7 +92,7 @@ function is_mac(mac)
 	local tmpmac = string.upper(mac)
 
 	if (string.len(tmpmac) ~= 17) then
-		return false, validator.msg.err.InvalidLength[lang.Current]
+		return false, "Invalid Length"
 	end
 
 	-- check for valid characters
@@ -154,7 +102,7 @@ function is_mac(mac)
 			 (string.sub(tmpmac, step, step) < "0" or string.sub(tmpmac, step, step) > "9") and 
 			 (string.sub(tmpmac, step, step) < "A" or string.sub(tmpmac, step, step) > "F") then
 			-- we have found an invalid character!
-			return false, validator.msg.err.InvalidChars[lang.Current]
+			return false, "Invalid Chars"
 		end
 		step = step + 1;
 	end
@@ -165,7 +113,7 @@ function is_mac(mac)
 			string.sub(tmpmac, 9, 9) ~= ":" or
 			string.sub(tmpmac, 12, 12) ~= ":" or
 			string.sub(tmpmac, 15, 15) ~= ":") then
-		return false, validator.msg.err.InvalidFormat[lang.Current]
+		return false, "Invalid Format"
 	end
 
 	-- check for valid non colon positions
@@ -174,12 +122,12 @@ function is_mac(mac)
 		if ((string.sub(tmpmac, step, step) == ":") and
 				((step ~= 3) and (step ~= 6) and (step ~= 9) and (step ~= 12) and 
 				 (step ~= 15))) then
-			return false, validator.msg.err.InvalidValue[lang.Current]
+			return false, "Invalid Value"
 		end
 		step = step + 1;
 	end
 
-	return true, validator.msg.err.Success[lang.Current]
+	return true
 end
 
 --
@@ -189,7 +137,7 @@ end
 --
 function is_integer(numstr)
 	-- ^   beginning of string
-	-- -?  one or zero ot the char '-'
+	-- -?  one or zero of the char '-'
 	-- %d+ one or more digits
 	-- $   end of string
 	return string.find(numstr, "^-?%d+$") ~= nil
@@ -218,8 +166,7 @@ end
 
 function is_valid_filename ( path, restriction )
 	if not (path) or ((restriction) and (string.find (path, "^" .. restriction ) == nil or string.find (path, "/", #restriction+2) )) then
-		return false, "* " .. validator.msg.err.FileInvalidPath1[lang.Current] .. "\n* ".. 
-			validator.msg.err.FileInvalidPath2[lang.Current] .. ":" .. string.format(restriction)
+		return false
 	end
-	return true, path
+	return true
 end
