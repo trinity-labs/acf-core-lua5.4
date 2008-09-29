@@ -103,3 +103,37 @@ function validatemulti(multi)
 	end
 	return true
 end
+
+
+function write_file_with_audit (self, path, str)
+	local pre = ""
+	local post = ""
+	local tmpfile = (self.conf.sessiondir or "/tmp/") .. 
+		(self.sessiondata.userinfo.userid or "unknown") .. "-" ..
+		 os.time() .. ".tmp"
+	
+	if type(self.conf) == "table" then
+		-- we make temporary globals for expand_bash_syntax_vars
+		local a,b,c = TEMPFILE,CONFFILE,_G.self
+		TEMPFILE=tmpfile
+		CONFFILE=path
+		_G.self=self
+
+		pre = format.expand_bash_syntax_vars(self.conf.audit_precommit or "" )
+		post = format.expand_bash_syntax_vars(self.conf.audit_postcommit or "")
+		TEMPFILE,CONFFILE,_G.self = a,b,c
+	end
+	
+	fs.write_file(tmpfile,str)
+	
+	if #pre then
+		os.execute(pre)
+	end
+	
+	os.rename (tmpfile, path)
+	
+	if #post then
+		os.execute(post)
+	end
+	return
+end

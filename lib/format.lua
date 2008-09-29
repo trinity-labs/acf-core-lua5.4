@@ -187,22 +187,22 @@ end
 
 -- Takes a str and expands any ${...} constructs with the Lua variable
 -- ex: a="foo"; print(expand_bash_syntax_vars("a=${a}) - > "a=foo"
+expand_bash_syntax_vars = function (str)
+  
+  local deref = function ( f)
+    local v = getfenv(3) -- get the upstream global env
+    for w in string.gfind(f, "[%w_]+") do
+      if v then v = v[w] end
+    end
+  return v
+  end
 
-function expand_bash_syntax_vars ( str )
-	local deref = function ( f)
-		local v = _G
-		for w in string.gfind(f, "[%w_]+") do
-			v = v[w]
-		end
-		return v
-	end
-
-	for w in string.gmatch (str, "${[^}]*}" ) do
-		local rvar = string.sub(w,3,-2)
-		local rval = ( deref(rvar) or "nil" )
-		str = string.gsub (str, w, rval)
-	end
-	return (str)
+  for w in string.gmatch (str, "${[^}]*}" ) do
+        local rvar = string.sub(w,3,-2)
+        local rval = ( deref(rvar) or "nil" )
+        str = string.gsub (str, w, rval)
+  end
+ return (str)
 end
 
 -- Removes the linenum line from str and replaces it with line.
