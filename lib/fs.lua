@@ -64,7 +64,7 @@ end
 function write_file ( path, str )
 	local file = io.open(path, "w")
 	--append a newline char to EOF
-	str = str .. "\n"
+	str = string.gsub(str, "\n*$", "\n")
 	if ( file ) then
 		file:write(str)
 		file:close()

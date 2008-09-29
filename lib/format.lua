@@ -188,7 +188,7 @@ end
 -- Takes a str and expands any ${...} constructs with the Lua variable
 -- ex: a="foo"; print(expand_bash_syntax_vars("a=${a}) - > "a=foo"
 
-expand_bash_syntax_vars = function ( str )
+function expand_bash_syntax_vars ( str )
 	local deref = function ( f)
 		local v = _G
 		for w in string.gfind(f, "[%w_]+") do
@@ -249,4 +249,246 @@ function get_line(str, linenum)
 		line = string.sub(str, startchar, endchar-1)
 	end
 	return line
+end
+
+-- Search the option string for separate options (-x or --xyz) and put them in a table
+function opts_to_table ( optstring, filter )
+	local optsparams
+	if optstring then
+		local optstr = optstring .. " "
+		for o in string.gmatch(optstr, "%-%-?%a+%s+[^-%s]*") do
+			local option = string.match(o, "%-%-?%a+")
+			if not filter or filter == option then
+				if not optsparams then optsparams = {} end
+				optsparams[option] = string.match(o, "%S*$")
+			end
+		end
+	end
+	return optsparams
+end
+
+-- Go through an options table and create the option string
+function table_to_opts ( optsparams )
+	local optstring = {}
+	for opt,val in pairs(optsparams) do
+		optstring[#optstring + 1] = opt
+		if val ~= "" then
+			optstring[#optstring + 1] = val
+		end
+	end
+	return table.concat(optstring, " ")
+end
+
+-- Set a name=value pair in a string
+-- If search_section is undefined or "", goes in the default section
+-- If value is defined we put "search_name=value" into search_section
+-- If value is undefined, we clear search_name out of search section
+-- Try not to touch anything but the value we're interested in (although will combine multi-line into one)
+-- If the search_section is not found, we'll add it at the end of the string
+-- If the search_name is not found, we'll add it at the end of the section
+function update_configfile2 (file, search_section, search_name, value)
+	if not file or not search_name or search_name == "" then
+		return file, false
+	end
+	
+	search_section = search_section or ""
+	local new_conf_file = {}
+	local section = ""
+	local done = false
+	local skip_lines = {}
+	for l in string.gmatch(file, "([^\n]*)\n?") do
+		if done == false then
+			if string.find ( l, "\\%s*$" ) then
+				skip_lines[#skip_lines+1] = string.match(l, "^(.*)\\%s*$")
+				l = nil
+			else
+				if #skip_lines then
+					skip_lines[#skip_lines+1] = l
+					l = table.concat(skip_lines, " ")
+				end
+				-- check if comment line
+				if not string.find ( l, "^%s*#" ) then
+					-- find section name
+					local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
+					if a then
+						-- we reached a new section, if we were in the one we wanted
+						-- we have to add in the name:value pair now
+						if (search_section == section) then
+							new_conf_file[#new_conf_file + 1] = search_name.."="..value
+							done = true
+						end
+						section = a
+					elseif (search_section == section) then
+						-- find name
+						a = string.match ( l, "^%s*(%S+)%s*=" )
+						if a and (search_name == a) then
+							-- We found the name, change the value, keep any comment
+							local comment = string.match(l, " #.*$") or ""
+							l = search_name.."="..value..comment
+							skip_lines = {}	-- replacing line
+							done = true
+						end
+					end
+				end
+				if #skip_lines > 0 then
+					for i,line in ipairs(skip_lines) do
+						new_conf_file[#new_conf_file + 1] = line
+					end
+					skip_lines = {}
+					l = nil
+				end
+			end
+		end
+		new_conf_file[#new_conf_file + 1] = l
+	end
+
+	if done == false then
+		-- we didn't find the section:name, add it now
+		if section ~= search_section then
+			new_conf_file[#new_conf_file + 1] = '[' .. search_section .. ']'
+		end
+		new_conf_file[#new_conf_file + 1] = search_name.."="..value
+	end
+
+	file = table.concat(new_conf_file, '\n')
+
+	return file, true
+end
+
+-- Parse string for name=value pairs, returned in a table
+-- If search_section is defined, only report values in matching section
+-- If search_name is defined, only report matching name (possibly in multiple sections)
+function parse_configfile2 (file, search_section, search_name)
+	if not file or file == "" then
+		return nil
+	end
+	local opts = nil
+	local section = ""
+	local skip_lines = {}
+	for l in string.gmatch(file, "([^\n]*)\n?") do
+		if string.find ( l, "\\%s*$" ) then
+			skip_lines[#skip_lines+1] = string.match(l, "^(.*)\\%s*$")
+		else
+			if #skip_lines then
+				skip_lines[#skip_lines+1] = l
+				l = table.concat(skip_lines, " ")
+				skip_lines = {}
+			end
+			-- check if comment line
+			if not string.find ( l, "^%s*#" ) then
+				-- find section name
+				local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
+				if a then
+					if (search_section == section) then break end
+					section = a
+				elseif not (search_section) or (search_section == section) then
+					-- find name
+					a = string.match ( l, "^%s*(%S+)%s*=" )
+					if a and (not (search_name) or (search_name == a)) then
+						-- Figure out the value
+						local b = string.match ( l, '^%s*%S+%s*%=%s*(.*)$' ) or ""
+						-- remove comments from end of line
+						if string.find ( b, '#' ) then
+							b = string.match ( b, '^(.*)#.*$' ) or ""
+						end
+						-- remove spaces from front and back
+						b = string.match ( b, '^%s*(.*%S)%s*$' ) or ""
+						if not (opts) then opts = {} end
+						if not (opts[section]) then opts[section] = {} end
+						opts[section][a] = b
+					end
+				end
+			end
+		end
+	end
+
+	if opts and search_section and search_name then
+		return opts[search_section][search_name]
+	elseif opts and search_section then
+		return opts[search_section]
+	end	
+	return opts
+end
+
+function get_section (file, search_section)
+	if not file or file == "" or not search_section then
+		return nil
+	end
+	search_section = search_section or ""
+	local conf_file = {}
+	if (fs.is_file(file)) then
+		conf_file = fs.read_file_as_array ( file )
+	else
+		for line in string.gmatch(file, "([^\n]*)\n") do
+			conf_file[#conf_file + 1] = line
+		end
+		local extra = string.match(file,"([^\n]*)$")
+		if extra ~= "" then
+			conf_file[#conf_file + 1] = extra
+		end
+	end
+	local sectionlines = {}
+	local section = ""
+	for l in string.gmatch(file, "([^\n]*)\n?") do
+		-- find section name
+		local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
+		if a then
+			if (search_section == section) then break end
+			section = a
+		elseif (search_section == section) then
+			sectionlines[#sectionlines + 1] = l
+		end
+	end
+
+	return table.concat(sectionlines, "\n")
+end
+
+function set_section (file, search_section, section_content)
+	if not file or not search_section then
+		return file, false
+	end
+	search_section = search_section or ""
+	local conf_file = {}
+	if (fs.is_file(file)) then
+		conf_file = fs.read_file_as_array ( file )
+	else
+		for line in string.gmatch(file, "([^\n]*)\n") do
+			conf_file[#conf_file + 1] = line
+		end
+		local extra = string.match(file,"([^\n]*)$")
+		if extra ~= "" then
+			conf_file[#conf_file + 1] = extra
+		end
+	end
+	local new_conf_file = {}
+	local done = false
+	local section = ""
+	for l in string.gmatch(file, "([^\n]*)\n?") do
+		-- find section name
+		if not done then
+			local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
+			if a then
+				if (search_section == section) then
+					done = true
+				else
+					section = a
+					if (search_section == section) then
+						l = l .. "\n" .. (section_content or "")
+					end
+				end 
+			elseif (search_section == section) then
+				l = nil
+			end
+		end
+		new_conf_file[#new_conf_file + 1] = l
+	end
+
+	if not done then
+		-- we didn't find the section, add it now
+		new_conf_file[#new_conf_file + 1] = '[' .. search_section .. ']\n' .. (section_content or "")
+	end
+
+	file = table.concat(new_conf_file, '\n')
+
+	return file, true
 end

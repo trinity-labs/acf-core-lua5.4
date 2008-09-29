@@ -11,7 +11,6 @@ controllerfunctions.lua - Common controller functions
 date.lua - Date and Time functions
 format.lua - Library to help reformat strings and tables.
 fs.lua - File and filesystem library
-getopts.lua - Parsing certain type of config files
 html.lua - Helps with form building in ACF.
 menubuilder.lua - Helps create the menus on left window in ACF
 modelfunctions.lua - Common model functions

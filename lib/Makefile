@@ -9,7 +9,6 @@ LIB_DIST=fs.lua\
 	validator.lua\
 	authenticator.lua\
 	authenticator-plaintext.lua\
-	getopts.lua\
 	roles.lua\
 	processinfo.lua\
 	viewfunctions.lua\
