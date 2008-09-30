@@ -6,8 +6,15 @@ module (..., package.seeall)
 require("modelfunctions")
 require("format")
 
--- This will be the sub-authenticator
-local auth
+-- This is the sub-authenticator
+-- In the future, this will be set based upon configuration
+-- This is a public variable to allow other controllers (ie tinydns) to do their own permissions
+auth = require("authenticator-plaintext")
+
+-- Publicly define the pre-defined tables
+usertable = "passwd"
+roletable = "roles"
+
 -- This will hold the auth structure from the database
 local authstruct
 -- This is a list of fields in the database that we are allowed to use.
@@ -18,18 +25,10 @@ local availablefields = {
 	['username']=true, 
 	['roles']=true, 
 	}
-local passwdtable = "passwd"
-local roletable = "roles"
-
-local load_auth = function(self)
-	-- For now, just loads the plaintext version
-	auth = auth or require("authenticator-plaintext")
-end
 
 local load_database = function(self)
-	load_auth(self)
 	if not authstruct then
-		local authtable = auth.read_field(self, passwdtable, "")
+		local authtable = auth.read_field(self, usertable, "")
 		authstruct = {}
 		for i,value in ipairs(authtable) do
 			if value.id ~= "" then
@@ -80,7 +79,7 @@ local write_settings = function(self, settings, id)
 	if settings.value.password then id.password = format.md5sum_string(settings.value.password.value) end
 	if settings.value.roles then id.roles = table.concat(settings.value.roles.value, ",") end
 
-	return auth.write_entry(self, passwdtable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or ""))
+	return auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or ""))
 end
 	
 -- validate the settings (ignore password if it's nil)
@@ -243,106 +242,9 @@ new_settings = function (self, settings)
 end
 
 delete_user = function (self, userid)
-	load_auth(self)
 	local cmdresult = "Failed to delete user"
-	if auth.delete_entry(self, passwdtable, "", userid) then
+	if auth.delete_entry(self, usertable, "", userid) then
 		cmdresult = "User deleted"
 	end
 	return cfe({ value=cmdresult, label="Delete user result" })
-end
-
-list_userfields = function(self)
-	load_auth(self)
-	if auth then
-		return auth.list_fields(self, passwdtable)
-	end
-	return nil
-end
-
-read_userfield = function(self, name)
-	load_auth(self)
-	if auth and name ~= "" then
-		return auth.read_field(self, passwdtable, name)
-	end
-	return nil
-end
-
-delete_userfield = function(self, name)
-	load_auth(self)
-	if auth and name ~= "" then
-		return auth.delete_field(self, passwdtable, name)
-	end
-	return false
-end
-
-write_userentry = function(self, name, userid, entry)
-	load_auth(self)
-	if auth and name ~= "" then
-		return auth.write_entry(self, passwdtable, name, userid, entry)
-	end
-	return false
-end
-
-read_userentry = function(self, name, userid)
-	load_auth(self)
-	if auth and name ~= "" then
-		return auth.read_entry(self, passwdtable, name, userid)
-	end
-	return nil
-end
-
-delete_userentry = function (self, name, userid)
-	load_auth(self)
-	if auth and name ~= "" then
-		return auth.delete_entry(self, passwdtable, name, userid)
-	end
-	return false
-end
-
-list_rolefields = function(self)
-	load_auth(self)
-	if auth then
-		return auth.list_fields(self, roletable)
-	end
-	return nil
-end
-
-read_rolefield = function(self, name)
-	load_auth(self)
-	if auth then
-		return auth.read_field(self, roletable, name)
-	end
-	return nil
-end
-
-delete_rolefield = function(self, name)
-	load_auth(self)
-	if auth then
-		return auth.delete_field(self, roletable, name)
-	end
-	return false
-end
-
-write_roleentry = function(self, name, role, entry)
-	load_auth(self)
-	if auth then
-		return auth.write_entry(self, roletable, name, role, entry)
-	end
-	return false
-end
-
-read_roleentry = function(self, name, role)
-	load_auth(self)
-	if auth then
-		return auth.read_entry(self, roletable, name, role)
-	end
-	return nil
-end
-
-delete_roleentry = function (self, name, role)
-	load_auth(self)
-	if auth then
-		return auth.delete_entry(self, roletable, name, role)
-	end
-	return false
 end

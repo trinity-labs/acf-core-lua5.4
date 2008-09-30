@@ -93,7 +93,7 @@ list_roles = function(self)
 	end
 
 	-- Open the roles file and parse for defined roles
-	local entries = authenticator.read_rolefield(self, "") or {}
+	local entries = authenticator.auth.read_field(self, authenticator.roletable, "") or {}
 	for x,entry in ipairs(entries) do
 		if not reverseroles[entry.id] then
 			defined_roles[#defined_roles + 1] = entry.id
@@ -146,7 +146,7 @@ get_roles_perm = function(self,roles)
 		end
 	end
 
-	local entries = authenticator.read_rolefield(self, "") or {}
+	local entries = authenticator.auth.read_field(self, authenticator.roletable, "") or {}
 	for x,entry in ipairs(entries) do
 		if reverseroles[entry.id] then
 			temp = format.string_to_table(entry.entry, ",")
@@ -197,7 +197,7 @@ get_role_perm = function(self,role)
 		end
 	end
 	
-	local entry = authenticator.read_roleentry(self, "", role)
+	local entry = authenticator.auth.read_entry(self, authenticator.roletable, "", role)
 	if entry then
 		temp = format.string_to_table(entry, ",")
 		for z,perm in pairs(temp) do
@@ -225,7 +225,7 @@ delete_role = function(self, role)
 		end
 	end
 	
-	local result = authenticator.delete_roleentry(self, "", role)
+	local result = authenticator.auth.delete_entry(self, authenticator.roletable, "", role)
 	local cmdresult = "Role entry not found"
 	if result then cmdresult = "Role deleted" end
 
@@ -257,5 +257,5 @@ set_role_perm = function(self, role, permissions, permissions_array)
 		return false, "No permissions set"
 	end
 	
-	return authenticator.write_roleentry(self, "", role, table.concat(permissions_array,","))
+	return authenticator.auth.write_entry(self, authenticator.roletable, "", role, table.concat(permissions_array,","))
 end
