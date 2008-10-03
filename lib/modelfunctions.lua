@@ -15,13 +15,13 @@ function getenabled(processname)
 	return result
 end
 
-function startstop_service(processname, action)
+function startstop_service(initname, action)
 	-- action is validated in daemoncontrol
-	local cmdmessage,cmderror = processinfo.daemoncontrol(processname, action)
+	local cmdmessage,cmderror = processinfo.daemoncontrol(initname, action)
 	return cfe({ value=cmdmessage or "", errtxt=cmderror, label="Start/Stop result" })
 end
 
-function getstatus(processname, packagename, label)
+function getstatus(processname, packagename, label, initname)
 	local status = {}
 	
 	local value, errtxt = processinfo.package_version(packagename)
@@ -33,7 +33,7 @@ function getstatus(processname, packagename, label)
 
 	status.status = getenabled(processname)
 
-	local autostart_sequence, autostart_errtxt = processinfo.process_botsequence(processname)
+	local autostart_sequence, autostart_errtxt = processinfo.process_botsequence(initname or processname)
 	status.autostart = cfe({
 		label="Autostart sequence",
 		value=autostart_sequence,
