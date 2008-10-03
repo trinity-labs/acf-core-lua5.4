@@ -279,6 +279,13 @@ function table_to_opts ( optsparams )
 	return table.concat(optstring, " ")
 end
 
+-- The following functions deal with ini files.  ini files contain comments, sections, names and values
+-- 	commented lines begin with '#' or ';', in-line comments begin with '#' and run to the end of the line
+-- 	sections are defined by "[section]" on a line.  Anything before the first section definition is in section ""
+--	name value pairs are defined by "name = value".  Names and values may contain spaces but not '#'
+--	lines ending with '\' are continued on the next line
+
+
 -- Set a name=value pair in a string
 -- If search_section is undefined or "", goes in the default section
 -- If value is defined we put "search_name=value" into search_section
@@ -286,7 +293,7 @@ end
 -- Try not to touch anything but the value we're interested in (although will combine multi-line into one)
 -- If the search_section is not found, we'll add it at the end of the string
 -- If the search_name is not found, we'll add it at the end of the section
-function update_configfile2 (file, search_section, search_name, value)
+function update_ini_file (file, search_section, search_name, value)
 	if not file or not search_name or search_name == "" then
 		return file, false
 	end
@@ -307,7 +314,7 @@ function update_configfile2 (file, search_section, search_name, value)
 					l = table.concat(skip_lines, " ")
 				end
 				-- check if comment line
-				if not string.find ( l, "^%s*#" ) then
+				if not string.find ( l, "^%s*[#;]" ) then
 					-- find section name
 					local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
 					if a then
@@ -320,7 +327,7 @@ function update_configfile2 (file, search_section, search_name, value)
 						section = a
 					elseif (search_section == section) then
 						-- find name
-						a = string.match ( l, "^%s*(%S+)%s*=" )
+						a = string.match ( l, "^%s*([^=]*%S)%s*=" )
 						if a and (search_name == a) then
 							-- We found the name, change the value, keep any comment
 							local comment = string.match(l, " #.*$") or ""
@@ -358,7 +365,7 @@ end
 -- Parse string for name=value pairs, returned in a table
 -- If search_section is defined, only report values in matching section
 -- If search_name is defined, only report matching name (possibly in multiple sections)
-function parse_configfile2 (file, search_section, search_name)
+function parse_ini_file (file, search_section, search_name)
 	if not file or file == "" then
 		return nil
 	end
@@ -375,7 +382,7 @@ function parse_configfile2 (file, search_section, search_name)
 				skip_lines = {}
 			end
 			-- check if comment line
-			if not string.find ( l, "^%s*#" ) then
+			if not string.find ( l, "^%s*[#;]" ) then
 				-- find section name
 				local a = string.match ( l, "^%s*%[%s*(%S+)%s*%]" )
 				if a then
@@ -383,16 +390,16 @@ function parse_configfile2 (file, search_section, search_name)
 					section = a
 				elseif not (search_section) or (search_section == section) then
 					-- find name
-					a = string.match ( l, "^%s*(%S+)%s*=" )
+					a = string.match ( l, "^%s*([^=]*%S)%s*=" )
 					if a and (not (search_name) or (search_name == a)) then
 						-- Figure out the value
-						local b = string.match ( l, '^%s*%S+%s*%=%s*(.*)$' ) or ""
+						local b = string.match ( l, '=%s*(.*)$' ) or ""
 						-- remove comments from end of line
 						if string.find ( b, '#' ) then
 							b = string.match ( b, '^(.*)#.*$' ) or ""
 						end
 						-- remove spaces from front and back
-						b = string.match ( b, '^%s*(.*%S)%s*$' ) or ""
+						b = string.gsub ( b, '%s+$', '' )
 						if not (opts) then opts = {} end
 						if not (opts[section]) then opts[section] = {} end
 						opts[section][a] = b
@@ -410,23 +417,11 @@ function parse_configfile2 (file, search_section, search_name)
 	return opts
 end
 
-function get_section (file, search_section)
-	if not file or file == "" or not search_section then
+function get_ini_section (file, search_section)
+	if not file then
 		return nil
 	end
 	search_section = search_section or ""
-	local conf_file = {}
-	if (fs.is_file(file)) then
-		conf_file = fs.read_file_as_array ( file )
-	else
-		for line in string.gmatch(file, "([^\n]*)\n") do
-			conf_file[#conf_file + 1] = line
-		end
-		local extra = string.match(file,"([^\n]*)$")
-		if extra ~= "" then
-			conf_file[#conf_file + 1] = extra
-		end
-	end
 	local sectionlines = {}
 	local section = ""
 	for l in string.gmatch(file, "([^\n]*)\n?") do
@@ -443,26 +438,16 @@ function get_section (file, search_section)
 	return table.concat(sectionlines, "\n")
 end
 
-function set_section (file, search_section, section_content)
-	if not file or not search_section then
+function set_ini_section (file, search_section, section_content)
+	if not file then
 		return file, false
 	end
 	search_section = search_section or ""
-	local conf_file = {}
-	if (fs.is_file(file)) then
-		conf_file = fs.read_file_as_array ( file )
-	else
-		for line in string.gmatch(file, "([^\n]*)\n") do
-			conf_file[#conf_file + 1] = line
-		end
-		local extra = string.match(file,"([^\n]*)$")
-		if extra ~= "" then
-			conf_file[#conf_file + 1] = extra
-		end
-	end
+	section_content = section_content or ""
 	local new_conf_file = {}
 	local done = false
 	local section = ""
+	if search_section == "" then new_conf_file[1] = section_content end
 	for l in string.gmatch(file, "([^\n]*)\n?") do
 		-- find section name
 		if not done then
@@ -473,7 +458,7 @@ function set_section (file, search_section, section_content)
 				else
 					section = a
 					if (search_section == section) then
-						l = l .. "\n" .. (section_content or "")
+						l = l .. "\n" .. section_content
 					end
 				end 
 			elseif (search_section == section) then
@@ -485,7 +470,10 @@ function set_section (file, search_section, section_content)
 
 	if not done then
 		-- we didn't find the section, add it now
-		new_conf_file[#new_conf_file + 1] = '[' .. search_section .. ']\n' .. (section_content or "")
+		if section ~= search_section then
+			new_conf_file[#new_conf_file + 1] = '[' .. search_section .. ']'
+			new_conf_file[#new_conf_file + 1] = section_content
+		end
 	end
 
 	file = table.concat(new_conf_file, '\n')
