@@ -2,6 +2,7 @@ module(..., package.seeall)
 
 -- Load libraries
 require("fs")
+require("format")
 require("processinfo")
 
 function getenabled(processname)
@@ -43,32 +44,64 @@ function getstatus(processname, packagename, label, initname)
 	return cfe({ type="group", value=status, label=label })
 end
 
-function getfiledetails(file, validatefunction)
-	local filename = cfe({ value=file, label="File name" })
+function getfiledetails(file, validatefilename, validatefiledetails)
+	local filename = cfe({ value=file or "", label="File name" })
 	local filecontent = cfe({ type="longtext", label="File content" })
 	local filesize = cfe({ value="0", label="File size" })
 	local mtime = cfe({ value="---", label="File date" })
-	if fs.is_file(file) then
-		local filedetails = fs.stat(file)
-		filecontent.value = fs.read_file(file)
-		filesize.value = filedetails.size
-		mtime.value = filedetails.mtime
-	else
-		filename.errtxt = "File not found"
-	end
 	local filedetails = cfe({ type="group", value={filename=filename, filecontent=filecontent, filesize=filesize, mtime=mtime}, label="Config file details" })
 	local success = true
-	if validatefunction then
-		success, filedetails = validatefunction(filedetails)
+	if type(validatefilename) == "function" then
+		success = validatefilename(filedetails.value.filename.value)
+		if not success then
+			filedetails.value.filename.errtxt = "Invalid File"
+		end
+	elseif type(validatefilename) == "table" then
+		success = false
+		filedetails.value.filename.errtxt = "Invalid File"
+		for i,f in ipairs(validatefilename) do	
+			if f == filedetails.value.filename.value then
+				success = true
+				filedetails.value.filename.errtxt = nil
+			end
+		end
+	end
+	if success then
+		if fs.is_file(file) then
+			local filedetails = fs.stat(file)
+			filecontent.value = fs.read_file(file)
+			filesize.value = filedetails.size
+			mtime.value = filedetails.mtime
+		else
+			filename.errtxt = "File not found"
+		end
+		if validatefiledetails then
+			success, filedetails = validatefiledetails(filedetails)
+		end
 	end
 	return filedetails
 end
 
-function setfiledetails(filedetails, validatefunction)
+function setfiledetails(filedetails, validatefilename, validatefiledetails)
 	filedetails.value.filecontent.value = string.gsub(format.dostounix(filedetails.value.filecontent.value), "\n+$", "")
 	local success = true
-	if validatefunction then
-		success, filedetails = validatefunction(filedetails)
+	if type(validatefilename) == "function" then
+		success = validatefilename(filedetails.value.filename.value)
+		if not success then
+			filedetails.value.filename.errtxt = "Invalid File"
+		end
+	elseif type(validatefilename) == "table" then
+		success = false
+		filedetails.value.filename.errtxt = "Invalid File"
+		for i,f in ipairs(validatefilename) do	
+			if f == filedetails.value.filename.value then
+				success = true
+				filedetails.value.filename.errtxt = nil
+			end
+		end
+	end
+	if success and type(validatefiledetails) == "function" then
+		success, filedetails = validatefiledetails(filedetails)
 	end
 	if success then
 		fs.write_file(filedetails.value.filename.value, filedetails.value.filecontent.value)
