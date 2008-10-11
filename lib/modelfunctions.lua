@@ -6,23 +6,23 @@ require("format")
 require("processinfo")
 
 function getenabled(processname)
-	local result = cfe({ label = "Program status" })
+	local result = cfe({ label = "Program status", name=processname })
 	local t = processinfo.pidof(processname)
 	if (t) and (#t > 0) then
-		result.value = "Enabled"
+		result.value = "Running"
 	else
-		result.value = "Disabled"
+		result.value = "Stopped"
 	end
 	return result
 end
 
-function startstop_service(initname, action)
+function startstop_service(servicename, action)
 	-- action is validated in daemoncontrol
-	local cmdmessage,cmderror = processinfo.daemoncontrol(initname, action)
+	local cmdmessage,cmderror = processinfo.daemoncontrol(servicename, action)
 	return cfe({ value=cmdmessage or "", errtxt=cmderror, label="Start/Stop result" })
 end
 
-function getstatus(processname, packagename, label, initname)
+function getstatus(processname, packagename, label, servicename)
 	local status = {}
 	
 	local value, errtxt = processinfo.package_version(packagename)
@@ -30,15 +30,17 @@ function getstatus(processname, packagename, label, initname)
 		label="Program version",
 		value=value,
 		errtxt=errtxt,
+		name=packagename
 		})
 
 	status.status = getenabled(processname)
 
-	local autostart_sequence, autostart_errtxt = processinfo.process_botsequence(initname or processname)
+	local autostart_sequence, autostart_errtxt = processinfo.process_startupsequence(servicename or processname)
 	status.autostart = cfe({
 		label="Autostart sequence",
 		value=autostart_sequence,
 		errtxt=autostart_errtxt,
+		name=servicename or processname
 		})
 	
 	return cfe({ type="group", value=status, label=label })

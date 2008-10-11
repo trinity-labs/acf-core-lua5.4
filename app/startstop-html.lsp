@@ -5,9 +5,9 @@
 <form action="<%= page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>" method="POST">
 <DT>Program control-panel</DT>
 <DD>
-<input class="submit" type="submit" name="action" value="Start" <% if data.value.status.value== "Enabled" then io.write("disabled") end %>>
-<input class="submit" type="submit" name="action" value="Stop" <% if data.value.status.value== "Disabled" then io.write("disabled") end %>>
-<input class="submit" type="submit" name="action" value="Restart" <% if data.value.status.value== "Disabled" then io.write("disabled") end %>>
+<input class="submit" type="submit" name="action" value="Start" <% if data.value.status.value== "Running" then io.write("disabled") end %>>
+<input class="submit" type="submit" name="action" value="Stop" <% if data.value.status.value== "Stopped" then io.write("disabled") end %>>
+<input class="submit" type="submit" name="action" value="Restart" <% if data.value.status.value== "Stopped" then io.write("disabled") end %>>
 </DD>
 </form>
 

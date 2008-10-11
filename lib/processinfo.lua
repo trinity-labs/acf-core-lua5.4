@@ -3,6 +3,8 @@ module(..., package.seeall)
 
 require("posix")
 
+local path = "PATH=/usr/bin:/bin:/usr/sbin:/sbin "
+
 function package_version(packagename)
 	local cmderrors
 	local f = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_version -vs " .. packagename .." | egrep -v 'acf' 2>/dev/null" )
@@ -16,16 +18,89 @@ function package_version(packagename)
 	return cmdresult,cmderrors
 end
 
-function process_botsequence(processname)
+function process_startupsequence(servicename)
 	local cmderrors
-	local f = io.popen( "/sbin/rc_status | egrep '^S' | egrep '" .. processname .."' 2>/dev/null" )
+	local f = io.popen( "/sbin/rc_status | egrep '^S' | egrep '" .. servicename .."' 2>/dev/null" )
 	local cmdresult = f:read("*a")
 	if (cmdresult) and (#cmdresult > 0) then
-		cmdresult = "Process will autostart at next boot (at sequence '" .. string.match(cmdresult,"^%a+(%d%d)") .. "')"
+		cmdresult = "Service will autostart at next boot (at sequence '" .. string.match(cmdresult,"^%a+(%d%d)") .. "')"
 	else
 		cmderrors = "Not programmed to autostart"
 	end	
 	f:close()
+	return cmdresult,cmderrors
+end
+
+function read_startupsequence()
+	local config = {}
+	local f = io.popen( "/sbin/rc_status 2>/dev/null" )
+	local cmdresult = f:read("*a") or ""
+	f:close()
+	local section = 0
+	for line in string.gmatch(cmdresult, "([^\n]*)\n?") do
+		local sequence, service = string.match(line, "(%d%d)(%S+)")
+		if service then
+			if section == 3 then	-- kill section
+				for i,cfg in ipairs(config) do
+					if cfg.servicename == service then
+						cfg.kill = true
+						break
+					end
+				end
+			else
+				config[#config+1] = {servicename=service, sequence=sequence, kill=false, system=(section == 1)}
+			end
+		elseif string.match(line, "^rc.%.d:") then
+			section = section + 1
+		end
+	end
+	-- Add in any missing init.d scripts
+	local reverseservices = {} for i,cfg in ipairs(config) do reverseservices[cfg.servicename] = i end
+	local temp = {}
+	for name in posix.files("/etc/init.d") do
+		if not reverseservices[name] and not string.find(name, "^rc[KLS]$") and not string.find(name, "^..?$") then
+			temp[#temp+1] = {servicename=name, sequence="", kill=false, system=false}
+		end
+	end
+	table.sort(temp, function(a,b) return a.servicename < b.servicename end)
+	for i,val in ipairs(temp) do
+		config[#config+1] = val
+	end
+	return config
+end
+
+function add_startupsequence(servicename, sequence, kill, system)
+	local cmdresult,cmderrors
+	if not servicename then
+		cmderrors = "Invalid service name"
+	else
+		local cmd = {path, "rc_add"}
+		if kill then cmd[#cmd+1] = "-k" end
+		if system then cmd[#cmd+1] = "-S" end
+		if sequence then cmd[#cmd+1] = "-s "..sequence end
+		cmd[#cmd+1] = servicename
+		cmd[#cmd+1] = "2>&1"
+		delete_startupsequence(servicename)
+		local f = io.popen(table.concat(cmd, " "))
+		cmdresult = f:read("*a")
+		f:close()
+		if cmdresult == "" then cmdresult = "Added sequence" end
+	end
+
+	return cmdresult,cmderrors
+end
+
+function delete_startupsequence(servicename)
+	local cmdresult,cmderrors
+	if not servicename then
+		cmderrors = "Invalid service name"
+	else
+		local f = io.popen(path.."rc_delete "..servicename)
+		cmdresult = f:read("*a")
+		f:close()
+		if cmdresult == "" then cmderrors = "Failed to delete sequence" end
+	end
+
 	return cmdresult,cmderrors
 end
 
