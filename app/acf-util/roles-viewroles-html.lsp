@@ -5,11 +5,12 @@
 	io.write(html.cfe_unpack(view))
 --]] %>
 
-<% displaycommandresults({"deleterole"}, session) %>
+<% displaycommandresults({"newrole", "editrole", "deleterole"}, session) %>
 
 <H1>Roles</H1>
 <H2>Create new role</H2>
 <form action="<%= page_info.script .. page_info.prefix .. page_info.controller %>/newrole" method="POST">
+<input class="hidden" type="hidden"  name="redir"  value="<%= page_info.orig_action %>" >
 <dl><dt></dt><dd><input class="submit" type="submit" value="New Role"></dd></dl>
 </form>
 
@@ -31,7 +32,7 @@
 		<dt><img src='/static/tango/16x16/apps/system-users.png' height='16' width='16'> <%= role %></dt>
 		<dd>
 		[<a href='viewroleperms?role=<%= role %>'>View this role</a>]
-		[<a href='editrole?role=<%= role %>'>Edit this role</a>]
+		[<a href='editrole?role=<%= role %>&redir=<%= page_info.orig_action %>'>Edit this role</a>]
 		[<a href='deleterole?role=<%= role %>'>Delete this role</a>]
 		</dd>
 	<% end %>

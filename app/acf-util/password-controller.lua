@@ -60,7 +60,7 @@ function newuser(self)
 			return self.model.read_user(self)
 		end, function(value)
 			return self.model.create_user(self, value)
-		end, self.clientdata, "Save", "New User Settings", "Saved user", "status")
+		end, self.clientdata, "Save", "New User Settings", "Saved user")
 end
 
 function deleteuser(self)

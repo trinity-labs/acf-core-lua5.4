@@ -1,4 +1,4 @@
-<% local form, viewlibrary, pageinfo, session = ... %>
+<% local form, viewlibrary, page_info, session = ... %>
 <% require("viewfunctions") %>
 <%
 --[[ DEBUG INFORMATION
@@ -8,11 +8,12 @@ io.write("</span>")
 --]]
 %>
 
-<% displaycommandresults({"deleteuser"}, session) %>
+<% displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>
 
 <H1>User Accounts</H1>
 <H2>Create new account</H2>
-<form action="newuser" method="POST">
+<form action="<%= page_info.script .. page_info.prefix .. page_info.controller %>/newuser" method="POST">
+<input class="hidden" type="hidden"  name="redir"  value="<%= page_info.orig_action %>" >
 <dl><dt></dt><dd><input class="submit" type="submit" value="New User"></dd></dl>
 </form>
 <H2>Existing account</H2>
@@ -32,9 +33,9 @@ io.write("</span>")
 		</TR><TR>
 			<TD STYLE='border:none;'><B>Option</B></TD>
 			<TD STYLE='border:none;'>
-			[<A HREF='edituser?userid=<%= name %>'>Edit this account</A>]
+			[<A HREF='edituser?userid=<%= name %>&redir=<%= page_info.orig_action %>'>Edit this account</A>]
 			[<A HREF='deleteuser?userid=<%= name %>'>Delete this account</A>]
-			[<A HREF='<%= pageinfo.script %>/acf-util/roles/viewuserroles?userid=<%= name %>'>View roles for this account</A>]
+			[<A HREF='<%= page_info.script %>/acf-util/roles/viewuserroles?userid=<%= name %>'>View roles for this account</A>]
 			</TD>
 		</TR>
 	</TABLE></DD>

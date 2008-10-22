@@ -17,10 +17,11 @@ displayitem(form.value.mtime)
 </DL>
 
 <H3>File Content</H3>
-<% if form.descr then %><P CLASS='descr'><%= string.gsub(form.descr, "\n", "<BR>") %></P><% end %>
-<% if form.errtxt then %><P CLASS='error'><%= string.gsub(form.errtxt, "\n", "<BR>") %></P><% end %>
-<form action="<%= page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>" method="POST">
+<% if form.type == "form" then %>
+<% form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>
+<% displayformstart(form) %>
 <input type="hidden" name="filename" value="<%= form.value.filename.value %>">
+<% end %>
 <textarea name="filecontent">
 <%= html.html_escape(form.value.filecontent.value) %>
 </textarea>
@@ -29,6 +30,6 @@ displayitem(form.value.mtime)
 
 <% if form.type == "form" then %>
 <H3>Save</H3>
-<DL><DT>Submit and save above changes</DT><DD><input class="submit" type="submit" name="<%= form.option %>" value="<%= form.option %>"></DD></DL>
+<% displayformend(form) %>
 <% end %>
 </form>

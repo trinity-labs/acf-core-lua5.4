@@ -43,7 +43,7 @@ function handle_clientdata(form, clientdata)
 	end
 end
 
-function handle_form(self, getFunction, setFunction, clientdata, option, label, descr, redirectOnSuccess)
+function handle_form(self, getFunction, setFunction, clientdata, option, label, descr)
 	local form = getFunction()
 
 	if clientdata[option] then
@@ -53,11 +53,20 @@ function handle_form(self, getFunction, setFunction, clientdata, option, label, 
 		if not form.errtxt and descr then
 			form.descr = descr
 		end
+		
+		if clientdata.redir then
+			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
+		end
 		form = self:redirect_to_referrer(form)
-		if redirectOnSuccess and not form.errtxt then
-			self:redirect(redirectOnSuccess)
+		if clientdata.redir and not form.errtxt then
+			form.value = form.descr -- make it a command result
+			form.descr = nil
+			self:redirect(clientdata.redir, form)
 		end
 	else
+		if clientdata.redir then
+			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
+		end
 		form = self:redirect_to_referrer() or form
 	end
 

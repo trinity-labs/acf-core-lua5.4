@@ -134,6 +134,7 @@ local dispatch_component = function(str, clientdata, suppress_view)
 	end
 	self.conf.component = true
 	self.conf.suppress_view = suppress_view
+	self.conf.orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action
 	local tempclientdata = self.clientdata
 	self.clientdata = clientdata or {}
 	self.clientdata.sessionid = tempclientdata.sessionid
@@ -200,7 +201,8 @@ local view_resolver = function(self)
 				script = self.conf.script,
 				appname = self.conf.appname,
 				skindir = self.conf.skindir or "",
-				skin = self.conf.skin or ""
+				skin = self.conf.skin or "",
+				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action
 				}
 
 	return func, viewlibrary, pageinfo, self.sessiondata
@@ -453,7 +455,10 @@ end
 -- Cause a redirect to specified (or default) action
 -- We use the self.conf table because it already has prefix,controller,etc
 -- The actual redirection is defined in exception_handler above
-redirect = function (self, str)
+redirect = function (self, str, result)
+	if result then
+		self.sessiondata[self.conf.action.."result"] = result
+	end
 	local prefix, controller, action = self.parse_path_info("/" .. (str or ""))
 	if prefix ~= "/" then self.conf.prefix = prefix end
 	if controller ~= "" then self.conf.controller = controller end

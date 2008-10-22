@@ -102,13 +102,15 @@ end
 function displayformitem(myitem, name, viewtype)
 	if not myitem then return end
 	if name then myitem.name = name end
-	io.write("<DT")
-	if myitem.errtxt then 
-		myitem.class = "error"
-		io.write(' class="error"')
+	if myitem.type ~= "hidden" then
+		io.write("<DT")
+		if myitem.errtxt then 
+			myitem.class = "error"
+			io.write(' class="error"')
+		end
+		io.write(">" .. myitem.label .. "</DT>\n")
+		io.write("<DD></DD>\n")
 	end
-	io.write(">" .. myitem.label .. "</DT>\n")
-	io.write("<DD>")
 	if (viewtype == "viewonly") then
 		myitem.disabled = "true"
 	end
@@ -163,13 +165,21 @@ function displayformitem(myitem, name, viewtype)
 	io.write("</DD>\n")
 end
 
-function displayform(myform, order, finishingorder)
+function displayformstart(myform)
 	if not myform then return end
 	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
 	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
 	io.write('<form action="' .. (myform.action or "") .. '" method="POST">\n')
+	if myform.value.redir then
+		displayformitem(myform.value.redir, "redir")
+	end
+end
+
+function displayform(myform, order, finishingorder)
+	if not myform then return end
+	displayformstart(myform)
 	io.write('<DL>\n')
-	local reverseorder= {}
+	local reverseorder= {["redir"]=0}
 	if order then
 		for x,name in ipairs(order) do
 			reverseorder[name] = x
@@ -199,6 +209,13 @@ function displayform(myform, order, finishingorder)
 			end
 		end
 	end
+	io.write('</DL>\n')
+	displayformend(myform)
+end
+
+function displayformend(myform)
+	if not myform then return end
+	io.write('<DL>\n')
 	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. myform.option .. '" value="' .. (myform.submit or myform.option) .. '"></DD>\n')
 	io.write('</DL>\n')
 	io.write('</FORM>')
@@ -215,7 +232,7 @@ function displaycommandresults(commands, session)
 	if #cmdresult > 0 then
 		io.write("<H1>Command Result</H1>\n<DL>\n")
 		for i,result in ipairs(cmdresult) do
-			if result.value ~= "" then io.write(result.value:gsub("\n", "<BR>") .. "\n") end
+			if type(result.value) == "string" and result.value ~= "" then io.write(result.value:gsub("\n", "<BR>") .. "\n") end
 			if result.descr then io.write('<P CLASS="descr">' .. string.gsub(result.descr, "\n", "<BR>") .. "</P>\n") end
 			if result.errtxt then io.write('<P CLASS="error">' .. string.gsub(result.errtxt, "\n", "<BR>") .. "</P>\n") end
 		end

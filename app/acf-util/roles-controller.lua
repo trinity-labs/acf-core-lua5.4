@@ -47,14 +47,14 @@ newrole = function(self)
 	return controllerfunctions.handle_form(self, 
 		function() return self.model.getpermissions(self) end, 
 		function(value) return self.model.setpermissions(self, value, true) end, 
-		self.clientdata, "Save", "Create New Role", "New Role Created", "viewroles")
+		self.clientdata, "Save", "Create New Role", "New Role Created")
 end
 
 editrole = function(self)
 	return controllerfunctions.handle_form(self, 
 		function() return self.model.getpermissions(self, self.clientdata.role) end, 
 		function(value) return self.model.setpermissions(self, value, false) end, 
-		self.clientdata, "Save", "Edit Role", "Role Saved", "viewroles")
+		self.clientdata, "Save", "Edit Role", "Role Saved")
 end
 
 deleterole = function(self)
