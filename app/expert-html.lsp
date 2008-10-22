@@ -1,6 +1,8 @@
 <% local form, viewlibrary, page_info, session = ... %>
 <% require("viewfunctions") %>
 
+<% displaycommandresults({"startstop"}, session) %>
+
 <% if viewlibrary and viewlibrary.dispatch_component then
 	viewlibrary.dispatch_component("status")
 end %>

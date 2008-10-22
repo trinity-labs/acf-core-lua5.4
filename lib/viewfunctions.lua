@@ -165,8 +165,11 @@ function displayformitem(myitem, name, viewtype)
 	io.write("</DD>\n")
 end
 
-function displayformstart(myform)
+function displayformstart(myform, page_info)
 	if not myform then return end
+	if not myform.action and page_info then
+		myform.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
+	end
 	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
 	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
 	io.write('<form action="' .. (myform.action or "") .. '" method="POST">\n')
@@ -175,9 +178,9 @@ function displayformstart(myform)
 	end
 end
 
-function displayform(myform, order, finishingorder)
+function displayform(myform, order, finishingorder, page_info)
 	if not myform then return end
-	displayformstart(myform)
+	displayformstart(myform, page_info)
 	io.write('<DL>\n')
 	local reverseorder= {["redir"]=0}
 	if order then
@@ -221,12 +224,14 @@ function displayformend(myform)
 	io.write('</FORM>')
 end
 
-function displaycommandresults(commands, session)
+function displaycommandresults(commands, session, preserveerrors)
 	local cmdresult = {}
 	for i,cmd in ipairs(commands) do
 		if session[cmd.."result"] then
 			cmdresult[#cmdresult + 1] = session[cmd.."result"]
-			session[cmd.."result"] = nil
+			if not preserveerrors or not session[cmd.."result"].errtxt then
+				session[cmd.."result"] = nil
+			end
 		end
 	end
 	if #cmdresult > 0 then
