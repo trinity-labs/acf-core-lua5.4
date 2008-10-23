@@ -109,7 +109,7 @@ function displayformitem(myitem, name, viewtype)
 			io.write(' class="error"')
 		end
 		io.write(">" .. myitem.label .. "</DT>\n")
-		io.write("<DD></DD>\n")
+		io.write("<DD>\n")
 	end
 	if (viewtype == "viewonly") then
 		myitem.disabled = "true"
@@ -160,9 +160,11 @@ function displayformitem(myitem, name, viewtype)
 	else
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
-	if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
-	if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
-	io.write("</DD>\n")
+	if myitem.type ~= "hidden" then
+		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
+		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
+		io.write("</DD>\n")
+	end
 end
 
 function displayformstart(myform, page_info)
