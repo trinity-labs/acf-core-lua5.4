@@ -1,3 +1,0 @@
-ALL=welcome:read,logon:logon,logon:logout,logon:status
-CREATE=password:status,password:edituser,password:newuser,password:deleteuser,roles:getpermslist,roles:viewuserroles,roles:viewroleperms,roles:viewroles,roles:editrole,roles:deleterole,roles:newrole
-READ=password:editme,roles:read

@@ -171,7 +171,7 @@ get_userinfo_roles = function(self, userid)
 	if rol then
 		local avail_roles = rol.list_all_roles(self)
 		for x,role in ipairs(avail_roles) do
-			if role=="ALL" then
+			if role==rol.guest_role then
 				table.remove(avail_roles,x)
 				break
 			end

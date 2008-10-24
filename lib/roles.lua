@@ -6,7 +6,7 @@ require ("format")
 
 module (..., package.seeall)
 
-local default_roles = { "CREATE", "UPDATE", "DELETE", "READ", "ALL" }
+guest_role = "GUEST"
 
 -- returns a table of the *.roles files
 -- startdir should be the app dir
@@ -81,16 +81,29 @@ get_controllers_view = function(self,controller_info)
 	return temp	
 end
 
-list_default_roles = function()
-	return default_roles
+list_default_roles = function(self)
+	local default_roles = {}
+	local reverseroles = {}
+
+	-- find all of the default roles files and parse them
+	local rolesfiles = get_roles_candidates(self.conf.appdir)
+
+	for x,file in ipairs(rolesfiles) do
+		f = fs.read_file_as_array(file)
+		for y,line in pairs(f) do
+			if not reverseroles[string.match(line,"^[%w_]+")] then
+				default_roles[#default_roles+1] = string.match(line,"^[%w_]+")
+				reverseroles[default_roles[#default_roles]] = #default_roles
+			end
+		end
+	end
+
+	return default_roles, reverseroles
 end
 
 list_roles = function(self)
 	local defined_roles = {}
-	local reverseroles = {}
-	for x,role in ipairs(default_roles) do
-		reverseroles[role] = x
-	end
+	local default_roles, reverseroles = list_default_roles(self)
 
 	-- Open the roles file and parse for defined roles
 	local entries = authenticator.auth.read_field(self, authenticator.roletable, "") or {}
@@ -111,19 +124,19 @@ list_all_roles = function(self)
 	return default_roles
 end	
 
--- Go through the roles files and determine the permissions for the specified roles
+-- Go through the roles files and determine the permissions for the specified list of roles (including guest)
 get_roles_perm = function(self,roles)
 	permissions = {}
 	permissions_array = {}
 
-	-- find all of the roles files and add in the master file
-	local rolesfiles = get_roles_candidates(self.conf.appdir)
-
 	local reverseroles = {}
 	for x,role in ipairs(roles) do
-		reverseroles[role] = {}
+		reverseroles[role] = x
 	end
-	reverseroles["ALL"] = {} -- always include ALL role
+	reverseroles[guest_role] = 0 -- always include guest role
+
+	-- find all of the default roles files and parse them
+	local rolesfiles = get_roles_candidates(self.conf.appdir)
 
 	for x,file in ipairs(rolesfiles) do
 		f = fs.read_file_as_array(file)
@@ -137,7 +150,7 @@ get_roles_perm = function(self,roles)
 							permissions[control] = {}
 						end
 						if action then
-							permissions[control][action] = {}
+							permissions[control][action] = {file}
 							permissions_array[#permissions_array + 1] = control .. ":" .. action
 						end
 					end
@@ -146,6 +159,7 @@ get_roles_perm = function(self,roles)
 		end
 	end
 
+	-- then look in the user-editable roles
 	local entries = authenticator.auth.read_field(self, authenticator.roletable, "") or {}
 	for x,entry in ipairs(entries) do
 		if reverseroles[entry.id] then
@@ -172,8 +186,9 @@ end
 get_role_perm = function(self,role)
 	permissions = {}
 	permissions_array = {}
+	default_permissions_array = {}
 
-	-- find all of the roles files and add in the master file
+	-- find all of the default roles files and parse them
 	local rolesfiles = get_roles_candidates(self.conf.appdir)
 
 	for x,file in ipairs(rolesfiles) do
@@ -188,15 +203,17 @@ get_role_perm = function(self,role)
 							permissions[control] = {}
 						end
 						if action then
-							permissions[control][action] = {}
+							permissions[control][action] = {file}
 							permissions_array[#permissions_array + 1] = control .. ":" .. action
+							default_permissions_array[#default_permissions_array + 1] = control .. ":" .. action
 						end
 					end
 				end
 			end
 		end
 	end
-	
+
+	-- then look in the user-editable roles
 	local entry = authenticator.auth.read_entry(self, authenticator.roletable, "", role)
 	if entry then
 		temp = format.string_to_table(entry, ",")
@@ -214,17 +231,11 @@ get_role_perm = function(self,role)
 		end
 	end
 
-	return permissions, permissions_array
+	return permissions, permissions_array, default_permissions_array
 end
 
 -- Delete a role from role file
 delete_role = function(self, role)
-	for x,ro in ipairs(default_roles) do
-		if role==ro then
-			return false, "Cannot delete default roles"
-		end
-	end
-	
 	local result = authenticator.auth.delete_entry(self, authenticator.roletable, "", role)
 	local cmdresult = "Role entry not found"
 	if result then cmdresult = "Role deleted" end
@@ -237,11 +248,6 @@ set_role_perm = function(self, role, permissions, permissions_array)
 	if role==nil or role=="" then
 		return false, "Invalid Role"
 	end
-	for x,ro in ipairs(default_roles) do
-		if role==ro then
-			return false, "Cannot modify default roles"
-		end
-	end
 	if string.find(role, '[^%w_]') then
 		return false, "Role can only contain letters, numbers, and '_'"
 	end
@@ -253,9 +259,6 @@ set_role_perm = function(self, role, permissions, permissions_array)
 			end
 		end
 	end
-	if permissions_array==nil or #permissions_array==0 then
-		return false, "No permissions set"
-	end
 	
-	return authenticator.auth.write_entry(self, authenticator.roletable, "", role, table.concat(permissions_array,","))
+	return authenticator.auth.write_entry(self, authenticator.roletable, "", role, table.concat(permissions_array or {},","))
 end

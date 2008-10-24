@@ -58,10 +58,13 @@ end
 
 getpermissions = function(self, role)
 	local my_perms = {}
+	local default_perms = {} 
 
 	if role then
-		tmp, my_perms = roles.get_role_perm(self, role)
+		local tmp
+		tmp, my_perms, default_perms = roles.get_role_perm(self, role)
 		my_perms = my_perms or {}
+		default_perms = default_perms or {}
 	else
 		role = ""
 	end
@@ -69,7 +72,7 @@ getpermissions = function(self, role)
 	local tmp, all_perms = get_all_permissions(self)
 	table.sort(all_perms)
 	
-	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions" })
+	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions", default=default_perms })
 	local role_cfe = cfe({ value=role, label="Role" })
 
 	return cfe({ type="table", value={role=role_cfe, permissions=permissions_cfe} })
