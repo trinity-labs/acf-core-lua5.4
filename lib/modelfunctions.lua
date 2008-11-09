@@ -106,7 +106,10 @@ function setfiledetails(filedetails, validatefilename, validatefiledetails)
 		success, filedetails = validatefiledetails(filedetails)
 	end
 	if success then
-		fs.write_file(filedetails.value.filename.value, filedetails.value.filecontent.value)
+		--fs.write_file(filedetails.value.filename.value, filedetails.value.filecontent.value)
+		-- NBA - FIXME? we pass the global "APP" to write_file_with_audit because it needs self
+		-- is that correct?  Is there a better way to do it?
+		write_file_with_audit( APP, filedetails.value.filename.value, filedetails.value.filecontent.value)
 		filedetails = getfiledetails(filedetails.value.filename.value)
 	else
 		filedetails.errtxt = "Failed to set file"
@@ -154,21 +157,38 @@ function write_file_with_audit (self, path, str)
 		CONFFILE=path
 		_G.self=self
 
-		pre = format.expand_bash_syntax_vars(self.conf.audit_precommit or "" )
-		post = format.expand_bash_syntax_vars(self.conf.audit_postcommit or "")
+		pre = self.conf.audit_precommit or ""
+		post = self.conf.audit_postcommit or ""
+
+		local m = self.conf.app_hooks[self.conf.controller] or {}
+		if m.audit_precommit then pre = m.audit_precommit end
+		if m.audit_postcommit then post = m.audit_postcommit end
+		m=nil
+
+		if (type(pre) == "string") then 
+			pre = format.expand_bash_syntax_vars(pre)
+		end
+		if type (post) == "string" then
+			post = format.expand_bash_syntax_vars(post)
+		end
 		TEMPFILE,CONFFILE,_G.self = a,b,c
 	end
-	
+
 	fs.write_file(tmpfile,str)
 	
-	if #pre then
+	if (type(pre) == "string" and #pre) then
 		os.execute(pre)
+	elseif (type(pre) == "function") then
+		pre(self, path, tmpfile)
 	end
 	
 	os.rename (tmpfile, path)
-	
-	if #post then
+
+	if (type(post) == "string" and #post) then
 		os.execute(post)
+	elseif (type(post) == "function") then
+		post(self, path, tmpfile)
 	end
 	return
+
 end
