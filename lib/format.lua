@@ -13,6 +13,10 @@ function dostounix ( str )
 	return data
 end
 
+function escapemagiccharacters ( str )
+	return string.gsub(str, "[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
+end
+
 -- search and remove all blank and commented lines from a string or table of lines
 -- returns a table to iterate over without the blank or commented lines
 
