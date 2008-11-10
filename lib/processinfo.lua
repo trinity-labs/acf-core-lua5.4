@@ -177,8 +177,19 @@ local function is_cmdline(path, name)
 	end
 end
 
+local function has_pidfile(name)
+	local pid
+	local f = io.popen(path .. "find /var/run/ -name "..name..".pid")
+	local file = f:read("*a")
+	f:close()
+	if file and string.find(file, "%w") then
+		pid = fs.read_file(string.match(file, "^%s*(.*%S)"))
+	end
+	return pid
+end
+
 function pidof(name)
-	local pids = {}
+	local pids = {has_pidfile(name)}
 	local i, j
 
 	for i,j in pairs(posix.glob("/proc/[0-9]*")) do
