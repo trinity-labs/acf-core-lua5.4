@@ -142,9 +142,9 @@ get_roles_perm = function(self,roles)
 		f = fs.read_file_as_array(file)
 		for y,line in pairs(f) do
 			if reverseroles[string.match(line,"^[%w_]+")] then
-				temp = format.string_to_table(string.match(line,"[,%a:]+$"),",")
+				temp = format.string_to_table(string.match(line,"[,%a_:]+$"),",")
 				for z,perm in pairs(temp) do
-					local control,action = string.match(perm,"(%a+):(%a+)")
+					local control,action = string.match(perm,"([%a_]+):([%a_]+)")
 					if control then
 						if nil == permissions[control] then
 							permissions[control] = {}
@@ -165,7 +165,7 @@ get_roles_perm = function(self,roles)
 		if reverseroles[entry.id] then
 			temp = format.string_to_table(entry.entry, ",")
 			for z,perm in pairs(temp) do
-				local control,action = string.match(perm,"(%a+):(%a+)")
+				local control,action = string.match(perm,"([%a_]+):([%a_]+)")
 				if control then
 					if nil == permissions[control] then
 						permissions[control] = {}
@@ -195,9 +195,9 @@ get_role_perm = function(self,role)
 		f = fs.read_file_as_array(file)
 		for y,line in pairs(f) do
 			if role == string.match(line,"^[%w_]+") then
-				temp = format.string_to_table(string.match(line,"[,%a:]+$"),",")
+				temp = format.string_to_table(string.match(line,"[,%a_:]+$"),",")
 				for z,perm in pairs(temp) do
-					local control,action = string.match(perm,"(%a+):(%a+)")
+					local control,action = string.match(perm,"([%a_]+):([%a_]+)")
 					if control then
 						if nil == permissions[control] then
 							permissions[control] = {}
@@ -218,7 +218,7 @@ get_role_perm = function(self,role)
 	if entry then
 		temp = format.string_to_table(entry, ",")
 		for z,perm in pairs(temp) do
-			local control,action = string.match(perm,"(%a+):(%a+)")
+			local control,action = string.match(perm,"([%a_]+):([%a_]+)")
 			if control then
 				if nil == permissions[control] then
 					permissions[control] = {}
