@@ -39,7 +39,7 @@ get_controllers = function(self,controller)
 	--we need to grab the directory and name of file
 	local temp = {}
 	for k,v in pairs(list) do
-		path = string.match(v,"[/%w-]+/")
+		path = string.match(v,"[/%w_-]+/")
 		filename = string.match(v,"[^/]*.lua")
 		name = string.match(filename,"[^.]*")
 		sname = string.match(filename,"[^-]*")
