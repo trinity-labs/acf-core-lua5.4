@@ -57,8 +57,10 @@ get_controllers_func = function(self,controller_info)
 	if controller_info == nil then
 		return "Could not be processed"
 	else
-	package.path=package.path .. ";" .. controller_info.path .. "?.lua"
+	local PATH = package.path
+	package.path = controller_info.path .. "?.lua;" .. package.path
 	temp = require (controller_info.name)
+	package.path = PATH
 	temp1 = {}
 	for a,b in pairs(temp) do 
 		local c = string.match(a,"^mvc") or string.match(a,"^_") 
@@ -66,8 +68,6 @@ get_controllers_func = function(self,controller_info)
 			temp1[#temp1 +1] = a
 		end
 	end
-	--require (controller_info.name)
-	--we need to go through bobo and take out the mvc func and locals and --
 	return temp1
 	end
 end
