@@ -61,14 +61,20 @@ write_entry = function(self, tabl, field, id, entry)
 	if not self or not tabl or tabl == "" or not field or not id or not entry then
 		return false
 	end
-	delete_entry(self, tabl, field, id)
 
 	-- Set path to passwordfile
 	local passwd_path = self.conf.confdir .. field .. tabl
 	-- Write the newline into the file
 	if fs.is_file(passwd_path) == false then fs.create_file(passwd_path) end
 	if fs.is_file(passwd_path) == false then return false end
-	fs.write_line_file(passwd_path, id .. ":" .. entry)
+	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
+	local output = {id .. ":" .. entry}
+	for k,v in pairs(passwdfilecontent) do
+		if not ( string.match(v, "^".. id .. "[:=]") ) and not string.match(v, "^%s*$") then
+			table.insert(output, v)
+		end
+	end
+	fs.write_file(passwd_path, table.concat(output, "\n"))
 	return true
 end
 
