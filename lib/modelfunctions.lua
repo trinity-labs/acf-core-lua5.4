@@ -107,9 +107,7 @@ function setfiledetails(filedetails, validatefilename, validatefiledetails)
 	end
 	if success then
 		--fs.write_file(filedetails.value.filename.value, filedetails.value.filecontent.value)
-		-- NBA - FIXME? we pass the global "APP" to write_file_with_audit because it needs self
-		-- is that correct?  Is there a better way to do it?
-		write_file_with_audit( APP, filedetails.value.filename.value, filedetails.value.filecontent.value)
+		write_file_with_audit(filedetails.value.filename.value, filedetails.value.filecontent.value)
 		filedetails = getfiledetails(filedetails.value.filename.value)
 	else
 		filedetails.errtxt = "Failed to set file"
@@ -142,53 +140,72 @@ function validatemulti(multi)
 	return true
 end
 
-
 function write_file_with_audit (self, path, str)
-	local pre = ""
-	local post = ""
-	local tmpfile = (self.conf.sessiondir or "/tmp/") .. 
-		(self.sessiondata.userinfo.userid or "unknown") .. "-" ..
-		 os.time() .. ".tmp"
-	
-	if type(self.conf) == "table" then
-		-- we make temporary globals for expand_bash_syntax_vars
-		local a,b,c = TEMPFILE,CONFFILE,_G.self
-		TEMPFILE=tmpfile
-		CONFFILE=path
-		_G.self=self
-
-		pre = self.conf.audit_precommit or ""
-		post = self.conf.audit_postcommit or ""
-
-		local m = self.conf.app_hooks[self.conf.controller] or {}
-		if m.audit_precommit then pre = m.audit_precommit end
-		if m.audit_postcommit then post = m.audit_postcommit end
-		m=nil
-
-		if (type(pre) == "string") then 
-			pre = format.expand_bash_syntax_vars(pre)
+	-- if there are only two parameters, assume self was omitted
+	if not str then
+		str = path
+		path = self
+		self = nil
+	end
+	-- attempt to find self
+	if not self then
+		if SELF and #SELF > 0 then
+			self = SELF[#SELF]
+		elseif APP then
+			self = APP
 		end
-		if type (post) == "string" then
-			post = format.expand_bash_syntax_vars(post)
+	end
+
+	if self then
+		local pre = ""
+		local post = ""
+
+		local tmpfile = (self.conf.sessiondir or "/tmp/") .. 
+			(self.sessiondata.userinfo.userid or "unknown") .. "-" ..
+			 os.time() .. ".tmp"
+	
+		if type(self.conf) == "table" then
+			-- we make temporary globals for expand_bash_syntax_vars
+			local a,b,c = TEMPFILE,CONFFILE,_G.self
+			TEMPFILE=tmpfile
+			CONFFILE=path
+			_G.self=self
+
+			pre = self.conf.audit_precommit or ""
+			post = self.conf.audit_postcommit or ""
+
+			local m = self.conf.app_hooks[self.conf.controller] or {}
+			if m.audit_precommit then pre = m.audit_precommit end
+			if m.audit_postcommit then post = m.audit_postcommit end
+			m=nil
+
+			if (type(pre) == "string") then 
+				pre = format.expand_bash_syntax_vars(pre)
+			end
+			if type (post) == "string" then
+				post = format.expand_bash_syntax_vars(post)
+			end
+			TEMPFILE,CONFFILE,_G.self = a,b,c
 		end
-		TEMPFILE,CONFFILE,_G.self = a,b,c
+
+		fs.write_file(tmpfile,str)
+
+		if (type(pre) == "string" and #pre) then
+			os.execute(pre)
+		elseif (type(pre) == "function") then
+			pre(self, path, tmpfile)
+		end
+
+		os.rename (tmpfile, path)
+
+		if (type(post) == "string" and #post) then
+			os.execute(post)
+		elseif (type(post) == "function") then
+			post(self, path, tmpfile)
+		end
+	else
+		fs.write_file(path,str)
 	end
 
-	fs.write_file(tmpfile,str)
-	
-	if (type(pre) == "string" and #pre) then
-		os.execute(pre)
-	elseif (type(pre) == "function") then
-		pre(self, path, tmpfile)
-	end
-	
-	os.rename (tmpfile, path)
-
-	if (type(post) == "string" and #post) then
-		os.execute(post)
-	elseif (type(post) == "function") then
-		post(self, path, tmpfile)
-	end
 	return
-
 end

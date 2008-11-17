@@ -93,6 +93,10 @@ new = function (self, modname)
 		c.worker.mvc.on_load = nil
 	end
 
+	-- save the new self on the SELF stack
+	if not SELF then SELF = {} end
+	SELF[#SELF + 1] = c
+
 	return c, worker_loaded, model_loaded
 end
 
@@ -100,6 +104,16 @@ destroy = function (self)
 	if  type(rawget(self.worker.mvc, "on_unload")) == "function" then
 		self.worker.mvc.on_unload(self)
 		self.worker.mvc.on_unload = nil
+	end
+
+	-- remove the self from the SELF stack (should be at the end, but just in case)
+	if SELF then
+		for i,s in ipairs(SELF) do
+			if s == self then
+				table.remove(SELF, i)
+				break
+			end
+		end
 	end
 end
 
