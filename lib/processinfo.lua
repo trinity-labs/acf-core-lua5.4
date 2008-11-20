@@ -184,7 +184,19 @@ local function has_pidfile(name)
 	local file = f:read("*a")
 	f:close()
 	if file and string.find(file, "%w") then
-		pid = fs.read_file(string.match(file, "^%s*(.*%S)"))
+		-- check to see if there's a matching proc directory and that it was created slightly after the pid file
+		-- this allows us to find init scripts with differing process names and avoids the problem with
+		-- proc numbers wrapping
+		file = string.match(file, "^%s*(.*%S)")
+		local tmp = string.match(fs.read_file(file), "%d+")
+		if tmp then
+			local dir = "/proc/" .. tmp
+			filetime = posix.stat(file, "ctime")
+			dirtime = posix.stat(dir, "ctime")
+			if dirtime and (tonumber(dirtime) - tonumber(filetime) < 100) then
+				pid = tmp
+			end
+		end
 	end
 	return pid
 end
