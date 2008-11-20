@@ -1,6 +1,7 @@
 
 module(..., package.seeall)
 
+require("fs")
 require("posix")
 
 local path = "PATH=/usr/bin:/bin:/usr/sbin:/sbin "
