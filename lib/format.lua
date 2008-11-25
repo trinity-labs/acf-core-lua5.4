@@ -20,11 +20,12 @@ end
 -- search and remove all blank and commented lines from a string or table of lines
 -- returns a table to iterate over without the blank or commented lines
 
-function parse_lines ( input )
+function parse_lines ( input, comment )
 	local lines = {}
+	comment = comment or "#"
 
 	function parse(line)
-		if not string.match(line, "^%s*$") and not string.match(line, "^%s*#") then
+		if not string.match(line, "^%s*$") and not string.match(line, "^%s*"..comment) then
 			lines[#lines + 1] = line
 		end
 	end
@@ -46,19 +47,20 @@ end
 -- parse the lines for words, looking for quotes and removing comments
 -- returns a table with an array of words for each line
 
-function parse_linesandwords ( input )
+function parse_linesandwords ( input, comment )
 	local lines = {}
 	local linenum = 0
+	comment = comment or "#"
 
 	function parse(line)
 		linenum = linenum + 1
-		if not string.match(line, "^%s*$") and not string.match(line, "^%s*#") then
+		if not string.match(line, "^%s*$") and not string.match(line, "^%s*"..comment) then
 			local linetable = {linenum=linenum, line=line}
 			local offset = 1
 			while string.find(line, "%S", offset) do
 				local word = string.match(line, "%S+", offset)
 				local endword
-				if string.find(word, "^#") then
+				if string.find(word, "^"..comment) then
 					break
 				elseif string.find(word, "^\"") then
 					endword = select(2, string.find(line, "\"[^\"]*\"", offset))
@@ -88,9 +90,9 @@ end
 
 -- returns a table with label value pairs
 
-function parse_configfile( input )
+function parse_configfile( input, comment )
 	local config = {}
-	local lines = parse_linesandwords(input)
+	local lines = parse_linesandwords(input, comment)
 
 	for i,linetable in ipairs(lines) do
 		config[linetable[1]] = table.concat(linetable, " ", 2) or ""
@@ -192,21 +194,21 @@ end
 -- Takes a str and expands any ${...} constructs with the Lua variable
 -- ex: a="foo"; print(expand_bash_syntax_vars("a=${a}) - > "a=foo"
 expand_bash_syntax_vars = function (str)
-  
-  local deref = function ( f)
-    local v = getfenv(3) -- get the upstream global env
-    for w in string.gfind(f, "[%w_]+") do
-      if v then v = v[w] end
-    end
-  return v
-  end
+	local deref = function (f)
+		local v = getfenv(3) -- get the upstream global env
+		for w in string.gfind(f, "[%w_]+") do
+			if v then v = v[w] end
+		end
+		return v
+	end
 
-  for w in string.gmatch (str, "${[^}]*}" ) do
-        local rvar = string.sub(w,3,-2)
-        local rval = ( deref(rvar) or "nil" )
-        str = string.gsub (str, w, rval)
-  end
- return (str)
+	for w in string.gmatch (str, "${[^}]*}" ) do
+		local rvar = string.sub(w,3,-2)
+		local rval = ( deref(rvar) or "nil" )
+		str = string.gsub (str, w, rval)
+	end
+	
+	return (str)
 end
 
 -- Removes the linenum line from str and replaces it with line.
