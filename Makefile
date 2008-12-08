@@ -52,5 +52,6 @@ phony+=install
 install: install-recursive $(CONF_FILES)
 	mkdir -p $(DESTDIR)/etc/acf
 	cp $(CONF_FILES) $(DESTDIR)/etc/acf
+	chmod 600 $(DESTDIR)/etc/acf/passwd
 
 .PHONY: $(phony)
