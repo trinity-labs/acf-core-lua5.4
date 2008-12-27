@@ -157,22 +157,24 @@ end
 -- example: format.string_to_table( "Anna, Bob, Charlie,Dolores", ",%s*")
 function string_to_table ( text, delimiter)
 	local list = {}
-	-- this would result in endless loops
-	if string.find("", delimiter) then 
-		-- delimiter matches empty string!
-		for i=1,#text do
-			list[#list + 1] = string.sub(text, i, i)
-		end
-	else
-		local pos = 1
-		while 1 do
-			local first, last = string.find(text, delimiter, pos)
-			if first then -- found?
-				table.insert(list, string.sub(text, pos, first-1))
-				pos = last+1
-			else
-				table.insert(list, string.sub(text, pos))
-				break
+	if text then
+		-- this would result in endless loops
+		if string.find("", delimiter) then 
+			-- delimiter matches empty string!
+			for i=1,#text do
+				list[#list + 1] = string.sub(text, i, i)
+			end
+		else
+			local pos = 1
+			while 1 do
+				local first, last = string.find(text, delimiter, pos)
+				if first then -- found?
+					table.insert(list, string.sub(text, pos, first-1))
+					pos = last+1
+				else
+					table.insert(list, string.sub(text, pos))
+					break
+				end
 			end
 		end
 	end
