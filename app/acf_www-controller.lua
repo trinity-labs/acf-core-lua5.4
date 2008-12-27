@@ -220,7 +220,7 @@ mvc.on_load = function (self, parent)
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.script = ENV.SCRIPT_NAME
 	self.conf.default_prefix = "/"
-	self.conf.default_controller = "welcome"
+	self.conf.default_controller = self.conf.default_controller or "welcome"
 	self.clientdata = FORM
 	self.conf.clientip = ENV.REMOTE_ADDR
 
