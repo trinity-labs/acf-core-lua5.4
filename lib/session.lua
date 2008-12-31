@@ -100,17 +100,21 @@ save_session = function( sessionpath, sessiontable)
 	sessiontable.id = nil
 
 	-- If the table only has an "id" field, then don't save it
-	if #sessiontable then 
+	if #sessiontable then
+		local output = {}
+		output[#output+1] = "-- This is an ACF session table."
+		output[#output+1] = "local " .. serialize("s", sessiontable)
+		output[#output+1] = "return s"
+
 		local file = io.open(sessionpath .. "/session." .. id , "w")
 		if file == nil then
 			sessiontable.id=id
 			return false
 		end
 
-		file:write ( "-- This is an ACF session table.\n")
-		file:write ( "\nlocal " )
-		file:write ( serialize("s", sessiontable) )
-		file:write ( "return s\n")
+		for i,out in ipairs(output) do
+			file:write(out, "\n")
+		end
 		file:close()
 	end
 
@@ -133,7 +137,21 @@ load_session = function ( sessionpath, session )
 	local spath = sessionpath .. "/session." .. session
 	local ts = posix.stat(spath, "ctime")
 	if (ts) then
-		s = dofile(spath) or {}
+		-- this loop is here because can't read file here if another process is writing it above
+		-- and if this fails, it effectively logs the user off (writes back blank session data)
+		local s
+		for i=1,20 do
+			local file = io.open(spath)
+			if file then
+				local content = file:read("*a")
+				file:close()
+				s = loadstring(content)()
+				break
+			end
+			sleep(10*i)
+		end
+
+		s = s or {}
 		s.id = session 
 		return ts, s
 	else
