@@ -18,6 +18,8 @@ minutes_expired_events=30
 minutes_count_events=30
 limit_count_events=10
 
+cached_content=nil
+
 local b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
 -- Return a sessionid of at least size bits length
@@ -65,29 +67,34 @@ local function basicSerialize (o)
 end
 
 
-function serialize (name, value, saved )
-	local str = str or ""
+function serialize (name, value, saved, output )
+	local need_to_concat = (output == nil)
+	output = output or {}
 	saved = saved or {}
-	str = str .. name .. " = "
+	local str = name .. " = "
 	if type(value) == "number" or type(value) == "string" then
-		str = str .. basicSerialize (value) .. "\n"
+		table.insert(output, str .. basicSerialize (value))
 	elseif type(value) == "table" then
 		if saved[value] then
-			str = str .. saved[value] .. "\n"
+			table.insert(output, str .. saved[value])
 		else
 			saved[value] = name
-			str = str .. "{}\n" 
+			table.insert(output, str .. "{}")
 			for k,v in pairs(value) do
 				local fieldname = string.format("%s[%s]", name, basicSerialize(k))
-				str = str .. serialize (fieldname, v, saved)
+				serialize (fieldname, v, saved, output)
 			end
 		end
 	elseif type(value) == "boolean" then
-			str = str .. tostring(value) .. "\n"
+		table.insert(output, str .. tostring(value))
 	else
-		str = str .. "nil\n"	 -- cannot save other types, so skip them
+		table.insert(output, str .. "nil")	 -- cannot save other types, so skip them
 	end
-	return str
+	if need_to_concat then
+		table.sort(output)
+		return table.concat(output, "\n")
+	end
+	return
 end
 
 -- Save the session (unless all it contains is the id)
@@ -105,17 +112,20 @@ save_session = function( sessionpath, sessiontable)
 		output[#output+1] = "-- This is an ACF session table."
 		output[#output+1] = "local " .. serialize("s", sessiontable)
 		output[#output+1] = "return s"
+		local content = table.concat(output, "\n") .. "\n"
 
-		local file = io.open(sessionpath .. "/session." .. id , "w")
-		if file == nil then
-			sessiontable.id=id
-			return false
-		end
+		-- want to avoid writing unless changed, becuase opening for write
+		-- prevents simultaneous opening for read
+		if content ~= cached_content then
+			local file = io.open(sessionpath .. "/session." .. id , "w")
+			if file == nil then
+				sessiontable.id=id
+				return false
+			end
 
-		for i,out in ipairs(output) do
-			file:write(out, "\n")
+			file:write(content)
+			file:close()
 		end
-		file:close()
 	end
 
 	sessiontable.id=id
@@ -143,9 +153,9 @@ load_session = function ( sessionpath, session )
 		for i=1,20 do
 			local file = io.open(spath)
 			if file then
-				local content = file:read("*a")
+				cached_content = file:read("*a")
 				file:close()
-				s = loadstring(content)()
+				s = loadstring(cached_content)()
 				break
 			end
 			sleep(10*i)
