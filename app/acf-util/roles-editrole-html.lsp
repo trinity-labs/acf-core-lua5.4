@@ -10,7 +10,7 @@
 	displayformstart(form, page_info)
 	-- If editing existing role, disable role
 	if page_info.action ~= "newrole" then
-		form.value.role.contenteditable = false
+		form.value.role.readonly = true
 	end
 	io.write("<DL>\n")
 	displayformitem(form.value.role, "role")

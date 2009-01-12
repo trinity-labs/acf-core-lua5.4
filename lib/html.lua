@@ -92,7 +92,7 @@ local generic_input = function ( field_type, v )
 	for i,k in ipairs ( {
 			"name", "size", "checked", "maxlength", 
 			"value", "length",   "class", "id", "src",
-			"align", "alt", "contenteditable", 
+			"align", "alt", "contenteditable", "readonly", 
 			"tabindex", "accesskey", "onfocus", "onblur"
 			} ) do
 		str = str .. nv_pair ( k, v[k] )
@@ -120,7 +120,7 @@ form.longtext = function ( v )
 	for i,k in ipairs ( {
 				"name", "rows", "cols",
 				"class", "id", "tabindex", "accesskey", 
-				"onfocus", "onblur" 
+				"onfocus", "onblur", "readonly"
 			} ) do
 		str = str .. nv_pair ( k, v[k] )
 	end

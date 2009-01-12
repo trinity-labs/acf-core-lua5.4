@@ -17,7 +17,7 @@ io.write("</span>")
 	end
 	-- If not in newuser action, disable userid
 	if pageinfo.action ~= "newuser" then
-		form.value.userid.contenteditable = false
+		form.value.userid.readonly = true
 	end
 	local order = { "userid", "username", "roles", "password", "password_confirm" }
 	displayform(form, order)
