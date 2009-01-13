@@ -188,7 +188,7 @@ local function has_pidfile(name)
 		-- this allows us to find init scripts with differing process names and avoids the problem with
 		-- proc numbers wrapping
 		file = string.match(file, "^%s*(.*%S)")
-		local tmp = string.match(fs.read_file(file), "%d+")
+		local tmp = string.match(fs.read_file(file) or "", "%d+")
 		if tmp then
 			local dir = "/proc/" .. tmp
 			filetime = posix.stat(file, "ctime")

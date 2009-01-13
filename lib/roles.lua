@@ -89,7 +89,7 @@ list_default_roles = function(self)
 	local rolesfiles = get_roles_candidates(self.conf.appdir)
 
 	for x,file in ipairs(rolesfiles) do
-		f = fs.read_file_as_array(file)
+		f = fs.read_file_as_array(file) or {}
 		for y,line in pairs(f) do
 			if not reverseroles[string.match(line,"^[%w_]+")] then
 				default_roles[#default_roles+1] = string.match(line,"^[%w_]+")
@@ -139,7 +139,7 @@ get_roles_perm = function(self,roles)
 	local rolesfiles = get_roles_candidates(self.conf.appdir)
 
 	for x,file in ipairs(rolesfiles) do
-		f = fs.read_file_as_array(file)
+		f = fs.read_file_as_array(file) or {}
 		for y,line in pairs(f) do
 			if reverseroles[string.match(line,"^[%w_]+")] then
 				temp = format.string_to_table(string.match(line,"[,%w_:]+$"),",")
@@ -192,7 +192,7 @@ get_role_perm = function(self,role)
 	local rolesfiles = get_roles_candidates(self.conf.appdir)
 
 	for x,file in ipairs(rolesfiles) do
-		f = fs.read_file_as_array(file)
+		f = fs.read_file_as_array(file) or {}
 		for y,line in pairs(f) do
 			if role == string.match(line,"^[%w_]+") then
 				temp = format.string_to_table(string.match(line,"[,%w_:]+$"),",")

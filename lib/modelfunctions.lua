@@ -71,7 +71,7 @@ function getfiledetails(file, validatefilename, validatefiledetails)
 	if success then
 		if fs.is_file(file) then
 			local filedetails = fs.stat(file)
-			filecontent.value = fs.read_file(file)
+			filecontent.value = fs.read_file(file) or ""
 			filesize.value = filedetails.size
 			mtime.value = filedetails.mtime
 		else

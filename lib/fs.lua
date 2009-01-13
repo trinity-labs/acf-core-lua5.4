@@ -9,22 +9,50 @@ module (..., package.seeall)
 
 require ("posix")
 
+basename = function (string, suffix)
+	string = string or ""
+	local basename = string.gsub (string, "[^/]*/", "")
+	if suffix then 
+		basename = string.gsub ( basename, suffix, "" )
+	end
+	return basename 
+end
+
+dirname = function ( string)
+	string = string or ""
+	-- strip trailing / first
+	string = string.gsub (string, "/$", "")
+	local basename = basename ( string)
+	string = string.sub(string, 1, #string - #basename - 1)
+	return(string)	
+end 
+
 -- generic wrapper funcs
 function is_dir ( pathstr )
-	return posix.stat ( pathstr, "type" ) == "directory"
+	return posix.stat ( pathstr or "", "type" ) == "directory"
 end
 
 function is_file ( pathstr )
-	return posix.stat ( pathstr, "type" ) == "regular"
+	return posix.stat ( pathstr or "", "type" ) == "regular"
 end
 
 function is_link ( pathstr )
-	return posix.stat ( pathstr, "type" ) == "link"
+	return posix.stat ( pathstr or "", "type" ) == "link"
 end
 
 
+-- Creates a directory if it doesn't exist
+function create_directory ( path )
+	local cmd = "mkdir -p "..(path or "")
+	local f = io.popen(cmd)
+	f:close()
+	return is_dir(path)
+end
+
 -- Creates a blank file
 function create_file ( path )
+	path = path or ""
+	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
 	local cmd = "touch "..path
 	local f = io.popen(cmd)
 	f:close()
@@ -33,7 +61,7 @@ end
 
 -- Returns the contents of a file as a string
 function read_file ( path )
-	local file = io.open(path)
+	local file = io.open(path or "")
 	if ( file ) then
 		local f = file:read("*a")
 		file:close()
@@ -46,7 +74,7 @@ end
 -- Returns an array with the contents of a file, 
 -- or nil and the error message
 function read_file_as_array ( path )
-	local file, error = io.open(path)
+	local file, error = io.open(path or "")
 	if ( file == nil ) then
 		return nil, error
 	end
@@ -59,12 +87,13 @@ function read_file_as_array ( path )
 	return f
 end
 	
--- write a string to a file !! MM-will replace file contents
-
+-- write a string to a file, will replace file contents
 function write_file ( path, str )
+	path = path or ""
+	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
 	local file = io.open(path, "w")
 	--append a newline char to EOF
-	str = string.gsub(str, "\n*$", "\n")
+	str = string.gsub(str or "", "\n*$", "\n")
 	if ( file ) then
 		file:write(str)
 		file:close()
@@ -73,22 +102,21 @@ end
 
 -- this could do more than a line. This will append
 -- fs.write_line_file ("filename", "Line1 \nLines2 \nLines3")
-
 function write_line_file ( path, str )
+	path = path or ""
+	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
 	local file = io.open(path)
 	if ( file) then
-	local c = file:read("*a")
-	file:close()
-	local d = (c .. str .. "\n")
-	-- include a friendly newline for EOF
-	fs.write_file(path,d)
+		local c = file:read("*a") or ""
+		file:close()
+		fs.write_file(path, c .. (str or ""))
 	end
 end
 
 
 --will return a string with md5sum and filename
 function md5sum_file ( path )
-	cmd = "/usr/bin/md5sum " .. path
+	cmd = "/usr/bin/md5sum " .. (path or "")
 	f = io.popen(cmd)
 	checksum = f:read("*a")
 	f:close()
@@ -128,7 +156,7 @@ end
 
 -- This function does almost the same as posix.stat, but instead it writes the output human readable.
 function stat ( path )
-	local filedetails = posix.stat(path)
+	local filedetails = posix.stat(path or "")
 	if (filedetails) then
 		filedetails["ctime"]=os.date("%c", filedetails["ctime"])
 		filedetails["mtime"]=os.date("%c", filedetails["mtime"])

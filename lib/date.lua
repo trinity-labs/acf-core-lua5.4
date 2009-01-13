@@ -298,7 +298,7 @@ end
 --tell me what TimeZone my system is set to
 
 function what_tz ()
-	f = fs.read_file_as_array("/etc/TZ")
+	f = fs.read_file_as_array("/etc/TZ") or {}
 	local tz = f[1]
 	return tz
 end
