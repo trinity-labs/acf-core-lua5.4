@@ -22,11 +22,11 @@ if viewlibrary and viewlibrary.dispatch_component then
 	end
 end
 %>
-<title><%= hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action %></title>
-<link rel="stylesheet" type="text/css" href="<%= pageinfo.skindir %>static/reset.css">
-<link rel="stylesheet" type="text/css" href="<%= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin..".css" %>">
+<title><%= html.html_escape(hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action) %></title>
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skindir) %>static/reset.css">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin..".css") %>">
 <!--[if IE]>
-<link rel="stylesheet" type="text/css" href="<%= pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin.."-ie.css" %>">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin.."-ie.css") %>">
 <![endif]-->
 </head>
 <body>
@@ -39,7 +39,7 @@ end
 		<div id="logo">
 			<div class="leader"></div>
 			<h1>AlpineLinux</h1>
-			<p><%= hostname or "unknown hostname" %></p>
+			<p><%= html.html_escape(hostname or "unknown hostname") %></p>
 			<div class="tailer"></div>
 		</div>
 		<span class="mute">
@@ -47,9 +47,9 @@ end
 			<% local ctlr = pageinfo.script .. "/acf-util/logon/"
 			
 			if session.userinfo and session.userinfo.userid then
-			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. session.userinfo.userid .. "'</a>\n", ctlr .. "logout" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. html.html_escape(session.userinfo.userid) .. "'</a>\n", html.html_escape(ctlr) .. "logout" ) )
 			else
-			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", ctlr .. "logon" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", html.html_escape(ctlr) .. "logon" ) )
 			end %>
 			 | 
 			<a href="/">home</a> | 
@@ -72,7 +72,7 @@ end
 			local tabs
 			io.write ( "<ul>")
 			for x,cat in ipairs(session.menu.cats) do
-				io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", cat.name))	--start row
+				io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", html.html_escape(cat.name)))	--start row
 				for y,group in ipairs(cat.groups) do
 					if pageinfo.prefix == group.prefix .. '/' and pageinfo.controller == group.controller then
 						class="class='selected'"
@@ -81,7 +81,7 @@ end
 						class=""
 					end
 					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
-						class,pageinfo.script,group.prefix, group.controller, group.tabs[1].action, group.name ))
+						html.html_escape(class),html.html_escape(pageinfo.script),html.html_escape(group.prefix), html.html_escape(group.controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
 				end
 				io.write ( "\t\t\t\t\t</ul>" )
 			  end
@@ -96,7 +96,7 @@ end
 		<div id="postnav">
 			<div class="leader">
 			</div>
-			<h2><%= pageinfo.controller %> : <%= pageinfo.action %></h2>
+			<h2><%= html.html_escape(pageinfo.controller) %> : <%= html.html_escape(pageinfo.action) %></h2>
 			<!-- FIXME: Next row is 'dead' data! Remove 'class=hide' when done! -->
 			<p class='hide'>[ welcome ] > [ login ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
 			<div class="tailer">
@@ -119,7 +119,7 @@ end
 					class=""
 				end
 				io.write (string.format('<li %s><a %s href="%s">%s</a></li>\n',
-							class,class,tab.action,tab.name ))
+							html.html_escape(class),html.html_escape(class),html.html_escape(tab.action),html.html_escape(tab.name) ))
 			end
 			%>
 			</ul>
@@ -144,7 +144,7 @@ end
 	<div id="footer">
 		<div class="leader">
 		</div>
-		<p>Page generated in <%= os.clock() %> seconds on <%= os.date() %>.</p>
+		<p>Page generated in <%= html.html_escape(os.clock()) %> seconds on <%= html.html_escape(os.date()) %>.</p>
 		<div class="tailer">
 		</div>
 	</div> <!-- footer -->

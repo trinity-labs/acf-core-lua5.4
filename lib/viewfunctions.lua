@@ -1,3 +1,4 @@
+require("html")
 
 function displayinfo(myform,tags,viewtype)
 	for k,v in pairs(tags) do 
@@ -91,11 +92,11 @@ function displayitem(myitem)
 		myitem.class = "error"
 		io.write(" class='error'")
 	end
-	io.write(">" .. myitem.label .. "</DT>\n")
+	io.write(">" .. html.html_escape(myitem.label) .. "</DT>\n")
 	io.write("<DD>")
-	io.write(string.gsub(tostring(myitem.value), "\n", "<BR>") .. "\n")
-	if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
-	if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
+	io.write(string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<BR>") .. "\n")
+	if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
+	if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 	io.write("</DD>\n")
 end
 
@@ -108,7 +109,7 @@ function displayformitem(myitem, name, viewtype)
 			myitem.class = "error"
 			io.write(' class="error"')
 		end
-		io.write(">" .. myitem.label .. "</DT>\n")
+		io.write(">" .. html.html_escape(myitem.label) .. "</DT>\n")
 		io.write("<DD>\n")
 	end
 	if (viewtype == "viewonly") then
@@ -131,7 +132,7 @@ function displayformitem(myitem, name, viewtype)
 			myitem.value = val
 			myitem.checked = reverseval[val]
 			myitem.name = tempname .. "." .. x
-			io.write(html.form.checkbox(myitem) .. val .. "<br>\n")
+			io.write(html.form.checkbox(myitem) .. html.html_escape(val) .. "<br>\n")
 		end
 		-- Check for values not in options
 		if myitem.errtxt then
@@ -142,7 +143,7 @@ function displayformitem(myitem, name, viewtype)
 			if not reverseopt[val] then
 				myitem.value = val
 				myitem.checked = true
-				io.write(html.form.checkbox(myitem) .. val .. "<br>\n")
+				io.write(html.form.checkbox(myitem) .. html.html_escape(val) .. "<br>\n")
 			end
 		end
 		if myitem.errtxt then
@@ -161,8 +162,8 @@ function displayformitem(myitem, name, viewtype)
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
 	if myitem.type ~= "hidden" then
-		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
-		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
+		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
+		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 		io.write("</DD>\n")
 	end
 end
@@ -172,9 +173,9 @@ function displayformstart(myform, page_info)
 	if not myform.action and page_info then
 		myform.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
 	end
-	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(myform.descr, "\n", "<BR>") .. "</P>\n") end
-	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(myform.errtxt, "\n", "<BR>") .. "</P>\n") end
-	io.write('<form action="' .. (myform.action or "") .. '" method="POST">\n')
+	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myform.descr), "\n", "<BR>") .. "</P>\n") end
+	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myform.errtxt), "\n", "<BR>") .. "</P>\n") end
+	io.write('<form action="' .. html.html_escape(myform.action) .. '" method="POST">\n')
 	if myform.value.redir then
 		displayformitem(myform.value.redir, "redir")
 	end
@@ -221,7 +222,7 @@ end
 function displayformend(myform)
 	if not myform then return end
 	io.write('<DL>\n')
-	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. myform.option .. '" value="' .. (myform.submit or myform.option) .. '"></DD>\n')
+	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. html.html_escape(myform.option) .. '" value="' .. html.html_escape(myform.submit or myform.option) .. '"></DD>\n')
 	io.write('</DL>\n')
 	io.write('</FORM>')
 end
@@ -239,9 +240,9 @@ function displaycommandresults(commands, session, preserveerrors)
 	if #cmdresult > 0 then
 		io.write("<H1>Command Result</H1>\n<DL>\n")
 		for i,result in ipairs(cmdresult) do
-			if type(result.value) == "string" and result.value ~= "" then io.write(result.value:gsub("\n", "<BR>") .. "\n") end
-			if result.descr then io.write('<P CLASS="descr">' .. string.gsub(result.descr, "\n", "<BR>") .. "</P>\n") end
-			if result.errtxt then io.write('<P CLASS="error">' .. string.gsub(result.errtxt, "\n", "<BR>") .. "</P>\n") end
+			if type(result.value) == "string" and result.value ~= "" then io.write(string.gsub(html.html_escape(result.value), "\n", "<BR>") .. "\n") end
+			if result.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(result.descr), "\n", "<BR>") .. "</P>\n") end
+			if result.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(result.errtxt), "\n", "<BR>") .. "</P>\n") end
 		end
 		io.write("</DL>\n")
 	end

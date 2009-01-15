@@ -3,4 +3,4 @@
 
 <%= html.cfe_unpack(view) %>
 
-<%= view.logout.value %>
+<%= html.html_escape(view.logout.value) %>

@@ -9,7 +9,7 @@ io.write("</span>")
 --]]
 %>
 
-<H1><%= form.label %></H1>
+<H1><%= html.html_escape(form.label) %></H1>
 <% 
 	if form.value.password and form.value.password_confirm then
 		form.value.password.type = "password"

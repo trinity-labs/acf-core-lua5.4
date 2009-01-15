@@ -20,13 +20,13 @@ displayitem(form.value.mtime)
 <% if form.type == "form" then %>
 <% form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>
 <% displayformstart(form) %>
-<input type="hidden" name="filename" value="<%= form.value.filename.value %>">
+<input type="hidden" name="filename" value="<%= html.html_escape(form.value.filename.value) %>">
 <% end %>
 <textarea name="filecontent">
 <%= html.html_escape(form.value.filecontent.value) %>
 </textarea>
-<% if form.value.filecontent.errtxt then %><P CLASS='error'><%= string.gsub(form.value.filecontent.errtxt, "\n", "<BR>") %></P><% end %>
-<% if form.value.filecontent.descr then %><P CLASS='descr'><%= string.gsub(form.value.filecontent.descr, "\n", "<BR>") %></P><% end %>
+<% if form.value.filecontent.errtxt then %><P CLASS='error'><%= string.gsub(html.html_escape(form.value.filecontent.errtxt), "\n", "<BR>") %></P><% end %>
+<% if form.value.filecontent.descr then %><P CLASS='descr'><%= string.gsub(html.html_escape(form.value.filecontent.descr), "\n", "<BR>") %></P><% end %>
 
 <% if form.type == "form" then %>
 <H3>Save</H3>

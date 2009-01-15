@@ -9,8 +9,8 @@
 
 <H1>Roles</H1>
 <H2>Create new role</H2>
-<form action="<%= page_info.script .. page_info.prefix .. page_info.controller %>/newrole" method="POST">
-<input class="hidden" type="hidden"  name="redir"  value="<%= page_info.orig_action %>" >
+<form action="<%= html.html_escape(page_info.script .. page_info.prefix .. page_info.controller) %>/newrole" method="POST">
+<input class="hidden" type="hidden"  name="redir"  value="<%= html.html_escape(page_info.orig_action) %>" >
 <dl><dt></dt><dd><input class="submit" type="submit" value="New Role"></dd></dl>
 </form>
 
@@ -18,10 +18,10 @@
 <% if view.value.default_roles then %>
 	<dl>
 	<% for x,role in pairs(view.value.default_roles.value) do %>
-		<dt><img src='/skins/static/tango/16x16/categories/applications-system.png' height='16' width='16'> <%= role %></dt>
+		<dt><img src='/skins/static/tango/16x16/categories/applications-system.png' height='16' width='16'> <%= html.html_escape(role) %></dt>
 		<dd>
-		[<a href='viewroleperms?role=<%= role %>'>View this role</a>]
-		[<a href='editrole?role=<%= role %>&redir=<%= page_info.orig_action %>'>Edit this role</a>]
+		[<a href='viewroleperms?role=<%= html.html_escape(role) %>'>View this role</a>]
+		[<a href='editrole?role=<%= html.html_escape(role) %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this role</a>]
 		</dd>
 	<% end %>
 	</dl>
@@ -30,11 +30,11 @@
 	<dl>
 	<% table.sort(view.value.defined_roles.value) %>
 	<% for x,role in pairs(view.value.defined_roles.value) do %>
-		<dt><img src='/skins/static/tango/16x16/apps/system-users.png' height='16' width='16'> <%= role %></dt>
+		<dt><img src='/skins/static/tango/16x16/apps/system-users.png' height='16' width='16'> <%= html.html_escape(role) %></dt>
 		<dd>
-		[<a href='viewroleperms?role=<%= role %>'>View this role</a>]
-		[<a href='editrole?role=<%= role %>&redir=<%= page_info.orig_action %>'>Edit this role</a>]
-		[<a href='deleterole?role=<%= role %>'>Delete this role</a>]
+		[<a href='viewroleperms?role=<%= html.html_escape(role) %>'>View this role</a>]
+		[<a href='editrole?role=<%= html.html_escape(role) %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this role</a>]
+		[<a href='deleterole?role=<%= html.html_escape(role) %>'>Delete this role</a>]
 		</dd>
 	<% end %>
 	</dl>

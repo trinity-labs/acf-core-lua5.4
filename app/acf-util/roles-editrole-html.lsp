@@ -5,7 +5,7 @@
 	io.write(html.cfe_unpack(form))
 --]] %>
 
-<H1><%= form.label %></H1>
+<H1><%= html.html_escape(form.label) %></H1>
 <%
 	displayformstart(form, page_info)
 	-- If editing existing role, disable role
@@ -23,7 +23,7 @@
 		myitem.class = "error"
 		io.write(' class="error"')
 	end
-	io.write(">" .. myitem.label .. "</DT>\n")
+	io.write(">" .. html.html_escape(myitem.label) .. "</DT>\n")
 	io.write("<DD>")
 	-- FIXME multiple select doesn't work in haserl, so use series of checkboxes
 	myitem.class = nil
@@ -44,7 +44,7 @@
 		myitem.checked = reverseval[val]
 		if reversedefault[val] then myitem.disabled = true else myitem.disabled = nil end
 		myitem.name = tempname .. "." .. x
-		io.write(html.form.checkbox(myitem) .. val .. "<br>\n")
+		io.write(html.form.checkbox(myitem) .. html.html_escape(val) .. "<br>\n")
 	end
 	-- Check for values not in options
 	if myitem.errtxt then
@@ -55,7 +55,7 @@
 		if not reverseopt[val] then
 			myitem.value = val
 			myitem.checked = true
-			io.write(html.form.checkbox(myitem) .. val .. "<br>\n")
+			io.write(html.form.checkbox(myitem) .. html.html_escape(val) .. "<br>\n")
 		end
 	end
 	if myitem.errtxt then
@@ -64,8 +64,8 @@
 	myitem.name = tempname
 	myitem.value = tempval
 
-	if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(myitem.descr, "\n", "<BR>") .. "</P>\n") end
-	if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(myitem.errtxt, "\n", "<BR>") .. "</P>\n") end
+	if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
+	if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 	io.write("</DD>\n")
 
 	io.write("</DL>\n")

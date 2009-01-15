@@ -27,4 +27,4 @@
 
 <h1>Alpine Configuration Framework</h1>
 <p class="errordetail">Dispatch error occured</p>
-<p class="hiddendetail">'<%= view.controller %>' does not have a '<%= view.action %>' action.</p>
+<p class="hiddendetail">'<%= html.html_escapt(view.controller) %>' does not have a '<%= html.html_escape(view.action) %>' action.</p>

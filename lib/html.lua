@@ -22,8 +22,8 @@ cookie.set = function ( name, value, path )
 	if path == nil then
 		path = "/"
 	end
-	return (string.format('Set-Cookie: %s=%s; path=%s; %s\n', tostring(name), 
-		tostring(value), path, expires))
+	return (string.format('Set-Cookie: %s=%s; path=%s; %s\n', html_escape(tostring(name)), 
+		html_escape(tostring(value)), html_escape(path), html_escape(expires)))
 end
 
 
@@ -39,7 +39,9 @@ function html_escape (text )
 	text = text or "" 
 	local str = string.gsub (text, "&", "&amp;" )
 	str = string.gsub (str, "<", "&lt;" )
-	return string.gsub (str, ">", "&gt;" )
+	str = string.gsub (str, ">", "&gt;" )
+	str = string.gsub (str, "'", "&#39;" )
+	return string.gsub (str, '"', "&quot;" )
 end
 
 --  return a name,value pair as a string.  
@@ -55,7 +57,7 @@ local nv_pair = function ( name, value)
 	if ( value == nil ) then
 		return ( "" )
 	else
-		return (string.format (' %s="%s" ', name , ( value or "" ) ))
+		return (string.format (' %s="%s" ', html_escape(name) , html_escape(value) ))
 	end
 end
 
@@ -87,7 +89,7 @@ local generic_input = function ( field_type, v )
 		return nil
 	end
 	
-	local str = string.format ( '<input class="%s" type="%s" ', field_type,field_type )
+	local str = string.format ( '<input class="%s" type="%s" ', html_escape(field_type), html_escape(field_type) )
 
 	for i,k in ipairs ( {
 			"name", "size", "checked", "maxlength", 
@@ -125,7 +127,7 @@ form.longtext = function ( v )
 		str = str .. nv_pair ( k, v[k] )
 	end
 	str = str .. nv_pair (nil, v.disabled)
-	return ( str .. ">" .. (v.value or "" ) .. "</textarea>" )
+	return ( str .. ">" .. html_escape(v.value) .. "</textarea>" )
 end
 
 
@@ -201,10 +203,10 @@ function form.select ( v )
 			str = str .. " selected"
 			selected = true
 		end
-		str = str .. nv_pair("value", val) .. ">" .. k .. "</option>"
+		str = str .. nv_pair("value", val) .. ">" .. html_escape(val) .. "</option>"
 	end
 	if not selected then
-		str = str .. '<option selected value="' .. v.value ..'">[' .. v.value .. ']</option>'
+		str = str .. '<option selected value="' .. html_escape(v.value) ..'">[' .. html_escape(v.value) .. ']</option>'
 	end
 	str = str .. "</select>"
 	return (str)
@@ -224,9 +226,9 @@ function form.start ( v)
 	local method = v.method or "get"
 	return ( string.format (
 			'<form %s%s%s>',
-			nv_pair ( "class", v.class ), 
-			nv_pair ( "method", v.method), 
-			nv_pair (	"action", v.action )
+			nv_pair ( "class", html_escape(v.class) ), 
+			nv_pair ( "method", html_escape(v.method) ), 
+			nv_pair (	"action", html_escape(v.action) )
 		) )
 end
 	
@@ -240,9 +242,9 @@ end
 function entity (tag, text, class, id)
 	return ( string.format (
 			"<%s%s%s>%s</%s>",
-			tag, 
+			html_escape(tag),
 			nv_pair ("class", class),
-			nv_pair("id", id), text , tag)
+			nv_pair("id", id), html_escape(text), html_escape(tag))
 		)
 end
 	 
@@ -256,7 +258,7 @@ function link ( v )
 		str = str .. nv_pair ( k, v[k] )
 	end
 
-	return ( "<a " .. str .. ">" .. (v.label or "" ) .. "</a>" )
+	return ( "<a " .. str .. ">" .. html_escape(v.label) .. "</a>" )
 end
 
 
@@ -265,7 +267,7 @@ end
 function cfe_unpack ( a )
 	if type(a) == "table" then
 	value = session.serialize("cfe", a)
-	value = "<pre>" .. value .. "</pre>"
+	value = "<pre>" .. html_escape(value) .. "</pre>"
 	return value
 	end
 

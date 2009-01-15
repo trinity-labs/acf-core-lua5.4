@@ -27,4 +27,4 @@
 
 <h1>Alpine Configuration Framework</h1>
 <p class="errordetail">Application error occured</p>
-<p class="hiddendetail"><%= view.message %></p>
+<p class="hiddendetail"><%= html.html_escape(view.message) %></p>
