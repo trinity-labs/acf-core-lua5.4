@@ -28,7 +28,7 @@ local availablefields = {
 
 local load_database = function(self)
 	if not authstruct then
-		local authtable = auth.read_field(self, usertable, "")
+		local authtable = auth.read_field(self, usertable, "") or {}
 		authstruct = {}
 		for i,value in ipairs(authtable) do
 			if value.id ~= "" then
