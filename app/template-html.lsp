@@ -81,7 +81,7 @@ end
 						class=""
 					end
 					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
-						html.html_escape(class),html.html_escape(pageinfo.script),html.html_escape(group.prefix), html.html_escape(group.controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
+						class,html.html_escape(pageinfo.script),html.html_escape(group.prefix), html.html_escape(group.controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
 				end
 				io.write ( "\t\t\t\t\t</ul>" )
 			  end
@@ -119,7 +119,7 @@ end
 					class=""
 				end
 				io.write (string.format('<li %s><a %s href="%s">%s</a></li>\n',
-							html.html_escape(class),html.html_escape(class),html.html_escape(tab.action),html.html_escape(tab.name) ))
+							class,class,html.html_escape(tab.action),html.html_escape(tab.name) ))
 			end
 			%>
 			</ul>
