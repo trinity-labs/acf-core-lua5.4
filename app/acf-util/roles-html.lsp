@@ -44,7 +44,7 @@
 		end
 		table.sort(actions)
 		for y,act in pairs(actions) do
-			print(html.html_escape(act))
+			print((html.html_escape(act)))
 		end
 		io.write("<TD></TR>")
 	    end
