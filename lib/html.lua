@@ -41,7 +41,7 @@ function html_escape (text )
 	str = string.gsub (str, "<", "&lt;" )
 	str = string.gsub (str, ">", "&gt;" )
 	str = string.gsub (str, "'", "&#39;" )
-	return string.gsub (str, '"', "&quot;" )
+	return (string.gsub (str, '"', "&quot;" ))
 end
 
 --  return a name,value pair as a string.  

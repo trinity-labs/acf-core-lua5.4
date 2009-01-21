@@ -15,12 +15,13 @@
 -- self, CONFFILE, and TEMPFILE
 
 -- Example of a general logging function
+require("format")
 local precommit=function(self, conf, temp)
   	local logfile = "/var/log/acf-" .. self.conf.controller .. ".log"
 	fs.write_line_file (logfile, "#---- BEGIN TRANSACTION - " .. 
 		 os.date() .. "\n" .. self.sessiondata.userinfo.userid ..
 		" modifed " .. conf .. " as follows:")
-	 os.execute ("diff -u " .. conf .. " " .. temp .. " >>" .. logfile)
+	 os.execute ("diff -u " .. format.escapespecialcharacters(conf) .. " " .. format.escapespecialcharacters(temp) .. " >>" .. format.escapespecialcharacters(logfile))
 	 fs.write_line_file (logfile, "\n#---- END TRANSACTION -")
 	end
 

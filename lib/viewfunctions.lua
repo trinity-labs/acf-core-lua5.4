@@ -175,7 +175,11 @@ function displayformstart(myform, page_info)
 	end
 	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myform.descr), "\n", "<BR>") .. "</P>\n") end
 	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myform.errtxt), "\n", "<BR>") .. "</P>\n") end
-	io.write('<form action="' .. html.html_escape(myform.action) .. '" method="POST">\n')
+	io.write('<form action="' .. html.html_escape(myform.action) .. '" ')
+	if myform.enctype and myform.enctype ~= "" then
+		io.write('enctype="'..html.html_escape(myform.enctype)..'" ')
+	end
+	io.write('method="POST">\n')
 	if myform.value.redir then
 		displayformitem(myform.value.redir, "redir")
 	end

@@ -12,7 +12,7 @@ guest_role = "GUEST"
 -- startdir should be the app dir
 local get_roles_candidates = function (startdir)
 	local t = {}
-	local fh = io.popen('find ' .. startdir .. ' -name "*.roles"')
+	local fh = io.popen('find ' .. format.escapespecialcharacters(startdir) .. ' -name "*.roles"')
 	for x in fh:lines() do
 		t[#t + 1] = x
 	end

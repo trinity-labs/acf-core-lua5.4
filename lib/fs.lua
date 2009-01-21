@@ -7,7 +7,8 @@
 
 module (..., package.seeall)
 
-require ("posix")
+require("posix")
+require("format")
 
 basename = function (string, suffix)
 	string = string or ""
@@ -43,7 +44,7 @@ end
 
 -- Creates a directory if it doesn't exist
 function create_directory ( path )
-	local cmd = "mkdir -p "..(path or "")
+	local cmd = "mkdir -p " .. format.escapespecialcharacters(path) 
 	local f = io.popen(cmd)
 	f:close()
 	return is_dir(path)
@@ -53,7 +54,7 @@ end
 function create_file ( path )
 	path = path or ""
 	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
-	local cmd = "touch "..path
+	local cmd = "touch "..format.escapespecialcharacters(path) 
 	local f = io.popen(cmd)
 	f:close()
 	return is_file(path)
@@ -116,9 +117,9 @@ end
 
 --will return a string with md5sum and filename
 function md5sum_file ( path )
-	cmd = "/usr/bin/md5sum " .. (path or "")
+	local cmd = "/usr/bin/md5sum "..format.escapespecialcharacters(path) 
 	f = io.popen(cmd)
-	checksum = f:read("*a")
+	local checksum = f:read("*a")
 	f:close()
 	return checksum
 end

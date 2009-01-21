@@ -13,8 +13,14 @@ function dostounix ( str )
 	return data
 end
 
+-- Escape Lua magic characters
 function escapemagiccharacters ( str )
-	return string.gsub(str, "[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
+	return (string.gsub(str or "", "[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1"))
+end
+
+-- Escape shell special characters
+function escapespecialcharacters ( str )
+	return (string.gsub(str or "", "[~`#%$&%*%(%)\\|%[%]{};\'\"<>/]", "\\%1"))
 end
 
 -- search and remove all blank and commented lines from a string or table of lines
@@ -182,7 +188,7 @@ function string_to_table ( text, delimiter)
 end
 
 function md5sum_string ( str)
-	cmd = "/bin/echo -n " .. str .. "|/usr/bin/md5sum|cut -f 1 -d \" \" "
+	local cmd = "/bin/echo -n \"" .. format.escapespecialcharacters(str) .. "\"|/usr/bin/md5sum|cut -f 1 -d \" \" "
 	f = io.popen(cmd)
 	local checksum =  {}
 	for line in f:lines() do
@@ -207,7 +213,7 @@ expand_bash_syntax_vars = function (str)
 	for w in string.gmatch (str, "${[^}]*}" ) do
 		local rvar = string.sub(w,3,-2)
 		local rval = ( deref(rvar) or "nil" )
-		str = string.gsub (str, w, rval)
+		str = string.gsub (str, w, escapespecialcharacters(rval))
 	end
 	
 	return (str)

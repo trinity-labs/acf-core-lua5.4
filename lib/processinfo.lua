@@ -1,14 +1,15 @@
 
 module(..., package.seeall)
 
-require("fs")
 require("posix")
+require("fs")
+require("format")
 
 local path = "PATH=/usr/bin:/bin:/usr/sbin:/sbin "
 
 function package_version(packagename)
 	local cmderrors
-	local f = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_version -vs " .. packagename .." | egrep -v 'acf' 2>/dev/null" )
+	local f = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_version -vs " .. format.escapespecialcharacters(packagename) .." | egrep -v 'acf' 2>/dev/null" )
 	local cmdresult = f:read("*l")
 	if (cmdresult) and (#cmdresult > 0) then
 		cmdresult = (string.match(cmdresult,"^%S*") or "Unknown")
@@ -21,7 +22,7 @@ end
 
 function process_startupsequence(servicename)
 	local cmderrors
-	local f = io.popen( "/sbin/rc_status | egrep '^S' | egrep '" .. servicename .."' 2>/dev/null" )
+	local f = io.popen( "/sbin/rc_status | egrep '^S' | egrep \"" .. format.escapespecialcharacters(servicename) .."\" 2>/dev/null" )
 	local cmdresult = f:read("*a")
 	if (cmdresult) and (#cmdresult > 0) then
 		cmdresult = "Service will autostart at next boot (at sequence '" .. string.match(cmdresult,"^%a+(%d%d)") .. "')"
@@ -78,8 +79,8 @@ function add_startupsequence(servicename, sequence, kill, system)
 		local cmd = {path, "rc_add"}
 		if kill then cmd[#cmd+1] = "-k" end
 		if system then cmd[#cmd+1] = "-S" end
-		if sequence then cmd[#cmd+1] = "-s "..sequence end
-		cmd[#cmd+1] = servicename
+		if sequence and tonumber(sequence) then cmd[#cmd+1] = "-s "..sequence end
+		cmd[#cmd+1] = format.escapespecialcharacters(servicename)
 		cmd[#cmd+1] = "2>&1"
 		delete_startupsequence(servicename)
 		local f = io.popen(table.concat(cmd, " "))
@@ -96,7 +97,7 @@ function delete_startupsequence(servicename)
 	if not servicename then
 		cmderrors = "Invalid service name"
 	else
-		local f = io.popen(path.."rc_delete "..servicename)
+		local f = io.popen(path.."rc_delete "..format.escapespecialcharacters(servicename))
 		cmdresult = f:read("*a")
 		f:close()
 		if cmdresult == "" then cmderrors = "Failed to delete sequence" end
@@ -108,9 +109,11 @@ end
 function daemoncontrol (process, action)
 	local cmdresult = ""
 	local cmderrors
-	if (string.lower(action) == "start") or (string.lower(action) == "stop") or (string.lower(action) == "restart") then
+	if not process then
+		cmderrors = "Invalid service name"
+	elseif (string.lower(action) == "start") or (string.lower(action) == "stop") or (string.lower(action) == "restart") then
 		local file = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin /etc/init.d/" .. 
-			process .. " " .. string.lower(action) .. " 2>&1" )
+			format.escapespecialcharacters(process) .. " " .. string.lower(action) .. " 2>&1" )
 		if file ~= nil then
 			cmdresult = file:read( "*a" )
 			file:close()
@@ -180,7 +183,7 @@ end
 
 local function has_pidfile(name)
 	local pid
-	local f = io.popen(path .. "find /var/run/ -name "..name..".pid")
+	local f = io.popen(path .. "find /var/run/ -name "..format.escapespecialcharacters(name)..".pid")
 	local file = f:read("*a")
 	f:close()
 	if file and string.find(file, "%w") then
