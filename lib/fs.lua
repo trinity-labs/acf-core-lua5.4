@@ -44,22 +44,21 @@ end
 
 -- Creates a directory if it doesn't exist, including the parent dirs
 function create_directory ( path )
-	local p, i
-	p = ""
-	for i in string.gmatch(path, "/*[^/]+") do 
-		p = p .. i
-		posix.mkdir(p)
+	local pos = string.find(path, "/")
+	while pos do
+		posix.mkdir(string.sub(path, 1, pos))
+		pos = string.find(path, "/", pos+1)
 	end
+	posix.mkdir(path)
 	return is_dir(path)
 end
 
--- Creates a blank file
+-- Creates a blank file (and the directory if necessary)
 function create_file ( path )
 	path = path or ""
 	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
-	local cmd = "touch "..format.escapespecialcharacters(path) 
-	local f = io.popen(cmd)
-	f:close()
+	local f = io.open(path, "w")
+	if f then f:close() end
 	return is_file(path)
 end
 
@@ -115,16 +114,6 @@ function write_line_file ( path, str )
 		file:close()
 		fs.write_file(path, c .. (str or ""))
 	end
-end
-
-
---will return a string with md5sum and filename
-function md5sum_file ( path )
-	local cmd = "/usr/bin/md5sum "..format.escapespecialcharacters(path) 
-	f = io.popen(cmd)
-	local checksum = f:read("*a")
-	f:close()
-	return checksum
 end
 
 -- iterator function for finding dir entries matching filespec (what)
