@@ -42,11 +42,14 @@ function is_link ( pathstr )
 end
 
 
--- Creates a directory if it doesn't exist
+-- Creates a directory if it doesn't exist, including the parent dirs
 function create_directory ( path )
-	local cmd = "mkdir -p " .. format.escapespecialcharacters(path) 
-	local f = io.popen(cmd)
-	f:close()
+	local p, i
+	p = ""
+	for i in string.gmatch(path, "/*[^/]+") do 
+		p = p .. i
+		posix.mkdir(p)
+	end
 	return is_dir(path)
 end
 
