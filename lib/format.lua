@@ -187,17 +187,6 @@ function string_to_table ( text, delimiter)
 	return list
 end
 
-function md5sum_string ( str)
-	local cmd = "/bin/echo -n \"" .. format.escapespecialcharacters(str) .. "\"|/usr/bin/md5sum|cut -f 1 -d \" \" "
-	f = io.popen(cmd)
-	local checksum =  {}
-	for line in f:lines() do
-		checksum[#checksum + 1] = line
-	end
-	f:close()
-	return checksum[1]
-end
-
 
 -- Takes a str and expands any ${...} constructs with the Lua variable
 -- ex: a="foo"; print(expand_bash_syntax_vars("a=${a}) - > "a=foo"

@@ -5,6 +5,7 @@ module (..., package.seeall)
 
 require("modelfunctions")
 require("format")
+require("md5")
 
 -- This is the sub-authenticator
 -- In the future, this will be set based upon configuration
@@ -76,7 +77,7 @@ local write_settings = function(self, settings, id)
 	-- Password, password_confirm, roles are allowed to not exist, just leave the same
 	id.userid = settings.value.userid.value
 	id.username = settings.value.username.value
-	if settings.value.password then id.password = format.md5sum_string(settings.value.password.value) end
+	if settings.value.password then id.password = md5.sumhexa(settings.value.password.value) end
 	if settings.value.roles then id.roles = table.concat(settings.value.roles.value, ",") end
 
 	return auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or ""))
@@ -129,7 +130,7 @@ authenticate = function(self, userid, password)
 			local id = get_id(userid)
 			if not id then
 				errtxt = "Userid not found"
-			elseif id.password ~= format.md5sum_string(password) then
+			elseif id.password ~= md5.sumhexa(password) then
 				errtxt = "Invalid password"
 			end
 		end
