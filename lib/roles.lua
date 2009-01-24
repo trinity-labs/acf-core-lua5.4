@@ -11,24 +11,18 @@ guest_role = "GUEST"
 -- returns a table of the *.roles files
 -- startdir should be the app dir
 local get_roles_candidates = function (startdir)
-	local t = {}
-	local fh = io.popen('find ' .. format.escapespecialcharacters(startdir) .. ' -name "*.roles"')
-	for x in fh:lines() do
-		t[#t + 1] = x
-	end
-	return t
+	return fs.find_files_as_array(".*%.roles", startdir) or {}
 end
 
 -- Return a list of *controller.lua files
 list_controllers = function(self)
 	local list = {}
-	local f = io.popen("/usr/bin/find /usr/share/acf/ |/bin/grep \"controller.lua$\" ")
-	for a in f:lines() do
-		if not string.find(a, "acf_") then
-			list[#list + 1 ] = a
+	for file in fs.find(".*controller%.lua", "/usr/share/acf") do
+		if not string.find(file, "acf_") then
+			list[#list + 1] = file
 		end
 	end
-	f:close()
+
 	return list
 end
 

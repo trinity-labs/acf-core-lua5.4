@@ -8,15 +8,9 @@ module(..., package.seeall)
 require("format")
 
 -- returns a table of the "*.menu" tables 
--- uses the system "find" command
 -- startdir should be the app dir.
 local get_candidates = function (startdir)
-	local t = {}
-	local fh = io.popen('find ' .. format.escapespecialcharacters(startdir) .. ' -name "*.menu"')
-	for x in fh:lines() do
-		t[#t + 1] = x
-	end
-	return t
+	return fs.find_files_as_array(".*%.menu", startdir)
 end
 
 -- Split string into priority and name, convert '_' to space

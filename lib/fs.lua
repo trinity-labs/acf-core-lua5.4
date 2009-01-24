@@ -53,6 +53,24 @@ function create_directory ( path )
 	return is_dir(path)
 end
 
+-- Deletes a directory along with its contents
+function remove_directory ( path )
+	if fs.is_dir(path) then
+		for d in posix.files(path) do
+			if (d == ".") or (d == "..") then
+				-- ignore
+			elseif fs.is_dir(path .. "/" ..  d) then
+				remove_directory(path .. "/" ..d)
+			else
+				os.remove(path .. "/" ..d)
+			end
+		end
+		os.remove(path)
+		return true
+	end
+	return false
+end
+
 -- Creates a blank file (and the directory if necessary)
 function create_file ( path )
 	path = path or ""
@@ -116,29 +134,27 @@ function write_line_file ( path, str )
 	end
 end
 
--- iterator function for finding dir entries matching filespec (what)
--- starting at where, or currentdir if not specified.
--- Finds regexes, not fileglobs
-function find ( what, where )
-	-- returns an array of files under "where" that match what "f"
-	local function find_files_as_array ( f, where, t )
-		where = where or posix.getcwd()
-		f = f or ".*"
-		t =  t or {}
-		if fs.is_dir(where) then
-			for d in posix.files ( where ) do
-				if fs.is_dir ( where .. "/" ..  d ) and (d ~= ".") and ( d ~= "..") then
-					find_files_as_array (f, where .. "/" .. d, t )
-				end
-				if (string.match (d, "^" .. f .. "$" ))  then
-					table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
-				end
+-- returns an array of files under "where" that match "what" (a Lua pattern)
+function find_files_as_array ( what, where, t )
+	where = where or posix.getcwd()
+	what = what or ".*"
+	t =  t or {}
+	if fs.is_dir(where) then
+		for d in posix.files ( where ) do
+			if fs.is_dir ( where .. "/" ..  d ) and (d ~= ".") and ( d ~= "..") then
+				find_files_as_array (what, where .. "/" .. d, t )
+			end
+			if (string.match (d, "^" .. what .. "$" ))  then
+				table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
 			end
 		end
-		return (t)
 	end
+	return (t)
+end
 
-	--  This is the iterator
+-- iterator function for finding dir entries matching (what) (a Lua pattern)
+-- starting at where, or currentdir if not specified.
+function find ( what, where )
 	local t = find_files_as_array ( what, where )
 	local idx = 0
 	return function () 

@@ -8,34 +8,40 @@ require("format")
 local path = "PATH=/usr/bin:/bin:/usr/sbin:/sbin "
 
 function package_version(packagename)
-	local cmderrors
-	local f = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_version -vs " .. format.escapespecialcharacters(packagename) .." | egrep -v 'acf' 2>/dev/null" )
-	local cmdresult = f:read("*l")
-	if (cmdresult) and (#cmdresult > 0) then
-		cmdresult = (string.match(cmdresult,"^%S*") or "Unknown")
-	else
-		cmderrors = "Program not installed"
-	end	
+	local result
+	local errtxt = "Program not installed"
+	local f = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_version -vs " .. format.escapespecialcharacters(packagename) )
+	local cmdresult = f:read("*a") or ""
 	f:close()
-	return cmdresult,cmderrors
+	for line in string.gmatch(cmdresult, "[^\n]+") do
+		if string.match(line, "^"..format.escapemagiccharacters(packagename).."-") then
+			result = string.match(line, "%S+")
+			errtxt = nil
+			break
+		end
+	end
+	return result,errtxt
 end
 
 function process_startupsequence(servicename)
-	local cmderrors
-	local f = io.popen( "/sbin/rc_status | egrep '^S' | egrep \"" .. format.escapespecialcharacters(servicename) .."\" 2>/dev/null" )
-	local cmdresult = f:read("*a")
-	if (cmdresult) and (#cmdresult > 0) then
-		cmdresult = "Service will autostart at next boot (at sequence '" .. string.match(cmdresult,"^%a+(%d%d)") .. "')"
-	else
-		cmderrors = "Not programmed to autostart"
-	end	
+	local result
+	local errtxt = "Not programmed to autostart"
+	local f = io.popen( "/sbin/rc_status" )
+	local cmdresult = f:read("*a") or ""
 	f:close()
-	return cmdresult,cmderrors
+	for line in string.gmatch(cmdresult, "[^\n]+") do
+		if string.match(line, "^%a%d%d"..format.escapemagiccharacters(servicename).."$") then
+			result = "Service will autostart at next boot (at sequence '" .. string.match(line,"^%a(%d%d)") .. "')"
+			errtxt = nil
+			break
+		end
+	end	
+	return result,errtxt
 end
 
 function read_startupsequence()
 	local config = {}
-	local f = io.popen( "/sbin/rc_status 2>/dev/null" )
+	local f = io.popen( "/sbin/rc_status" )
 	local cmdresult = f:read("*a") or ""
 	f:close()
 	local section = 0
@@ -183,14 +189,11 @@ end
 
 local function has_pidfile(name)
 	local pid
-	local f = io.popen(path .. "find /var/run/ -name "..format.escapespecialcharacters(name)..".pid")
-	local file = f:read("*a")
-	f:close()
-	if file and string.find(file, "%w") then
+	local file = "/var/run/"..name..".pid"
+	if fs.is_file(file) then
 		-- check to see if there's a matching proc directory and that it was created slightly after the pid file
 		-- this allows us to find init scripts with differing process names and avoids the problem with
 		-- proc numbers wrapping
-		file = string.match(file, "^%s*(.*%S)")
 		local tmp = string.match(fs.read_file(file) or "", "%d+")
 		if tmp then
 			local dir = "/proc/" .. tmp
