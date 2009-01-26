@@ -21,11 +21,9 @@ end
 
 dirname = function ( string)
 	string = string or ""
-	-- strip trailing / first
-	string = string.gsub (string, "/$", "")
-	local basename = basename ( string)
+	local basename = basename(string)
 	string = string.sub(string, 1, #string - #basename - 1)
-	return(string)	
+	return string	
 end 
 
 -- generic wrapper funcs
@@ -40,7 +38,6 @@ end
 function is_link ( pathstr )
 	return posix.stat ( pathstr or "", "type" ) == "link"
 end
-
 
 -- Creates a directory if it doesn't exist, including the parent dirs
 function create_directory ( path )
@@ -78,6 +75,22 @@ function create_file ( path )
 	local f = io.open(path, "w")
 	if f then f:close() end
 	return is_file(path)
+end
+
+-- Copies a file to a directory or new filename (creating the directory if necessary)
+-- fails if new file already exists
+function copy_file(oldpath, newpath)
+	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and posix.stat(newpath)) or (basename(newpath) == "" and posix.stat(newpath .. basename(oldpath))) then
+		return false
+	end
+	if dirname(newpath) and not posix.stat(dirname(newpath)) then create_directory(dirname(newpath)) end
+	if basename(newpath) == "" then newpath = newpath .. basename(oldpath) end
+	local old = io.open(oldpath, "r")
+	local new = io.open(newpath, "w")
+	new:write(old:read("*a"))
+	new:close()
+	old:close()
+	return is_file(newpath)
 end
 
 -- Returns the contents of a file as a string
