@@ -154,10 +154,11 @@ function find_files_as_array ( what, where, t )
 	t =  t or {}
 	if fs.is_dir(where) then
 		for d in posix.files ( where ) do
-			if fs.is_dir ( where .. "/" ..  d ) and (d ~= ".") and ( d ~= "..") then
+			if (d == ".") or ( d == "..") then
+				-- do nothing
+			elseif fs.is_dir ( where .. "/" ..  d ) then
 				find_files_as_array (what, where .. "/" .. d, t )
-			end
-			if (string.match (d, "^" .. what .. "$" ))  then
+			elseif (string.match (d, "^" .. what .. "$" ))  then
 				table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
 			end
 		end
