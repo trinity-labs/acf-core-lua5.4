@@ -101,6 +101,10 @@ function parse_configfile( input, comment )
 	local lines = parse_linesandwords(input, comment)
 
 	for i,linetable in ipairs(lines) do
+		if string.find(linetable[1], "%S=%S") then
+			table.insert(linetable, 2, string.match(linetable[1], "=(%S+)"))
+			linetable[1] = string.match(linetable[1], "^[^=]+")
+		end
 		config[linetable[1]] = table.concat(linetable, " ", 2) or ""
 	end
 	return config
