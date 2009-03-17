@@ -78,15 +78,13 @@ function handle_form(self, getFunction, setFunction, clientdata, option, label, 
 end
 
 function handle_startstop(self, startstopfunction, getstatusfunction, clientdata)
-	local result
-	if clientdata.action then
-		result = startstopfunction(clientdata.action)
-	end
-	result = self:redirect_to_referrer(result)
+	local result = startstopfunction(clientdata.action)
+	result.value.result = self:redirect_to_referrer(result.value.result)
 
 	local status = getstatusfunction()
 	if status.value.status then status = status.value.status end
+	result.value.status = status
 
-	return cfe({ type="group", value={status=status, result=result} })
+	return result
 end
 

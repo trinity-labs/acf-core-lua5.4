@@ -112,14 +112,18 @@ function delete_startupsequence(servicename)
 	return cmdresult,cmderrors
 end
 
-function daemoncontrol (process, action)
+function daemoncontrol (process, action, actions)
+	actions = actions or {"start", "stop", "restart"}
+	local reverseactions = {}
+	for i,act in ipairs(actions) do reverseactions[string.lower(act)] = i end
+
 	local cmdresult = ""
 	local cmderrors
 	if not process then
 		cmderrors = "Invalid service name"
-	elseif (string.lower(action) == "start") or (string.lower(action) == "stop") or (string.lower(action) == "restart") then
+	elseif reverseactions[string.lower(action)] then
 		local file = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin /etc/init.d/" .. 
-			format.escapespecialcharacters(process) .. " " .. string.lower(action) .. " 2>&1" )
+			format.escapespecialcharacters(process) .. " " .. format.escapespecialcharacters(string.lower(action)) .. " 2>&1" )
 		if file ~= nil then
 			cmdresult = file:read( "*a" )
 			file:close()
@@ -128,7 +132,7 @@ function daemoncontrol (process, action)
 	else
 		cmderrors = "Unknown command!"
 	end
-	return cmdresult,cmderrors
+	return cmdresult,cmderrors,actions
 end
 
 -- the following methods are available:

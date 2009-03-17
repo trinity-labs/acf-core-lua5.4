@@ -16,10 +16,15 @@ function getenabled(processname)
 	return result
 end
 
-function startstop_service(servicename, action)
-	-- action is validated in daemoncontrol
-	local cmdmessage,cmderror = processinfo.daemoncontrol(servicename, action)
-	return cfe({ value=cmdmessage or "", errtxt=cmderror, label="Start/Stop result" })
+function startstop_service(servicename, action, actions)
+	-- action is validated against actions in daemoncontrol
+	local result = {}
+	result.actions = cfe({ type="list", value=actions or {"start", "stop", "restart"}, label="Start/Stop actions" })
+	if action then
+		local cmdmessage,cmderror = processinfo.daemoncontrol(servicename, action, result.actions.value)
+		result.result = cfe({ value=cmdmessage or "", errtxt=cmderror, label="Start/Stop result" })
+	end
+	return cfe({ type="group", value=result, label="Start/Stop result" })
 end
 
 function getstatus(processname, packagename, label, servicename)
