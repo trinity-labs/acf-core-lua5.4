@@ -1,4 +1,4 @@
-#!/usr/bin/haserl --shell=lua --upload-limit=32
+#!/usr/bin/haserl --shell=lua --upload-limit=256
 <% 
 require("mvc")
 
