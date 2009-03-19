@@ -65,7 +65,7 @@ write_entry = function(self, tabl, field, id, entry)
 	-- Set path to passwordfile
 	local passwd_path = self.conf.confdir .. field .. tabl
 	-- Write the newline into the file
-	if fs.is_file(passwd_path) == false then fs.create_file(passwd_path) end
+	if fs.is_file(passwd_path) == false then fs.create_file(passwd_path) posix.chmod(passwd_path, "rw-------") end
 	if fs.is_file(passwd_path) == false then return false end
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local output = {id .. ":" .. entry}
