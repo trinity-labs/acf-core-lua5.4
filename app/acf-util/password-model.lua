@@ -7,7 +7,17 @@ function create_user(self, userdata)
 end
 
 function read_user(self, user)
-	return authenticator.get_userinfo(self, user)
+	local retval = authenticator.get_userinfo(self, user)
+	if not user then
+		local userlist = authenticator.list_users(self)
+		if #userlist == 0 then
+			-- There are no users yet, suggest some values
+			retval.value.userid.value = "root"
+			retval.value.username.value = "Admin account"
+			retval.value.roles.value = {"ADMIN"}
+		end
+	end
+	return retval
 end
 
 function update_user(self, userdata)

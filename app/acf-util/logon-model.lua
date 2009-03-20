@@ -57,3 +57,6 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 	return cfe({ type="boolean", value=false, label="Logon Success" })
 end
 
+list_users = function(self)
+	return cfe({ type="list", value=authenticator.list_users(self), label="Users" })
+end

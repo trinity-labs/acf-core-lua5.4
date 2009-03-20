@@ -6,6 +6,17 @@ default_action = "status"
 
 -- Logon a new user based upon id and password in clientdata
 logon = function(self)
+	-- If there are no users defined, add privileges and dispatch password/newuser
+	local users = self.model:list_users()
+	if #users.value == 0 then
+		self.sessiondata.permissions.password = {}
+		self.sessiondata.permissions.password.newuser = {"temp"}
+		self:dispatch(self.conf.prefix, "password", "newuser")
+		self.sessiondata.permissions.password = nil
+		self.conf.suppress_view = true
+		return
+	end
+
 	local userid = cfe({ value=clientdata.userid or "", label="User ID" })
 	local password = cfe({ label="Password" })
 	local redir = cfe({ value=clientdata.redir or "/welcome/read", label="" })

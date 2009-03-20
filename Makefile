@@ -8,7 +8,7 @@ DISTPKG=$(P).tar.bz2
 
 SUBDIRS=app lib www
 EXTRA_DIST=config.mk Makefile README
-CONF_FILES=acf.conf passwd roles
+CONF_FILES=acf.conf
 
 DISTFILES=$(EXTRA_DIST) $(CONF_FILES)
 
@@ -52,6 +52,5 @@ phony+=install
 install: install-recursive $(CONF_FILES)
 	mkdir -p $(DESTDIR)/etc/acf
 	cp $(CONF_FILES) $(DESTDIR)/etc/acf
-	chmod 600 $(DESTDIR)/etc/acf/passwd
 
 .PHONY: $(phony)
