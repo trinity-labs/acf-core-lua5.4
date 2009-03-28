@@ -477,9 +477,11 @@ redirect_to_referrer = function(self, result)
 	if result and not self.conf.component then
 		-- If we have a result, then we did something, so we might have to redirect
 		if not ENV.HTTP_REFERER then
-			-- If no referrer, we have a problem.  Can't let it go through, because action
-			-- might not have view.  So redirect to default action for this controller.
-			self:redirect()
+			-- If no referrer, we have a potential problem.
+			if not find_view(self.conf.appdir, self.conf.prefix, self.conf.controller, self.conf.action, self.conf.viewtype or "html") then
+				-- Action does not have view, so redirect to default action for this controller.
+				self:redirect()
+			end
 		else
 			local prefix, controller, action = self.parse_path_info(ENV.HTTP_REFERER:gsub("%?.*", ""))
 			if controller ~= self.conf.controller or action ~= self.conf.action then
