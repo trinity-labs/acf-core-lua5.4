@@ -201,8 +201,7 @@ function write_file_with_audit (self, path, str)
 			pre(self, path, tmpfile)
 		end
 
-		if fs.dirname(path) and not posix.stat(fs.dirname(path)) then fs.create_directory(fs.dirname(path)) end
-		os.rename (tmpfile, path)
+		fs.move_file(tmpfile, path)
 
 		if (type(post) == "string" and #post) then
 			os.execute(post)
