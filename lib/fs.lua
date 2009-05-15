@@ -93,6 +93,28 @@ function copy_file(oldpath, newpath)
 	return is_file(newpath)
 end
 
+-- Moves a file to a directory or new filename (creating the directory if necessary)
+-- fails if new file already exists
+function move_file(oldpath, newpath)
+	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and posix.stat(newpath)) or (basename(newpath) == "" and posix.stat(newpath .. basename(oldpath))) then
+		return false
+	end
+	if dirname(newpath) and not posix.stat(dirname(newpath)) then create_directory(dirname(newpath)) end
+	if basename(newpath) == "" then newpath = newpath .. basename(oldpath) end
+	local status, errstr, errno = os.rename(oldpath, newpath)
+        -- errno 18 means  Invalid cross-device link
+	if status or errno ~= 18 then
+		-- successful move or failure due to something else
+		return (status ~= nil), errstr, errno
+	else
+		status = copy_file(oldpath, newpath)
+		if status then
+			os.remove(oldpath)
+		end
+		return status
+	end
+end
+
 -- Returns the contents of a file as a string
 function read_file ( path )
 	local file = io.open(path or "")
