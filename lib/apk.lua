@@ -15,7 +15,7 @@ local reload_installed = function()
 			end
 		end
 		-- read in which are installed
-		local f = io.popen(path.."/sbin/apk_info 2>/dev/null")
+		local f = io.popen(path.."/sbin/apk info -vv 2>/dev/null")
 		local line
 		for line in f:lines() do
 			local name, ver, comment = string.match(line, "(%S+)%-(%d+%S*)%s+(.*)")
@@ -34,7 +34,7 @@ end
 repository = function()
 	if not repo then
 		-- read in all of the packages
-		local f = io.popen(path.."/sbin/apk_fetch -lvq 2>/dev/null")
+		local f = io.popen(path.."/sbin/apk search 2>/dev/null")
 		repo = {}
 		install_cache = false
 		for line in f:lines() do
@@ -107,7 +107,7 @@ delete = function(package)
 	local cmdresult = "Delete failed - Invalid package"
 	if package and repo[package] then
 		success = true
-		local cmd = path .. "apk_delete " .. package .. " 2>&1"
+		local cmd = path .. "apk del " .. package .. " 2>&1"
 		local f = io.popen( cmd )
 		cmdresult = f:read("*a") or ""
 		f:close()
@@ -122,7 +122,7 @@ install = function(package)
 	local cmdresult = "Install failed - Invalid package"
 	if package and repo[package] then
 		success = true
-		local cmd = path .. "apk_add " .. package .. " 2>&1"
+		local cmd = path .. "apk add " .. package .. " 2>&1"
 		local f = io.popen( cmd )
 		cmdresult = f:read("*a")
 		f:close()
@@ -134,4 +134,13 @@ end
 is_installed = function(package)
 	repo = repository()
 	return package and repo[package] and repo[package].installed
+end
+
+version = function(package)
+	repo = repository()
+	if package and repo[package] then
+		return repo[package].installed
+	else
+		return nil
+	end
 end

@@ -4,109 +4,103 @@ module(..., package.seeall)
 require("posix")
 require("fs")
 require("format")
+require("apk")
 
 local path = "PATH=/usr/bin:/bin:/usr/sbin:/sbin "
 
 function package_version(packagename)
-	local result
-	local errtxt = "Program not installed"
-	local f = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin apk_version -vs " .. format.escapespecialcharacters(packagename) )
-	local cmdresult = f:read("*a") or ""
-	f:close()
-	for line in string.gmatch(cmdresult, "[^\n]+") do
-		if string.match(line, "^"..format.escapemagiccharacters(packagename).."-") then
-			result = string.match(line, "%S+")
-			errtxt = nil
-			break
-		end
+	local result = apk.version(packagename)
+	local errtxt
+	if result then
+		result = packagename.."-"..result
+	else
+		errtxt = "Program not installed"
 	end
 	return result,errtxt
 end
 
-function process_startupsequence(servicename)
+function process_autostart(servicename)
 	local result
 	local errtxt = "Not programmed to autostart"
-	local f = io.popen( "/sbin/rc_status" )
+	local f = io.popen( "/sbin/rc-update show" )
 	local cmdresult = f:read("*a") or ""
 	f:close()
 	for line in string.gmatch(cmdresult, "[^\n]+") do
-		if string.match(line, "^%a%d%d"..format.escapemagiccharacters(servicename).."$") then
-			result = "Service will autostart at next boot (at sequence '" .. string.match(line,"^%a(%d%d)") .. "')"
-			errtxt = nil
+		if string.match(line, "^%s*"..format.escapemagiccharacters(servicename).."%s+|") then
+			local runlevels = string.match(line, "|(.*)")
+			-- ignore the shutdown runlevel
+			runlevels = string.gsub(runlevels, "%sshutdown%s", " ")
+			runlevels = string.gsub(runlevels, "^%s+", "")
+			runlevels = string.gsub(runlevels, "%s+$", "")
+			if runlevels ~= "" then
+				result = "Service will autostart at next boot (at runlevel '" .. runlevels .. "')"
+				errtxt = nil
+			end
 			break
 		end
 	end	
 	return result,errtxt
 end
 
-function read_startupsequence()
+function read_initrunlevels()
 	local config = {}
-	local f = io.popen( "/sbin/rc_status" )
+	local f = io.popen( "/sbin/rc-update show -v" )
 	local cmdresult = f:read("*a") or ""
 	f:close()
-	local section = 0
 	for line in string.gmatch(cmdresult, "([^\n]*)\n?") do
-		local sequence, service = string.match(line, "(%d%d)(%S+)")
+                local service, runlevels = string.match(line, "^%s*(%w+) |(.*)")
 		if service then
-			if section == 3 then	-- kill section
-				for i,cfg in ipairs(config) do
-					if cfg.servicename == service then
-						cfg.kill = true
-						break
-					end
-				end
-			else
-				config[#config+1] = {servicename=service, sequence=sequence, kill=false, system=(section == 1)}
-			end
-		elseif string.match(line, "^rc.%.d:") then
-			section = section + 1
+			local runlevel = format.string_to_table(runlevels, "%s+") or {}
+			config[#config+1] = {servicename=service, runlevels=runlevel}
 		end
 	end
-	-- Add in any missing init.d scripts
-	local reverseservices = {} for i,cfg in ipairs(config) do reverseservices[cfg.servicename] = i end
-	local temp = {}
-	for name in posix.files("/etc/init.d") do
-		if not reverseservices[name] and not string.find(name, "^rc[KLS]$") and not string.find(name, "^..?$") then
-			temp[#temp+1] = {servicename=name, sequence="", kill=false, system=false}
-		end
-	end
-	table.sort(temp, function(a,b) return a.servicename < b.servicename end)
-	for i,val in ipairs(temp) do
-		config[#config+1] = val
-	end
+	table.sort(config, function(a,b) return a.servicename < b.servicename end)
 	return config
 end
 
-function add_startupsequence(servicename, sequence, kill, system)
+function add_runlevels(servicename, runlevels)
 	local cmdresult,cmderrors
 	if not servicename then
 		cmderrors = "Invalid service name"
 	else
-		local cmd = {path, "rc_add"}
-		if kill then cmd[#cmd+1] = "-k" end
-		if system then cmd[#cmd+1] = "-S" end
-		if sequence and tonumber(sequence) then cmd[#cmd+1] = "-s "..sequence end
-		cmd[#cmd+1] = format.escapespecialcharacters(servicename)
-		cmd[#cmd+1] = "2>&1"
-		delete_startupsequence(servicename)
-		local f = io.popen(table.concat(cmd, " "))
-		cmdresult = f:read("*a")
-		f:close()
-		if cmdresult == "" then cmdresult = "Added sequence" end
+		if runlevels and #runlevels > 0 then
+			local cmd = {path, "rc-update add"}
+			cmd[#cmd+1] = format.escapespecialcharacters(servicename)
+			for i,lev in ipairs(runlevels) do
+				cmd[#cmd+1] = lev
+			end
+			cmd[#cmd+1] = "2>&1"
+			local f = io.popen(table.concat(cmd, " "))
+			cmdresult = f:read("*a")
+			f:close()
+			cmdresult = string.gsub(cmdresult, "\n+$", "")
+		else
+			cmdresult = "No runlevels added"
+		end
 	end
 
 	return cmdresult,cmderrors
 end
 
-function delete_startupsequence(servicename)
+function delete_runlevels(servicename, runlevels)
 	local cmdresult,cmderrors
 	if not servicename then
 		cmderrors = "Invalid service name"
 	else
-		local f = io.popen(path.."rc_delete "..format.escapespecialcharacters(servicename))
-		cmdresult = f:read("*a")
-		f:close()
-		if cmdresult == "" then cmderrors = "Failed to delete sequence" end
+		if runlevels and #runlevels > 0 then
+			local cmd = {path, "rc-update del"}
+			cmd[#cmd+1] = format.escapespecialcharacters(servicename)
+			for i,lev in ipairs(runlevels) do
+				cmd[#cmd+1] = lev
+			end
+			cmd[#cmd+1] = "2>&1"
+			local f = io.popen(table.concat(cmd, " "))
+			cmdresult = f:read("*a")
+			f:close()
+			cmdresult = string.gsub(cmdresult, "\n+$", "")
+		else
+			cmdresult = "No runlevels deleted"
+		end
 	end
 
 	return cmdresult,cmderrors

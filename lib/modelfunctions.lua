@@ -40,10 +40,10 @@ function getstatus(processname, packagename, label, servicename)
 
 	status.status = getenabled(processname)
 
-	local autostart_sequence, autostart_errtxt = processinfo.process_startupsequence(servicename or processname)
+	local autostart_value, autostart_errtxt = processinfo.process_autostart(servicename or processname)
 	status.autostart = cfe({
-		label="Autostart sequence",
-		value=autostart_sequence,
+		label="Autostart status",
+		value=autostart_value,
 		errtxt=autostart_errtxt,
 		name=servicename or processname
 		})

@@ -175,10 +175,14 @@ function string_to_table ( text, delimiter)
 			while 1 do
 				local first, last = string.find(text, delimiter, pos)
 				if first then -- found?
-					table.insert(list, string.sub(text, pos, first-1))
+					if first > pos then
+						table.insert(list, string.sub(text, pos, first-1))
+					end
 					pos = last+1
 				else
-					table.insert(list, string.sub(text, pos))
+					if pos < string.len(text) then
+						table.insert(list, string.sub(text, pos))
+					end
 					break
 				end
 			end

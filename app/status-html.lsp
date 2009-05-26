@@ -19,6 +19,6 @@ end
 displayitem(data.value.autostart)
 if not (data.value.version and data.value.version.errtxt) and data.value.autostart and data.value.autostart.errtxt and session.permissions.rc and session.permissions.rc.edit then
 %>
-	<a href="<%= html.html_escape(page_info.script .. "/alpine-baselayout/rc/edit?servicename="..data.value.autostart.name.."&redir=".. page_info.orig_action) %>">Schedule autostart</a>
+	<a href="<%= html.html_escape(page_info.script .. "/alpine-baselayout/rc/edit?servicename="..data.value.autostart.name.."&redir=".. page_info.orig_action) %>">Enable autostart</a>
 <% end %>
 </DL>
