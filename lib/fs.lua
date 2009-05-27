@@ -78,9 +78,9 @@ function create_file ( path )
 end
 
 -- Copies a file to a directory or new filename (creating the directory if necessary)
--- fails if new file already exists
+-- fails if new file is already a directory
 function copy_file(oldpath, newpath)
-	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and posix.stat(newpath)) or (basename(newpath) == "" and posix.stat(newpath .. basename(oldpath))) then
+	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and is_dir(newpath)) or (basename(newpath) == "" and is_dir(newpath .. basename(oldpath))) then
 		return false
 	end
 	if dirname(newpath) and not posix.stat(dirname(newpath)) then create_directory(dirname(newpath)) end
@@ -94,9 +94,9 @@ function copy_file(oldpath, newpath)
 end
 
 -- Moves a file to a directory or new filename (creating the directory if necessary)
--- fails if new file already exists
+-- fails if new file is already a directory
 function move_file(oldpath, newpath)
-	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and posix.stat(newpath)) or (basename(newpath) == "" and posix.stat(newpath .. basename(oldpath))) then
+	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and is_dir(newpath)) or (basename(newpath) == "" and is_dir(newpath .. basename(oldpath))) then
 		return false
 	end
 	if dirname(newpath) and not posix.stat(dirname(newpath)) then create_directory(dirname(newpath)) end
