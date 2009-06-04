@@ -112,6 +112,8 @@ function daemoncontrol (process, action)
 	local cmderrors
 	if not process then
 		cmderrors = "Invalid service name"
+	elseif not action then
+		cmderrors = "Invalid action"
 	else
 		local file = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin /etc/init.d/" .. 
 			format.escapespecialcharacters(process) .. " " .. format.escapespecialcharacters(string.lower(action)) .. " 2>&1" )
