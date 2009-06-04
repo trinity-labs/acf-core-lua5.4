@@ -7,22 +7,33 @@ require("processinfo")
 
 function getenabled(processname)
 	local result = cfe({ label = "Program status", name=processname })
-	local t = processinfo.pidof(processname)
-	if (t) and (#t > 0) then
-		result.value = "Running"
+	result.value, result.errtxt = processinfo.daemoncontrol(processname, "status")
+	if string.find(result.value, ": not found") then
+		result.value = ""
+		result.errtxt = "Program not installed"
 	else
-		result.value = "Stopped"
+		result.value = string.gsub(result.value, "* status: ", "")
+		result.value = string.gsub(result.value, "^%l", string.upper)
 	end
 	return result
 end
 
 function startstop_service(servicename, action, actions)
-	-- action is validated against actions in daemoncontrol
 	local result = {}
-	result.actions = cfe({ type="list", value=actions or {"start", "stop", "restart"}, label="Start/Stop actions" })
+	actions = actions or {"Start", "Stop", "Restart"}
+	result.actions = cfe({ type="list", value=actions, label="Start/Stop actions" })
+	
 	if action then
-		local cmdmessage,cmderror = processinfo.daemoncontrol(servicename, action, result.actions.value)
-		result.result = cfe({ value=cmdmessage or "", errtxt=cmderror, label="Start/Stop result" })
+		local reverseactions = {}
+		for i,act in ipairs(actions) do reverseactions[string.lower(act)] = i end
+		result.result = cfe({ label="Start/Stop result" })
+		if reverseactions[string.lower(action)] then
+			local cmdresult, errtxt = processinfo.daemoncontrol(servicename, action)
+			result.result.value = cmdresult
+			result.result.errtxt = errtxt
+		else
+			result.result.errtxt = "Unknown command!"
+		end
 	end
 	return cfe({ type="group", value=result, label="Start/Stop result" })
 end

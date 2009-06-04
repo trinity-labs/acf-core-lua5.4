@@ -106,16 +106,13 @@ function delete_runlevels(servicename, runlevels)
 	return cmdresult,cmderrors
 end
 
-function daemoncontrol (process, action, actions)
-	actions = actions or {"start", "stop", "restart"}
-	local reverseactions = {}
-	for i,act in ipairs(actions) do reverseactions[string.lower(act)] = i end
+function daemoncontrol (process, action)
 
 	local cmdresult = ""
 	local cmderrors
 	if not process then
 		cmderrors = "Invalid service name"
-	elseif reverseactions[string.lower(action)] then
+	else
 		local file = io.popen( "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin /etc/init.d/" .. 
 			format.escapespecialcharacters(process) .. " " .. format.escapespecialcharacters(string.lower(action)) .. " 2>&1" )
 		if file ~= nil then
@@ -123,10 +120,8 @@ function daemoncontrol (process, action, actions)
 			file:close()
 		end
 		posix.sleep(2)	-- Wait for the process to start|stop
-	else
-		cmderrors = "Unknown command!"
 	end
-	return cmdresult,cmderrors,actions
+	return cmdresult,cmderrors
 end
 
 -- the following methods are available:

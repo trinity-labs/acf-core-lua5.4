@@ -77,14 +77,9 @@ function handle_form(self, getFunction, setFunction, clientdata, option, label, 
 	return form
 end
 
-function handle_startstop(self, startstopfunction, getstatusfunction, clientdata)
+function handle_startstop(self, startstopfunction, clientdata)
 	local result = startstopfunction(clientdata.action)
 	result.value.result = self:redirect_to_referrer(result.value.result)
-
-	local status = getstatusfunction()
-	if status.value.status then status = status.value.status end
-	result.value.status = status
-
 	return result
 end
 
