@@ -39,7 +39,7 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 			session.unlink_session(sessiondir, sessiondata.id)
 			-- Clear the current session data
 			for a,b in pairs(sessiondata) do
-				if a ~= "id" then sessiondata[a] = nil end
+				if a ~= "id" and a ~= "logonredirect" then sessiondata[a] = nil end
 			end
 			--]]
 			sessiondata.id = session.random_hash(512)

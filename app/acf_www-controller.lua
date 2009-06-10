@@ -304,6 +304,12 @@ exception_handler = function (self, message )
 					"/" .. message.action .. 
 					(message.extra or "" ) .. "\n")
 			elseif message.type == "dispatch" then
+				-- We got a dispatch error because the user session timed out
+				-- We want to save the URL and any get / post data to resubmit after logon
+				self.sessiondata.logonredirect = message
+				self.sessiondata.logonredirect.clientdata = self.clientdata
+				self.sessiondata.logonredirect.clientdata.sessionid = nil
+				self.sessiondata.logonredirect.referrer = ENV.HTTP_REFERER
 				io.write ("Location: " .. ENV["SCRIPT_NAME"] .. "/acf-util/logon/logon?redir="..message.prefix..message.controller.."/"..message.action.."\n")
 			else
 				io.write ("Location: " .. ENV.HTTP_REFERER .. "\n")
@@ -356,6 +362,14 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		self.conf.prefix = userprefix
 		self.conf.controller = userctlr or ""
 		self.conf.action = useraction or ""
+	end
+
+	-- This is for get / post data saved for after logon
+	if self.sessiondata.logonredirect and self.conf.controller == self.sessiondata.logonredirect.controller
+	and self.conf.action == self.sessiondata.logonredirect.action then
+		ENV.HTTP_REFERER = self.sessiondata.logonredirect.referrer or ENV.HTTP_REFERER
+		self.clientdata = self.sessiondata.logonredirect.clientdata
+		self.sessiondata.logonredirect = nil
 	end
 
 	-- Find the proper controller/action combo
