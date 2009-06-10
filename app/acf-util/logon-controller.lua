@@ -22,6 +22,7 @@ logon = function(self)
 	local redir = cfe({ value=clientdata.redir or "/welcome/read", label="" })
 	local cmdresult = cfe({ type="form", value={userid=userid, password=password, redir=redir}, label="Logon", option="Logon" })
 	if clientdata.Logon then
+		local logonredirect = self.sessiondata.logonredirect
 		local logon = self.model:logon(clientdata.userid, clientdata.password, conf.clientip, conf.sessiondir, sessiondata)
 		-- If successful logon, redirect to welcome-page, otherwise try again
 		if logon.value then
@@ -31,6 +32,13 @@ logon = function(self)
 		end
 		cmdresult = self:redirect_to_referrer(cmdresult)
 		if logon.value then
+			-- only copy the logonredirect if redirecting to that page
+			if logonredirect and cmdresult.value.redir.value then
+				local prefix, controller, action = self.parse_path_info("/"..cmdresult.value.redir.value)
+				if logonredirect.action == action and logonredirect.controller == controller then
+					self.sessiondata.logonredirect = logonredirect
+				end
+			end
 			redirect(self, cmdresult.value.redir.value)
 		end
 	else
