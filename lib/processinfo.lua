@@ -121,7 +121,6 @@ function daemoncontrol (process, action)
 			cmdresult = file:read( "*a" )
 			file:close()
 		end
-		posix.sleep(2)	-- Wait for the process to start|stop
 	end
 	return cmdresult,cmderrors
 end
