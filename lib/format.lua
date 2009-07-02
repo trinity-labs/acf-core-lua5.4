@@ -483,3 +483,30 @@ function set_ini_section (file, search_section, section_content)
 
 	return file, true
 end
+
+-- Find the value of an entry allowing for parent section and $variables
+-- the file parameter can be a string or structure returned by parse_ini_file
+-- beginning and ending quotes are removed
+-- returns value or "" if not found
+function get_ini_entry (file, section, value)
+	local opts = file
+	if not file or not value then
+		return nil
+	elseif type(file) == "string" then
+		opts = parse_ini_file(file)
+	end
+	section = section or ""
+	local result = opts[section][value]
+	if not result then
+		section = ""
+		result = opts[section][value] or ""
+	end
+	while string.find(result, "%$[%w_]+") do
+		local sub = string.match(result, "%$[%w_]+")
+		result = string.gsub(result, escapemagiccharacters(sub), get_ini_entry(opts, section, sub))
+	end
+	if string.find(result, '^"') and string.find(result, '"$') then
+		result = string.sub(result, 2, -2)
+	end
+	return result
+end
