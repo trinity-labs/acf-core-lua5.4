@@ -85,7 +85,7 @@ find_template = function ( appdir, prefix, controller, action, viewtype )
 	local file
 	for k,v in pairs(targets) do
 		file = io.open (v)
-		if file then 
+		if file then
 			io.close (file)
 			return v
 		end
@@ -202,7 +202,8 @@ local view_resolver = function(self)
 				appname = self.conf.appname,
 				skindir = self.conf.skindir or "",
 				skin = self.conf.skin or "",
-				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action
+				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
+				clientdata = self.clientdata,
 				}
 
 	return func, viewlibrary, pageinfo, self.sessiondata

@@ -166,3 +166,80 @@ function displaycommandresults(commands, session, preserveerrors)
 		io.write("</DL>\n")
 	end
 end
+
+-- Divide up data into pages of size pagesize
+-- clientdata can be a page number or a table where clientdata.page is the page number
+function paginate(data, clientdata, pagesize)
+	local subset = data
+	local page_data = { numpages=1, page=1, pagesize=pagesize, num=#data }
+	if #data > pagesize then
+		page_data.numpages = math.floor((#data + pagesize -1)/pagesize)
+		if clientdata and clientdata.page and tonumber(clientdata.page) then
+			page_data.page = tonumber(clientdata.page)
+		elseif clientdata and tonumber(clientdata.page) then
+			page_data.page = tonumber(clientdata)
+		end
+		if page_data.page > page_data.numpages then
+			page_data.page = page_data.numpages
+		end
+		subset = {}
+		for i=((page_data.page-1)*pagesize)+1, page_data.page*pagesize do
+			table.insert(subset, data[i])
+		end
+	end
+	return subset, page_data
+end
+
+function displaypagination(page_data, page_info)
+	local min = math.min(((page_data.page-1)*page_data.pagesize)+1, page_data.num)
+	local max = math.min(page_data.page*page_data.pagesize, page_data.num)
+	if min == max then
+		io.write("Record "..min.." of "..page_data.num.."\n")
+	else
+		io.write("Records "..min.."-"..max.." of "..page_data.num.."\n")
+	end
+
+	if page_data.numpages > 1 then
+		-- Pre-determine the links for each page
+		local link = page_info.script .. page_info.orig_action .. "?"
+		local clientdata = {}
+		for name,val in pairs(page_info.clientdata) do
+			if name ~= "sessionid" and name ~= "page" then
+				clientdata[#clientdata + 1] = name.."="..val
+			end
+		end
+		if #clientdata > 0 then
+			link = link .. table.concat(clientdata, "&") .. "&"
+		end
+		link = link.."page="
+
+		function pagelink(page)
+			io.write(html.link{value=link..page, label=page}.."\n")
+		end
+
+		-- Print out < 1 n-50 n-25 n-10 n-2 n-1 n n+1 n+2 n+10 n+25 n+50 numpages >
+		io.write('<div align="right">Pages:')
+		local p = page_data.page
+		if p > 1 then
+			io.write("<a href="..link..(p-1).."><img SRC='/skins/static/tango/16x16/actions/go-previous.png' HEIGHT='16' WIDTH='16'></a>")
+			pagelink(1)
+		end
+		local links = {(p-3)-(p-3)%10, p-2, p-1, p, p+1, p+2, (p+12)-(p+12)%10}
+		table.insert(links, 1, links[1]-1-(links[1]-1)%25)
+		table.insert(links, 1, links[1]-1-(links[1]-1)%50)
+		table.insert(links, links[#links]+25-links[#links]%25)
+		table.insert(links, links[#links]+50-links[#links]%50)
+		for i,num in ipairs(links) do
+			if num==p then
+				io.write(p.."\n")
+			elseif num>1 and num<page_data.numpages then
+				pagelink(num)
+			end
+		end
+		if p<page_data.numpages then
+			pagelink(page_data.numpages)
+			io.write("<a href="..link..(p+1).."><img SRC='/skins/static/tango/16x16/actions/go-next.png' HEIGHT='16' WIDTH='16'></a>")
+		end
+		io.write("</div>")
+	end
+end
