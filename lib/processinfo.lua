@@ -11,9 +11,7 @@ local path = "PATH=/usr/bin:/bin:/usr/sbin:/sbin "
 function package_version(packagename)
 	local result = apk.version(packagename)
 	local errtxt
-	if result then
-		result = packagename.."-"..result
-	else
+	if not result then
 		errtxt = "Program not installed"
 	end
 	return result,errtxt
