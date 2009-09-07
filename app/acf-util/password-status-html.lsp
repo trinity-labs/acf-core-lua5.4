@@ -14,7 +14,7 @@ io.write("</span>")
 <H2>Create new account</H2>
 <form action="<%= page_info.script .. page_info.prefix .. page_info.controller %>/newuser" method="POST">
 <input class="hidden" type="hidden"  name="redir"  value="<%= html.html_escape(page_info.orig_action) %>" >
-<dl><dt></dt><dd><input class="submit" type="submit" value="New User"></dd></dl>
+<dl><dt></dt><dd><input class="submit" type="submit" value="Create"></dd></dl>
 </form>
 <H2>Existing account</H2>
 <DL>
