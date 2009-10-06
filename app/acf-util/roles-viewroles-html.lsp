@@ -15,19 +15,17 @@
 </form>
 
 <H2>Existing roles</H2>
+<DL>
 <% if view.value.default_roles then %>
-	<table>
 	<% for x,role in pairs(view.value.default_roles.value) do %>
-		<tr><td><dt><img src='/skins/static/tango/16x16/categories/applications-system.png' height='16' width='16'> <%= html.html_escape(role) %></dt>
+		<dt><img src='/skins/static/tango/16x16/categories/applications-system.png' height='16' width='16'> <%= html.html_escape(role) %></dt>
 		<dd>
 		[<a href='viewroleperms?role=<%= html.html_escape(role) %>'>View this role</a>]
 		[<a href='editrole?role=<%= html.html_escape(role) %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this role</a>]
-		</dd></td></tr>
+		</dd>
 	<% end %>
-	</table>
 <% end %>
 <% if view.value.defined_roles then %>
-	<dl>
 	<% table.sort(view.value.defined_roles.value) %>
 	<% for x,role in pairs(view.value.defined_roles.value) do %>
 		<dt><img src='/skins/static/tango/16x16/apps/system-users.png' height='16' width='16'> <%= html.html_escape(role) %></dt>
@@ -39,3 +37,4 @@
 	<% end %>
 	</dl>
 <% end %>
+</DL>
