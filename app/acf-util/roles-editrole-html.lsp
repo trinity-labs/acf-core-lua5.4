@@ -12,7 +12,6 @@
 	if page_info.action ~= "newrole" then
 		form.value.role.readonly = true
 	end
-	io.write("<DL>\n")
 	displayformitem(form.value.role, "role")
 
 	-- copied this code from viewfunctions so we can disable the default boxes
@@ -68,6 +67,5 @@
 	if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 	io.write("</DD>\n")
 
-	io.write("</DL>\n")
 	displayformend(form)
 %>

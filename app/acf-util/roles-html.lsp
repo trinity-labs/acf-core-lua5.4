@@ -14,9 +14,11 @@
 
 <% if view.value.roles then %>
 	<H2><%= html.html_escape(view.value.userid.value) %> is valid in these roles</H2>
+	<DL>
 	<% for a,b in pairs(view.value.roles.value) do
-		print("<li>",html.html_escape(b),"</li>")
+		print("<dt>",html.html_escape(b),"</dt><dd>&nbsp;</dd>")
 	end %>
+	</DL>
 <% end %>
 <% --]] %>
 
@@ -27,6 +29,7 @@
 	<% elseif view.value.role then %>
 		<H2><%= html.html_escape(view.value.role.value) %>'s full permissions are</H2>
 	<% end %>
+	<DL>
 	<% local controllers = {}
 	   -- It's nice to have it in alphabetical order
 	   for cont in pairs(view.value.permissions.value) do
@@ -50,5 +53,6 @@
 	    end
 	    io.write("</TABLE>")
 	    %>
+	</DL>
 <% end %>
 <% --]] %>
