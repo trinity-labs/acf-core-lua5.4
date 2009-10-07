@@ -29,7 +29,6 @@ displayitem(form.value.mtime)
 <% if form.value.filecontent.descr then %><P CLASS='descr'><%= string.gsub(html.html_escape(form.value.filecontent.descr), "\n", "<BR>") %></P><% end %>
 
 <% if form.type == "form" then %>
-<H3>Save</H3>
 <% displayformend(form) %>
 <% end %>
 </form>

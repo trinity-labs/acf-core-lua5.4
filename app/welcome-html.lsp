@@ -1,6 +1,6 @@
 <% view = ... %>
 <h1>Alpine Configuration Framework</h1>
-<p>Welcome.</p>
+<DL><p>Welcome.</p></DL>
 
 <% --[[
 	io.write(html.cfe_unpack(view))
