@@ -88,6 +88,7 @@ function displayformstart(myform, page_info)
 	if not myform.action and page_info then
 		myform.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
 	end
+	io.write('<DL>\n')
 	if myform.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myform.descr), "\n", "<BR>") .. "</P>\n") end
 	if myform.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myform.errtxt), "\n", "<BR>") .. "</P>\n") end
 	io.write('<form action="' .. html.html_escape(myform.action) .. '" ')
@@ -103,7 +104,6 @@ end
 function displayform(myform, order, finishingorder, page_info)
 	if not myform then return end
 	displayformstart(myform, page_info)
-	io.write('<DL>\n')
 	local reverseorder= {["redir"]=0}
 	if order then
 		for x,name in ipairs(order) do
@@ -134,16 +134,14 @@ function displayform(myform, order, finishingorder, page_info)
 			end
 		end
 	end
-	io.write('</DL>\n')
 	displayformend(myform)
 end
 
 function displayformend(myform)
 	if not myform then return end
-	io.write('<DL>\n')
 	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. html.html_escape(myform.option) .. '" value="' .. html.html_escape(myform.submit or myform.option) .. '"></DD>\n')
-	io.write('</DL>\n')
 	io.write('</FORM>')
+	io.write('</DL>\n')
 end
 
 function displaycommandresults(commands, session, preserveerrors)
