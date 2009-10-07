@@ -1,8 +1,13 @@
-<% local view= ... %> 
-<% --[[
-	io.write(html.cfe_unpack(view))
---]] %>
-<h1>User Status </h1>
-<p> Below is your current Session id <p>
-<%= html.html_escape(view.value.sessionid.value) %>
-<p>You are currently known to the system as <%= html.html_escape(view.value.username.value) %>.</p>
+<% local view = ... %>
+
+<h1>User Status</h1>
+
+<DL>
+
+<DT><%= html.html_escape(view.value.username.label) %></DT>
+<DD><%= html.html_escape(view.value.username.value) %></DD>
+
+<DT><%= html.html_escape(view.value.sessionid.label) %></DT>
+<DD><%= html.html_escape(view.value.sessionid.value) %></DD>
+
+</DL>
