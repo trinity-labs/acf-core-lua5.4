@@ -35,6 +35,5 @@
 		[<a href='deleterole?role=<%= html.html_escape(role) %>'>Delete this role</a>]
 		</dd>
 	<% end %>
-	</dl>
 <% end %>
 </DL>
