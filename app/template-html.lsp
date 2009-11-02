@@ -53,7 +53,7 @@ end
 			end %>
 			 | 
 			<a href="/">home</a> | 
-			<a href="http://wiki.alpinelinux.org">about</a>
+			<a href="http://www.alpinelinux.org">about</a>
 			</p></span>
 		<div class="tailer"></div>
 	</div>	<!-- header -->
