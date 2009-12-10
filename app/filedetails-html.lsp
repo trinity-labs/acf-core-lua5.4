@@ -21,6 +21,8 @@ displayitem(form.value.mtime)
 <% form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>
 <% displayformstart(form) %>
 <input type="hidden" name="filename" value="<%= html.html_escape(form.value.filename.value) %>">
+<% else %>
+<DL>
 <% end %>
 <textarea name="filecontent">
 <%= html.html_escape(form.value.filecontent.value) %>
@@ -30,5 +32,6 @@ displayitem(form.value.mtime)
 
 <% if form.type == "form" then %>
 <% displayformend(form) %>
+<% else %>
+</DL>
 <% end %>
-</form>
