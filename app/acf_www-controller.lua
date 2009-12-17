@@ -69,6 +69,17 @@ local check_permission = function(self, controller, action)
 	return true
 end
 
+local check_permission_string = function (self, str)
+	local prefix, controller, action = self.parse_path_info("/" .. (str or ""))
+	if prefix == "/" then prefix = self.conf.prefix end
+	if controller == "" then controller = self.conf.controller end
+	
+	if "" == action then
+		action = rawget(self.worker, "default_action") or ""
+	end
+	return check_permission(self, controller, action)
+end
+
 -- look for a template
 -- ctlr-action-view, then  ctlr-view, then action-view, then view
 -- cannot be local function because of recursion
@@ -124,9 +135,8 @@ local has_view = function(self)
 end
 
 -- This function is made available within the view to allow loading of components
-local dispatch_component = function(str, clientdata, suppress_view)
+local dispatch_component = function(self, str, clientdata, suppress_view)
 	-- Before we call dispatch, we have to set up conf and clientdata like it was really called for this component
-	self = APP
 	local tempconf = self.conf
 	self.conf = {}
 	for x,y in pairs(tempconf) do
@@ -163,7 +173,8 @@ local create_helper_library = function ( self )
 		end
 	end
 --]]
-	library.dispatch_component = dispatch_component
+	library.dispatch_component = function(...) return dispatch_component(self, ...) end
+	library.check_permission = function(...) return check_permission_string(self, ...) end
 	return library
 end
 

@@ -13,6 +13,6 @@ local func = haserl.loadfile(page_info.viewfile:gsub(pattern..".*$", "/") .. "fi
 func(form, viewlibrary, page_info, session)
 %>
 
-<% if viewlibrary and viewlibrary.dispatch_component and session.permissions[page_info.controller].startstop then
+<% if viewlibrary and viewlibrary.dispatch_component and viewlibrary.check_permission("startstop") then
 	viewlibrary.dispatch_component("startstop")
 end %>
