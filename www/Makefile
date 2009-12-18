@@ -1,6 +1,7 @@
 include ../config.mk
 
 WWW_DIST=cgi-bin/acf\
+	cgi-bin/cli\
 	cgi-bin/mvc.lua\
 	index.html\
 	sample.html\
@@ -36,6 +37,7 @@ install:
 		cp "$$i" "$$dest";\
 	done
 	chmod +x $(install_dir)/cgi-bin/acf
+	chmod +x $(install_dir)/cgi-bin/cli
 
 
 .PHONY: $(phony)

@@ -1,22 +1,48 @@
+#!/usr/bin/lua
+if #arg == 0 then
+	print([[ACF Client interface
+
+Usage: cli [action] [parameter]...
+
+Actions are of the form "prefix/controller/action"
+Parameters are of the form "parameter=value"
+	list and multi select parameters are of the form "parameter[1]=value"
+	boolean parameters are true if defined, false is undefined
+
+Example:
+cli acf-util/password/newuser password="test123" password_confirm="test123" roles[1]="ADMIN" userid="root" Create
+
+For forms, remember to pass in the "option" value as a parameter (see Create in example above).
+Output will be a serialized Lua table.
+	]])
+	return
+end
+
+local PATH = package.path
+package.path = "/usr/share/acf/www/cgi-bin/?.lua;" .. package.path
 require("mvc")
+package.path = PATH
+
 -- this is to get around having to store
--- -- the config file in /etc/helloworld/helloworld.conf
+-- the config file in /etc/helloworld/helloworld.conf
 ENV={}
 ENV.HOME="."
 FRAMEWORK=mvc:new()
 FRAMEWORK:read_config("acf") 
 APP=FRAMEWORK:new("acf_cli")
+
+-- command line will have URI-type string defining prefix/controller/action
+--  (put into ENV.PATH_INFO)
+-- followed by parameters
+--  (put into APP.clientdata)
+ENV.PATH_INFO = arg[1]
 APP.clientdata = {}
-local cmd={}
-for i = 2, #arg do
-   a,v = string.match(arg[i], "([^=]-)=(.*)")
-   if v then
-       APP.clientdata[a] = v
-   else 
-       cmd[#cmd + 1] = a
-   end
+for i=2,#arg do
+	a,v = string.match(arg[i], "([^=]*)=(.*)")
+	if v then
+		APP.clientdata[a] = v
+	else
+		APP.clientdata[arg[i]] = true
+	end
 end
-APP:dispatch("", cmd[1], cmd[2] or "")
-
--- vim: set filetype=lua :
-
+APP:dispatch()

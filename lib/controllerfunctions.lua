@@ -20,6 +20,15 @@ function handle_clientdata(form, clientdata)
 		if value.type == "boolean" then
 			value.value = (clientdata[name] ~= nil)
 		elseif value.type == "multi" then
+			if clientdata[name] == nil then
+				-- for cli we use name[num] as the name
+				clientdata[name] = {}
+				for n,val in pairs(clientdata) do
+					if string.find(n, "^"..name.."%[%d+%]$") then
+						clientdata[name][tonumber(string.match(n, "%[(%d+)%]$"))] = val
+					end
+				end
+			end
 			-- FIXME this is because multi selects don't work in haserl
 			local oldtable = clientdata[name] or {}
 			-- Assume it's a sparse array, and remove blanks
@@ -33,8 +42,16 @@ function handle_clientdata(form, clientdata)
 		elseif value.type == "list" then
 			value.value = {}
 			if clientdata[name] and clientdata[name] ~= "" then
+				-- for www we use \r separated list
 				for ip in string.gmatch(clientdata[name].."\n", "%s*(%S[^\n]*%S)%s*\n") do
 					table.insert(value.value, ip)
+				end
+			else
+				-- for cli we use name[num] as the name
+				for n,val in pairs(clientdata) do
+					if string.find(n, "^"..name.."%[%d+%]$") then
+						value.value[tonumber(string.match(n, "%[(%d+)%]$"))] = val
+					end
 				end
 			end
 		else

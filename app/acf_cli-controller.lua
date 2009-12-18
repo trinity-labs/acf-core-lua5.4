@@ -5,7 +5,6 @@ local parent_exception_handler
 
 mvc = {}
 mvc.on_load = function (self, parent)
-	
 	-- Make sure we have some kind of sane defaults for libdir and sessiondir
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
@@ -29,16 +28,26 @@ end
 
 
 view_resolver = function(self)
-    return function (viewtable)
-        print(viewtable)
-    end
+	return function (viewtable)
+		print(session.serialize("result", viewtable))
+	end
 end
 
+--[[ The parent exception handler is just fine
 exception_handler = function (self, message )
-    print(message)
+	print(session.serialize("exception", message))
+end
+--]]
+
+redirect = function (self, str, result)
+	return result
+end
+
+redirect_to_referrer = function(self, result)
+	return result
 end
 
 -- syslog something
-logit = function ( ... )
+logevent = function ( ... )
 	os.execute ( "logger \"" .. ... .. "\"" )
 end

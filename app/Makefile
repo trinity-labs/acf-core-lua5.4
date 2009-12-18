@@ -19,6 +19,7 @@ APP_DIST= \
 	acf-util/password-status-html.lsp \
 	acf-util/password.menu \
 	acf_www-controller.lua\
+	acf_cli-controller.lua\
 	menuhints.menu\
 	template-html.lsp\
 	template-stream.lsp\
