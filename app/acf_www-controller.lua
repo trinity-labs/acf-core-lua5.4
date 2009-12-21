@@ -34,12 +34,12 @@ local function build_menus(self)
 		local cat = cats[x]
 		for y = #cat.groups,1,-1 do
 			local group = cat.groups[y]
-			if nil == permissions[group.controller] then
+			if nil == permissions[group.prefix] or nil == permissions[group.prefix][group.controller] then
 				table.remove(cat.groups, y)
 			else
 				for z = #group.tabs,1,-1 do
 					local tab = group.tabs[z]
-					if nil == permissions[group.controller][tab.action] then
+					if nil == permissions[group.prefix][group.controller][tab.action] then
 						table.remove(group.tabs, z)
 					end
 				end
@@ -59,12 +59,12 @@ local function build_menus(self)
 	self.sessiondata.menu.timestamp = {tab="Menu_created: " .. os.date(),action="Menu_created: " .. os.date(),}
 end
 
-local check_permission = function(self, controller, action)
-	--logevent("Trying " .. (controller or "nil") .. ":" .. (action or "nil"))
+local check_permission = function(self, prefix, controller, action)
+	--logevent("Trying "..(prefix or "/")..(controller or "nil").."/"..(action or "nil"))
 	if nil == self.sessiondata.permissions then return false end
-	if controller then
-		if nil == self.sessiondata.permissions[controller] then return false end
-		if action and nil == self.sessiondata.permissions[controller][action] then return false end
+	if prefix and controller then
+		if nil == self.sessiondata.permissions[prefix] or nil == self.sessiondata.permissions[prefix][controller] then return false end
+		if action and nil == self.sessiondata.permissions[prefix][controller][action] then return false end
 	end
 	return true
 end
@@ -77,7 +77,7 @@ local check_permission_string = function (self, str)
 	if "" == action then
 		action = rawget(self.worker, "default_action") or ""
 	end
-	return check_permission(self, controller, action)
+	return check_permission(self, prefix, controller, action)
 end
 
 -- look for a template
@@ -231,7 +231,7 @@ mvc.on_load = function (self, parent)
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.script = ENV.SCRIPT_NAME
-	self.conf.default_prefix = "/"
+	self.conf.default_prefix = "/acf-util/"
 	self.conf.default_controller = self.conf.default_controller or "welcome"
 	self.clientdata = FORM
 	self.conf.clientip = ENV.REMOTE_ADDR
@@ -394,7 +394,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	end
 	if "" ~= self.conf.controller then
 		-- We now know the controller / action combo, check if we're allowed to do it
-		local perm = check_permission(self, self.conf.controller)
+		local perm = check_permission(self, self.conf.prefix, self.conf.controller)
 		local worker_loaded = false
 
 		if perm then
@@ -404,7 +404,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			local default_action = rawget(controller.worker, "default_action") or ""
 			if self.conf.action == "" then self.conf.action = default_action end
 			if "" ~= self.conf.action then
-				local perm = check_permission(controller, self.conf.controller, self.conf.action)
+				local perm = check_permission(controller, self.conf.prefix, self.conf.controller, self.conf.action)
 				-- Because of the inheritance, normally the 
 				-- controller.worker.action will flow up, so that all children have
 				-- actions of all parents.  We use rawget to make sure that only
@@ -428,7 +428,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	-- If the controller or action are missing, display an error view
 	if nil == controller then
 		-- If we have a view w/o an action, just display the view (passing in the clientdata)
-		if (not self.conf.suppress_view) and has_view(self) and check_permission(self, self.conf.controller, self.conf.action) then
+		if (not self.conf.suppress_view) and has_view(self) and check_permission(self, self.conf.prefix, self.conf.controller, self.conf.action) then
 			viewtable = self.clientdata
 		else
 			origconf.type = "dispatch"

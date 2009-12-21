@@ -18,13 +18,13 @@ APP_DIST= \
 	acf-util/password-model.lua \
 	acf-util/password-status-html.lsp \
 	acf-util/password.menu \
+	acf-util/welcome-controller.lua\
+	acf-util/welcome-html.lsp\
 	acf_www-controller.lua\
 	acf_cli-controller.lua\
 	menuhints.menu\
 	template-html.lsp\
 	template-stream.lsp\
-	welcome-controller.lua\
-	welcome-html.lsp\
 	dispatcherror-html.lsp\
 	exception-html.lsp\
 	status-html.lsp\

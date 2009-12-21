@@ -9,6 +9,7 @@ mvc.on_load = function (self, parent)
 	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.script = ""
+	self.conf.default_prefix = "/acf-util/"	
 	self.conf.default_controller = "welcome"	
 
 	parent_exception_handler = parent.exception_handler

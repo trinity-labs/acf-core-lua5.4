@@ -34,10 +34,11 @@ get_controllers = function(self,controller)
 	local temp = {}
 	for k,v in pairs(list) do
 		path = string.match(v,"[/%w_-]+/")
+		prefix = string.match(path,"/[^/]+/$")
 		filename = string.match(v,"[^/]*.lua")
 		name = string.match(filename,"[^.]*")
 		sname = string.match(filename,"[^-]*")
-		temp[sname] = {path=path,filename=filename,name=name,sname=sname}
+		temp[sname] = {path=path,prefix=prefix,filename=filename,name=name,sname=sname}
 	end
 	if controller then
 		return temp[controller]
@@ -118,34 +119,38 @@ list_all_roles = function(self)
 	return default_roles
 end	
 
--- Go through the roles files and determine the permissions for the specified list of roles (including guest)
-get_roles_perm = function(self,roles)
-	permissions = {}
-	permissions_array = {}
+-- Go through the roles files and determine the permissions for the specified list of roles
+local determine_perms = function(self,roles)
+	local permissions = {}
+	local permissions_array = {}
+	local default_permissions_array = {}
 
 	local reverseroles = {}
 	for x,role in ipairs(roles) do
 		reverseroles[role] = x
 	end
-	reverseroles[guest_role] = 0 -- always include guest role
 
 	-- find all of the default roles files and parse them
 	local rolesfiles = get_roles_candidates(self.conf.appdir)
 
 	for x,file in ipairs(rolesfiles) do
+		local prefix = string.match(file, "(/[^/]+/)[^/]+$") or "/"
+		permissions[prefix] = permissions[prefix] or {}
 		f = fs.read_file_as_array(file) or {}
 		for y,line in pairs(f) do
 			if reverseroles[string.match(line,"^[%w_]+")] then
-				temp = format.string_to_table(string.match(line,"[,%w_:]+$"),",")
+				temp = format.string_to_table(string.match(line,"[,%w_:/]+$"),",")
 				for z,perm in pairs(temp) do
-					local control,action = string.match(perm,"([%w_]+):([%w_]+)")
+					-- we'll allow for : or / to not break old format
+					local control,action = string.match(perm,"([%w_]+)[:/]([%w_]+)")
 					if control then
-						if nil == permissions[control] then
-							permissions[control] = {}
+						if nil == permissions[prefix][control] then
+							permissions[prefix][control] = {}
 						end
 						if action then
-							permissions[control][action] = {file}
-							permissions_array[#permissions_array + 1] = control .. ":" .. action
+							permissions[prefix][control][action] = {file}
+							permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
+							default_permissions_array[#default_permissions_array + 1] = prefix .. control .. "/" .. action
 						end
 					end
 				end
@@ -159,73 +164,33 @@ get_roles_perm = function(self,roles)
 		if reverseroles[entry.id] then
 			temp = format.string_to_table(entry.entry, ",")
 			for z,perm in pairs(temp) do
-				local control,action = string.match(perm,"([%w_]+):([%w_]+)")
+				local prefix,control,action = mvc.parse_path_info(perm)
 				if control then
-					if nil == permissions[control] then
-						permissions[control] = {}
+					if nil == permissions[prefix] then
+						permissions[prefix] = {}
 					end
-					if action then
-						permissions[control][action] = {}
-						permissions_array[#permissions_array + 1] = control .. ":" .. action
+					if nil == permissions[prefix][control] then
+						permissions[prefix][control] = {}
 					end
+					permissions[prefix][control][action] = {}
+					permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
 				end
 			end
 		end
 	end
 	
-	return permissions, permissions_array
+	return permissions, permissions_array, default_permissions_array
+end
+
+-- Go through the roles files and determine the permissions for the specified list of roles (including guest)
+get_roles_perm = function(self,roles)
+	roles[#roles+1] = guest_role
+	return determine_perms(self, roles)
 end
 
 -- Go through the roles files and determine the permissions for the specified role
 get_role_perm = function(self,role)
-	permissions = {}
-	permissions_array = {}
-	default_permissions_array = {}
-
-	-- find all of the default roles files and parse them
-	local rolesfiles = get_roles_candidates(self.conf.appdir)
-
-	for x,file in ipairs(rolesfiles) do
-		f = fs.read_file_as_array(file) or {}
-		for y,line in pairs(f) do
-			if role == string.match(line,"^[%w_]+") then
-				temp = format.string_to_table(string.match(line,"[,%w_:]+$"),",")
-				for z,perm in pairs(temp) do
-					local control,action = string.match(perm,"([%w_]+):([%w_]+)")
-					if control then
-						if nil == permissions[control] then
-							permissions[control] = {}
-						end
-						if action then
-							permissions[control][action] = {file}
-							permissions_array[#permissions_array + 1] = control .. ":" .. action
-							default_permissions_array[#default_permissions_array + 1] = control .. ":" .. action
-						end
-					end
-				end
-			end
-		end
-	end
-
-	-- then look in the user-editable roles
-	local entry = authenticator.auth.read_entry(self, authenticator.roletable, "", role)
-	if entry then
-		temp = format.string_to_table(entry, ",")
-		for z,perm in pairs(temp) do
-			local control,action = string.match(perm,"([%w_]+):([%w_]+)")
-			if control then
-				if nil == permissions[control] then
-					permissions[control] = {}
-				end
-				if action then
-					permissions[control][action] = {}
-					permissions_array[#permissions_array + 1] = control .. ":" .. action
-				end
-			end
-		end
-	end
-
-	return permissions, permissions_array, default_permissions_array
+	return determine_perms(self, {role})
 end
 
 -- Delete a role from role file
@@ -247,9 +212,11 @@ set_role_perm = function(self, role, permissions, permissions_array)
 	end
 	if permissions and not permissions_array then
 		permissions_array = {}
-		for cont,actions in pairs(permissions) do
-			for action in pairs(actions) do
-				permissions_array[#permissions_array + 1] = cont .. ":" .. action
+		for prefix,contrllrs in pairs(permissions) do
+			for cont,actions in pairs(contrllrs) do
+				for action in pairs(actions) do
+					permissions_array[#permissions_array + 1] = prefix .. cont .. "/" .. action
+				end
 			end
 		end
 	end

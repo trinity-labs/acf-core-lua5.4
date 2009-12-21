@@ -11,19 +11,22 @@ local get_all_permissions = function(self)
 	local table_perm = {}
 	local array_perm = {}
 	for a,b in pairs(controllers) do
-		if nil == table_perm[b.sname] then
-			table_perm[b.sname] = {}
+		if nil == table_perm[b.prefix] then
+			table_perm[b.prefix] = {}
+		end
+		if nil == table_perm[b.prefix][b.sname] then
+			table_perm[b.prefix][b.sname] = {}
 		end
 		local temp = roles.get_controllers_func(self,b)
 		for x,y in ipairs(temp) do
-			table_perm[b.sname][y] = {}
-			array_perm[#array_perm + 1] = b.sname .. ":" .. y
+			table_perm[b.prefix][b.sname][y] = {}
+			array_perm[#array_perm + 1] = b.prefix .. b.sname .. "/" .. y
 		end
 		temp = roles.get_controllers_view(self,b)
 		for x,y in ipairs(temp) do
-			if not table_perm[b.sname][y] then
-				table_perm[b.sname][y] = {}
-				array_perm[#array_perm + 1] = b.sname .. ":" .. y
+			if not table_perm[b.prefix][b.sname][y] then
+				table_perm[b.prefix][b.sname][y] = {}
+				array_perm[#array_perm + 1] = b.prefix .. b.sname .. "/" .. y
 			end
 		end
 	end

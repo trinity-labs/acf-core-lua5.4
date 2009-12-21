@@ -1,9 +1,5 @@
 <% local view= ... %> 
-<% --[[
-	io.write(html.cfe_unpack(view))
---]] %>
 
-<% ---[[ %>
 <% if view.value.userid then %>
 	<H1>Roles/Permission list for <%= html.html_escape(view.value.userid.value) %>:</H1>
 <% elseif view.value.role then %>
@@ -20,9 +16,7 @@
 	end %>
 	</DL>
 <% end %>
-<% --]] %>
 
-<% ---[[ %>
 <% if view.value.permissions then %>
 	<% if view.value.userid then %>
 		<H2><%= html.html_escape(view.value.userid.value) %>'s full permissions are</H2>
@@ -30,29 +24,36 @@
 		<H2><%= html.html_escape(view.value.role.value) %>'s full permissions are</H2>
 	<% end %>
 	<DL>
-	<% local controllers = {}
-	   -- It's nice to have it in alphabetical order
-	   for cont in pairs(view.value.permissions.value) do
-		controllers[#controllers + 1] = cont
-	   end
-	   table.sort(controllers)
-	   io.write("<TABLE>")
-	   io.write("<TR><TD CLASS='header'>Controller</TD><TD CLASS='header'>Action(s)</TD>")
-	   for x,cont in ipairs(controllers) do
-		print("<TR><TD STYLE='font-weight:bold;'>",html.html_escape(cont),"</TD><TD>")
-		-- Again, alphabetical order
-		local actions = {}
-		for act in pairs(view.value.permissions.value[cont]) do
-			actions[#actions + 1] = act
+	<TABLE>
+		<TR><TD CLASS='header'>Controller</TD><TD CLASS='header'>Action(s)</TD></TR>
+		<% local prefixes = {}
+		-- It's nice to have it in alphabetical order
+		for pref in pairs(view.value.permissions.value) do
+			prefixes[#prefixes + 1] = pref
 		end
-		table.sort(actions)
-		for y,act in pairs(actions) do
-			print((html.html_escape(act)))
+		table.sort(prefixes)
+		for w,pref in ipairs(prefixes) do
+			local controllers = {}
+			-- Again, alphabetical order
+			for cont in pairs(view.value.permissions.value[pref]) do
+				controllers[#controllers + 1] = cont
+			end
+			table.sort(controllers)
+			for x,cont in ipairs(controllers) do
+				print("<TR><TD STYLE='font-weight:bold;'>",html.html_escape(pref..cont),"</TD><TD>")
+				-- Again, alphabetical order
+				local actions = {}
+				for act in pairs(view.value.permissions.value[pref][cont]) do
+					actions[#actions + 1] = act
+				end
+				table.sort(actions)
+				for y,act in pairs(actions) do
+					print((html.html_escape(act)))
+				end
+				io.write("<TD></TR>")
+			end
 		end
-		io.write("<TD></TR>")
-	    end
-	    io.write("</TABLE>")
-	    %>
+		%>
+	</TABLE>
 	</DL>
 <% end %>
-<% --]] %>

@@ -74,13 +74,13 @@ end
 			for x,cat in ipairs(session.menu.cats) do
 				io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", html.html_escape(cat.name)))	--start row
 				for y,group in ipairs(cat.groups) do
-					if pageinfo.prefix == group.prefix .. '/' and pageinfo.controller == group.controller then
+					if pageinfo.prefix == group.prefix and pageinfo.controller == group.controller then
 						class="class='selected'"
 						tabs = group.tabs
 					else
 						class=""
 					end
-					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s/%s/%s\">%s</a></li>\n", 
+					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s%s/%s\">%s</a></li>\n", 
 						class,html.html_escape(pageinfo.script),html.html_escape(group.prefix), html.html_escape(group.controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
 				end
 				io.write ( "\t\t\t\t\t</ul>" )

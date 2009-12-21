@@ -64,7 +64,7 @@ get_menuitems = function (startdir)
 	startdir = (string.gsub(startdir, "/$", ""))	--remove trailing /
 	for k,filename in pairs(get_candidates(startdir)) do
 		local controller = mvc.basename(filename, ".menu")
-		local prefix = (string.gsub(mvc.dirname(filename), startdir, ""))
+		local prefix = (string.gsub(mvc.dirname(filename), startdir, "")).."/"
 
 		-- open the menu file, and parse the contents
 		local handle = io.open(filename)

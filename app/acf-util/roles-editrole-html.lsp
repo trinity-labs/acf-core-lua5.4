@@ -1,10 +1,6 @@
 <% local form, viewtable, page_info = ... %> 
 <% require("viewfunctions") %>
 
-<% --[[
-	io.write(html.cfe_unpack(form))
---]] %>
-
 <H1><%= html.html_escape(form.label) %></H1>
 <%
 	displayformstart(form, page_info)
