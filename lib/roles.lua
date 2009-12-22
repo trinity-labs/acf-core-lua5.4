@@ -33,7 +33,7 @@ get_controllers = function(self,pre,controller)
 	--we need to grab the directory and name of file
 	local temp = {}
 	for k,v in pairs(list) do
-		path = string.match(v,"[/%w_-]+/")
+		path = string.match(v,".*/")
 		prefix = string.match(path,"/[^/]+/$")
 		filename = string.match(v,"[^/]*.lua")
 		name = string.match(filename,"[^.]*")
@@ -52,18 +52,22 @@ get_controllers_func = function(self,controller_info)
 	if controller_info == nil then
 		return "Could not be processed"
 	else
-	local PATH = package.path
-	package.path = controller_info.path .. "?.lua;" .. package.path
-	temp = require (controller_info.name)
-	package.path = PATH
-	temp1 = {}
-	for a,b in pairs(temp) do 
-		local c = string.match(a,"^mvc") or string.match(a,"^_") 
-		if c == nil and type(temp[a])=="function" then
-			temp1[#temp1 +1] = a
+		-- FIXME - would rather do this without 'require' since that messes with global variables
+		-- but, haven't figured that out yet
+		local PATH = package.path
+		local loaded = package.loaded[controller_info.name]
+		package.path = controller_info.path .. "?.lua;" .. package.path
+		temp = require (controller_info.name)
+		package.path = PATH
+		package.loaded[controller_info.name] = loaded
+		temp1 = {}
+		for a,b in pairs(temp) do
+			local c = string.match(a,"^mvc") or string.match(a,"^_") 
+			if c == nil and type(temp[a])=="function" then
+				temp1[#temp1 +1] = a
+			end
 		end
-	end
-	return temp1
+		return temp1
 	end
 end
 
