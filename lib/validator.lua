@@ -165,7 +165,7 @@ function is_port(numstr)
 end
 
 function is_valid_filename ( path, restriction )
-	if not (path) or ((restriction) and (string.find (path, "^" .. restriction ) == nil or string.find (path, "/", #restriction+2) )) then
+	if not (path) or ((restriction) and (string.find (path, "^" .. format.escapemagiccharacters(restriction) ) == nil or string.find (path, "/", #restriction+2) )) then
 		return false
 	end
 	return true
