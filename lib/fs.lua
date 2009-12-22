@@ -170,28 +170,42 @@ function write_line_file ( path, str )
 end
 
 -- returns an array of files under "where" that match "what" (a Lua pattern)
-function find_files_as_array ( what, where, t )
+function find_files_as_array ( what, where, follow, t )
 	where = where or posix.getcwd()
 	what = what or ".*"
 	t =  t or {}
-	if fs.is_dir(where) then
+	
+	local link
+	if follow and fs.is_link(where) then
+		link = posix.readlink(where)
+		if not string.find(link, "^/") then
+			link = dirname(where).."/"..link
+		end
+	end
+
+	if fs.is_dir(where) or (link and fs.is_dir(link)) then
 		for d in posix.files ( where ) do
 			if (d == ".") or ( d == "..") then
 				-- do nothing
 			elseif fs.is_dir ( where .. "/" ..  d ) then
-				find_files_as_array (what, where .. "/" .. d, t )
+				find_files_as_array (what, where .. "/" .. d, follow, t )
+			elseif follow and fs.is_link ( where .. "/" ..  d ) then
+				find_files_as_array (what, where .. "/" .. d, follow, t )
 			elseif (string.match (d, "^" .. what .. "$" ))  then
 				table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
 			end
 		end
+	elseif (string.match (basename(where), "^" .. what .. "$" ))  then
+		table.insert (t, where )
 	end
+
 	return (t)
 end
 
 -- iterator function for finding dir entries matching (what) (a Lua pattern)
 -- starting at where, or currentdir if not specified.
-function find ( what, where )
-	local t = find_files_as_array ( what, where )
+function find ( what, where, follow )
+	local t = find_files_as_array ( what, where, follow )
 	local idx = 0
 	return function () 
 		idx = idx + 1

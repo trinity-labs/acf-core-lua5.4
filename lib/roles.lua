@@ -11,13 +11,13 @@ guest_role = "GUEST"
 -- returns a table of the *.roles files
 -- startdir should be the app dir
 local get_roles_candidates = function (startdir)
-	return fs.find_files_as_array(".*%.roles", startdir) or {}
+	return fs.find_files_as_array(".*%.roles", startdir, true) or {}
 end
 
 -- Return a list of *controller.lua files
 list_controllers = function(self)
 	local list = {}
-	for file in fs.find(".*controller%.lua", "/usr/share/acf") do
+	for file in fs.find(".*controller%.lua", "/usr/share/acf", true) do
 		if not string.find(file, "acf_") then
 			list[#list + 1] = file
 		end
@@ -27,7 +27,7 @@ list_controllers = function(self)
 end
 
 -- Return information about all or specified controller files
-get_controllers = function(self,controller)
+get_controllers = function(self,pre,controller)
 	--we get all the controllers
 	local list = roles.list_controllers()
 	--we need to grab the directory and name of file
@@ -38,10 +38,10 @@ get_controllers = function(self,controller)
 		filename = string.match(v,"[^/]*.lua")
 		name = string.match(filename,"[^.]*")
 		sname = string.match(filename,"[^-]*")
-		temp[sname] = {path=path,prefix=prefix,filename=filename,name=name,sname=sname}
+		temp[prefix.."/"..sname] = {path=path,prefix=prefix,filename=filename,name=name,sname=sname}
 	end
-	if controller then
-		return temp[controller]
+	if pre and controller then
+		return temp[pre.."/"..controller]
 	else
 		return temp
 	end
