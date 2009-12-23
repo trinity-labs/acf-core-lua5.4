@@ -36,7 +36,7 @@ new = function (self, modname)
 	-- If no clientdata, then clientdata is a null table
 	if self.clientdata == nil then 
 		c.clientdata = {} 
-		end
+	end
 
 	-- If we don't have an application name, use the modname
 	if (self.conf == nil ) or (self.conf.appname == nil) then
@@ -215,8 +215,8 @@ soft_require = function (self, name )
 		-- and if it doesnt exist silently fail.
 		-- This version allows things from /usr/local/lua/5.1 to
 		-- be loaded
-		package.path = self.conf.appdir .. "?" .. ".lua;" .. package.path
-		local t = require(name)
+		package.path = self.conf.appdir .. dirname(name) .. "/?.lua;" .. package.path
+		local t = require(basename(name))
 		package.path = PATH
 		return t
 	end
@@ -234,13 +234,8 @@ basename = function (string, suffix)
 end
 
 -- see man dirname.1
-dirname = function ( string)
-	string = string or ""
-	-- strip trailing / first
-	string = string.gsub (string, "/$", "")
-	local basename = basename ( string)
-	string = string.sub(string, 1, #string - #basename - 1)
-	return(string)	
+dirname = function (string)
+	return (string.gsub (string or "", "/?[^/]*$", ""))
 end 
 
 -- look in various places for a config file, and store it in self.conf
