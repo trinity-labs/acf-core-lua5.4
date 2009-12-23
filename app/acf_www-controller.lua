@@ -34,18 +34,14 @@ local function build_menus(self)
 		local cat = cats[x]
 		for y = #cat.groups,1,-1 do
 			local group = cat.groups[y]
-			if nil == permissions[group.prefix] or nil == permissions[group.prefix][group.controller] then
+			for z = #group.tabs,1,-1 do
+				local tab = group.tabs[z]
+				if nil == permissions[tab.prefix] or nil == permissions[tab.prefix][tab.controller] or nil == permissions[tab.prefix][tab.controller][tab.action] then
+					table.remove(group.tabs, z)
+				end
+			end
+			if 0 == #group.tabs then
 				table.remove(cat.groups, y)
-			else
-				for z = #group.tabs,1,-1 do
-					local tab = group.tabs[z]
-					if nil == permissions[group.prefix][group.controller][tab.action] then
-						table.remove(group.tabs, z)
-					end
-				end
-				if 0 == #group.tabs then
-					table.remove(cat.groups, y)
-				end
 			end
 		end
 		if 0 == #cat.groups then

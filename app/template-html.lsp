@@ -74,14 +74,13 @@ end
 			for x,cat in ipairs(session.menu.cats) do
 				io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", html.html_escape(cat.name)))	--start row
 				for y,group in ipairs(cat.groups) do
-					if pageinfo.prefix == group.prefix and pageinfo.controller == group.controller then
+					class=""
+					if not tabs and group.controllers[pageinfo.prefix .. pageinfo.controller] then
 						class="class='selected'"
 						tabs = group.tabs
-					else
-						class=""
 					end
 					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s%s/%s\">%s</a></li>\n", 
-						class,html.html_escape(pageinfo.script),html.html_escape(group.prefix), html.html_escape(group.controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
+						class,html.html_escape(pageinfo.script),html.html_escape(group.tabs[1].prefix), html.html_escape(group.tabs[1].controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
 				end
 				io.write ( "\t\t\t\t\t</ul>" )
 			  end
@@ -113,13 +112,13 @@ end
 			<ul>
 			<% local class="" %>
 			<% for x,tab in pairs(tabs or {})  do
-				if tab.action == pageinfo.action then
+				if tab.prefix == pageinfo.prefix and tab.controller == pageinfo.controller and tab.action == pageinfo.action then
 					class="class='selected'"
 				else
 					class=""
 				end
-				io.write (string.format('<li %s><a %s href="%s">%s</a></li>\n',
-							class,class,html.html_escape(tab.action),html.html_escape(tab.name) ))
+				io.write (string.format('<li %s><a %s href="%s%s%s/%s">%s</a></li>\n',
+							class,class,html.html_escape(pageinfo.script),html.html_escape(tab.prefix),html.html_escape(tab.controller),html.html_escape(tab.action),html.html_escape(tab.name) ))
 			end
 			%>
 			</ul>

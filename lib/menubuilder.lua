@@ -10,7 +10,7 @@ require("format")
 -- returns a table of the "*.menu" tables 
 -- startdir should be the app dir.
 local get_candidates = function (startdir)
-	return fs.find_files_as_array(".*%.menu", startdir)
+	return fs.find_files_as_array(".*%.menu", startdir, true)
 end
 
 -- Split string into priority and name, convert '_' to space
@@ -87,16 +87,19 @@ get_menuitems = function (startdir)
 				if nil == cat.groups[cat.reversegroups[result.group]] then
 					table.insert ( cat.groups,
 						{ name = result.group,
-						controller = controller,
-						prefix = prefix,
+						controllers = {},
 						tabs = {} } )
 					cat.reversegroups[result.group] = #cat.groups
 				end
+				cat.groups[cat.reversegroups[result.group]].controllers[prefix..controller] = true
 				local group = cat.groups[cat.reversegroups[result.group]]
 				group.priority = group.priority or result.group_prio
 				-- Add the tab
 				if nil == result.tab or nil == result.action then break end
-				local tab = { name = result.tab, action = result.action }
+				local tab = { name = result.tab,
+						controller = controller,
+						prefix = prefix,
+						action = result.action }
 				table.insert(group.tabs, tab)
 				end
 			end

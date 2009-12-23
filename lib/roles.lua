@@ -139,7 +139,6 @@ local determine_perms = function(self,roles)
 
 	for x,file in ipairs(rolesfiles) do
 		local prefix = string.match(file, "(/[^/]+/)[^/]+$") or "/"
-		permissions[prefix] = permissions[prefix] or {}
 		f = fs.read_file_as_array(file) or {}
 		for y,line in pairs(f) do
 			if reverseroles[string.match(line,"^[%w_]+")] then
@@ -148,6 +147,9 @@ local determine_perms = function(self,roles)
 					-- we'll allow for : or / to not break old format
 					local control,action = string.match(perm,"([%w_]+)[:/]([%w_]+)")
 					if control then
+						if nil == permissions[prefix] then
+							permissions[prefix] = {}
+						end
 						if nil == permissions[prefix][control] then
 							permissions[prefix][control] = {}
 						end
@@ -182,7 +184,7 @@ local determine_perms = function(self,roles)
 			end
 		end
 	end
-	
+
 	return permissions, permissions_array, default_permissions_array
 end
 
