@@ -88,6 +88,7 @@ get_menuitems = function (startdir)
 					table.insert ( cat.groups,
 						{ name = result.group,
 						controllers = {},
+						reversetabs = {},
 						tabs = {} } )
 					cat.reversegroups[result.group] = #cat.groups
 				end
@@ -101,6 +102,13 @@ get_menuitems = function (startdir)
 						prefix = prefix,
 						action = result.action }
 				table.insert(group.tabs, tab)
+				if group.reversetabs[tab.name] then
+					-- Flag for two tabs of same name
+					group.flag = tab.name
+					table.insert(group.reversetabs[tab.name], #group.tabs)
+				else
+					group.reversetabs[tab.name] = {#group.tabs}
+				end
 				end
 			end
 		end
@@ -113,6 +121,58 @@ get_menuitems = function (startdir)
 
 	-- Then groups
 	for x, cat in ipairs(cats) do
+		-- Let's check for bad groups (multiple tabs with same name)
+		for y,group in ipairs(cat.groups) do
+			if group.flag then
+				-- determine the difference between prefix/controller combos (start and stop chars)
+				local start=0
+				local done = false
+				local first = ""
+				for con in pairs(group.controllers) do
+					first = con
+					break
+				end
+				while not done and start<first:len() do
+					start = start+1
+					for con in pairs(group.controllers) do
+						if con:sub(start,start) ~= first:sub(start,start) then
+							done = true
+							break
+						end
+					end
+				end
+				local stop=0
+				done = false
+				while not done and stop+first:len()>0 do
+					stop = stop-1
+					for con in pairs(group.controllers) do
+						if con:sub(stop,stop) ~= first:sub(stop,stop) then
+							done = true
+							break
+						end
+					end
+				end
+					
+				-- create new groups for each prefix/controller
+				for con in pairs(group.controllers) do
+					table.insert ( cat.groups,
+						{ name = group.name..string.sub(con,start,stop),
+						controllers = {},
+						priority = group.priority,
+						reversetabs = {},
+						tabs = {} } )
+					cat.groups[#cat.groups].controllers[con] = true
+					cat.reversegroups[group.name..con] = #cat.groups
+				end
+				-- move the tabs into appropriate groups
+				for z,tab in ipairs(group.tabs) do
+					table.insert(cat.groups[cat.reversegroups[group.name..tab.prefix..tab.controller]].tabs, tab)
+				end
+				-- remove the group
+				group.tabs = {}
+			end
+			group.reversetabs = nil -- don't need reverse table anymore
+		end
 		cat.reversegroups = nil	-- don't need reverse table anymore
 		table.sort(cat.groups, prio_compare)
 	end
