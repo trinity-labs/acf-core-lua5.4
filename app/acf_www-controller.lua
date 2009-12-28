@@ -98,7 +98,7 @@ find_template = function ( appdir, prefix, controller, action, viewtype )
 		end
 	end
 	-- not found, so try one level higher
-	if prefix == "." then -- already at the top level - fail
+	if prefix == "/" then -- already at the top level - fail
 		return nil
 	end
 	prefix = posix.dirname (prefix) 

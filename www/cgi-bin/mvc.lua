@@ -225,21 +225,6 @@ soft_require = function (self, name )
 	return nil
 end
 
---  see man basename.1 
-basename = function (string, suffix)
-	string = string or ""
-	local basename = string.gsub (string, "[^/]*/", "")
-	if suffix then 
-		basename = string.gsub ( basename, suffix, "" )
-	end
-	return basename 
-end
-
--- see man dirname.1
-dirname = function (string)
-	return (string.gsub (string or "", "/?[^/]*$", ""))
-end 
-
 -- look in various places for a config file, and store it in self.conf
 read_config = function( self, appname )
 	appname = appname or self.conf.appname
