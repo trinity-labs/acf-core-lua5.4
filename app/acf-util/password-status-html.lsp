@@ -29,7 +29,7 @@ io.write("</span>")
 			<TD STYLE='border:none;'><%= html.html_escape(user.value.username.value) %></TD>
 		</TR><TR>
 			<TD STYLE='border:none;'><B><%= html.html_escape(user.value.roles.label) %></B></TD>
-			<TD STYLE='border:none;'><%= html.html_escape(table.concat(user.value.roles.value, " / ")) %></TD>
+			<TD STYLE='border:none;'><%= html.html_escape(table.concat(user.value.roles.value, ", ")) %></TD>
 		</TR><TR>
 			<TD STYLE='border:none;'><B>Option</B></TD>
 			<TD STYLE='border:none;'>

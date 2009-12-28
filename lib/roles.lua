@@ -89,13 +89,28 @@ list_default_roles = function(self)
 
 	for x,file in ipairs(rolesfiles) do
 		f = fs.read_file_as_array(file) or {}
+		local rolefile = string.match(file, "(/[^/]+/[^/]+)%.roles$")
 		for y,line in pairs(f) do
-			if not reverseroles[string.match(line,"^[%w_]+")] then
-				default_roles[#default_roles+1] = string.match(line,"^[%w_]+")
-				reverseroles[default_roles[#default_roles]] = #default_roles
+			local role = string.match(line,"^[%w_]+")
+			if role then
+				if not reverseroles[rolefile.."/"..role] then
+					default_roles[#default_roles+1] = rolefile.."/"..role
+					reverseroles[default_roles[#default_roles]] = #default_roles
+				end
+				if not reverseroles[role] then
+					default_roles[#default_roles+1] = role
+					reverseroles[default_roles[#default_roles]] = #default_roles
+				end
 			end
 		end
 	end
+
+	table.sort(default_roles, function(a,b)
+			if string.byte(a, 1) == 47 and string.byte(b,1) ~= 47 then return false
+			elseif string.byte(a, 1) ~= 47 and string.byte(b,1) == 47 then return true
+			else return a<b 
+			end
+		end)
 
 	return default_roles, reverseroles
 end
@@ -111,16 +126,18 @@ list_roles = function(self)
 			defined_roles[#defined_roles + 1] = entry.id
 		end
 	end
+	table.sort(defined_roles)
 
 	return defined_roles, default_roles
 end
 
 list_all_roles = function(self)
 	local defined_roles, default_roles = list_roles(self)
-	for x,role in ipairs(defined_roles) do
-		default_roles[#default_roles + 1] = role
+	-- put the defined roles first
+	for x,role in ipairs(default_roles) do
+		defined_roles[#defined_roles + 1] = role
 	end
-	return default_roles
+	return defined_roles
 end	
 
 -- Go through the roles files and determine the permissions for the specified list of roles
@@ -140,23 +157,27 @@ local determine_perms = function(self,roles)
 	for x,file in ipairs(rolesfiles) do
 		local prefix = string.match(file, "(/[^/]+/)[^/]+$") or "/"
 		f = fs.read_file_as_array(file) or {}
+		local rolefile = string.match(file, "(/[^/]+/[^/]+)%.roles$")
 		for y,line in pairs(f) do
-			if reverseroles[string.match(line,"^[%w_]+")] then
-				temp = format.string_to_table(string.match(line,"[,%w_:/]+$"),",")
-				for z,perm in pairs(temp) do
-					-- we'll allow for : or / to not break old format
-					local control,action = string.match(perm,"([%w_]+)[:/]([%w_]+)")
-					if control then
-						if nil == permissions[prefix] then
-							permissions[prefix] = {}
-						end
-						if nil == permissions[prefix][control] then
-							permissions[prefix][control] = {}
-						end
-						if action then
-							permissions[prefix][control][action] = {file}
-							permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
-							default_permissions_array[#default_permissions_array + 1] = prefix .. control .. "/" .. action
+			local role = string.match(line,"^[%w_]+")
+			if role then
+				if reverseroles[role] or reverseroles[rolefile.."/"..role] then
+					temp = format.string_to_table(string.match(line,"[,%w_:/]+$"),",")
+					for z,perm in pairs(temp) do
+						-- we'll allow for : or / to not break old format
+						local control,action = string.match(perm,"([%w_]+)[:/]([%w_]+)")
+						if control then
+							if nil == permissions[prefix] then
+								permissions[prefix] = {}
+							end
+							if nil == permissions[prefix][control] then
+								permissions[prefix][control] = {}
+							end
+							if action then
+								permissions[prefix][control][action] = {file}
+								permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
+								default_permissions_array[#default_permissions_array + 1] = prefix .. control .. "/" .. action
+							end
 						end
 					end
 				end
@@ -213,8 +234,8 @@ set_role_perm = function(self, role, permissions, permissions_array)
 	if role==nil or role=="" then
 		return false, "Invalid Role"
 	end
-	if string.find(role, '[^%w_]') then
-		return false, "Role can only contain letters, numbers, and '_'"
+	if string.find(role, '[^%w_/]') then
+		return false, "Role can only contain letters, numbers, '/', and '_'"
 	end
 	if permissions and not permissions_array then
 		permissions_array = {}
