@@ -10,22 +10,6 @@ module (..., package.seeall)
 require("posix")
 require("format")
 
-basename = function (string, suffix)
-	string = string or ""
-	local basename = string.gsub (string, "[^/]*/", "")
-	if suffix then 
-		basename = string.gsub ( basename, suffix, "" )
-	end
-	return basename 
-end
-
-dirname = function ( string)
-	string = string or ""
-	local basename = basename(string)
-	string = string.sub(string, 1, #string - #basename - 1)
-	return string	
-end 
-
 -- generic wrapper funcs
 function is_dir ( pathstr )
 	return posix.stat ( pathstr or "", "type" ) == "directory"
@@ -71,7 +55,7 @@ end
 -- Creates a blank file (and the directory if necessary)
 function create_file ( path )
 	path = path or ""
-	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
+	if posix.dirname(path) and not posix.stat(posix.dirname(path)) then create_directory(posix.dirname(path)) end
 	local f = io.open(path, "w")
 	if f then f:close() end
 	return is_file(path)
@@ -80,11 +64,11 @@ end
 -- Copies a file to a directory or new filename (creating the directory if necessary)
 -- fails if new file is already a directory
 function copy_file(oldpath, newpath)
-	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and is_dir(newpath)) or (basename(newpath) == "" and is_dir(newpath .. basename(oldpath))) then
+	if not is_file(oldpath) or not newpath or newpath == "" or (posix.basename(newpath) ~= "." and is_dir(newpath)) or (posix.basename(newpath) == "." and is_dir(newpath .. posix.basename(oldpath))) then
 		return false
 	end
-	if dirname(newpath) and not posix.stat(dirname(newpath)) then create_directory(dirname(newpath)) end
-	if basename(newpath) == "" then newpath = newpath .. basename(oldpath) end
+	if posix.dirname(newpath) and not posix.stat(posix.dirname(newpath)) then create_directory(posix.dirname(newpath)) end
+	if posix.basename(newpath) == "." then newpath = newpath .. posix.basename(oldpath) end
 	local old = io.open(oldpath, "r")
 	local new = io.open(newpath, "w")
 	new:write(old:read("*a"))
@@ -96,11 +80,11 @@ end
 -- Moves a file to a directory or new filename (creating the directory if necessary)
 -- fails if new file is already a directory
 function move_file(oldpath, newpath)
-	if not is_file(oldpath) or not newpath or newpath == "" or (basename(newpath) ~= "" and is_dir(newpath)) or (basename(newpath) == "" and is_dir(newpath .. basename(oldpath))) then
+	if not is_file(oldpath) or not newpath or newpath == "" or (posix.basename(newpath) ~= "." and is_dir(newpath)) or (posix.basename(newpath) == "." and is_dir(newpath .. posix.basename(oldpath))) then
 		return false
 	end
-	if dirname(newpath) and not posix.stat(dirname(newpath)) then create_directory(dirname(newpath)) end
-	if basename(newpath) == "" then newpath = newpath .. basename(oldpath) end
+	if posix.dirname(newpath) and not posix.stat(posix.dirname(newpath)) then create_directory(posix.dirname(newpath)) end
+	if posix.basename(newpath) == "." then newpath = newpath .. posix.basename(oldpath) end
 	local status, errstr, errno = os.rename(oldpath, newpath)
         -- errno 18 means  Invalid cross-device link
 	if status or errno ~= 18 then
@@ -146,7 +130,7 @@ end
 -- write a string to a file, will replace file contents
 function write_file ( path, str )
 	path = path or ""
-	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
+	if posix.dirname(path) and not posix.stat(posix.dirname(path)) then create_directory(posix.dirname(path)) end
 	local file = io.open(path, "w")
 	--append a newline char to EOF
 	str = string.gsub(str or "", "\n*$", "\n")
@@ -160,7 +144,7 @@ end
 -- fs.write_line_file ("filename", "Line1 \nLines2 \nLines3")
 function write_line_file ( path, str )
 	path = path or ""
-	if dirname(path) and not posix.stat(dirname(path)) then create_directory(dirname(path)) end
+	if posix.dirname(path) and not posix.stat(posix.dirname(path)) then create_directory(posix.dirname(path)) end
 	local file = io.open(path)
 	if ( file) then
 		local c = file:read("*a") or ""
@@ -179,7 +163,7 @@ function find_files_as_array ( what, where, follow, t )
 	if follow and fs.is_link(where) then
 		link = posix.readlink(where)
 		if not string.find(link, "^/") then
-			link = dirname(where).."/"..link
+			link = posix.dirname(where).."/"..link
 		end
 	end
 
@@ -195,7 +179,7 @@ function find_files_as_array ( what, where, follow, t )
 				table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
 			end
 		end
-	elseif (string.match (basename(where), "^" .. what .. "$" ))  then
+	elseif (string.match (posix.basename(where), "^" .. what .. "$" ))  then
 		table.insert (t, where )
 	end
 

@@ -34,8 +34,8 @@ logon = function(self)
 		if logon.value then
 			-- only copy the logonredirect if redirecting to that page
 			if logonredirect and cmdresult.value.redir.value then
-				local prefix, controller, action = self.parse_path_info("/"..cmdresult.value.redir.value)
-				if logonredirect.action == action and logonredirect.controller == controller then
+				local prefix, controller, action = self.parse_redir_string(cmdresult.value.redir.value)
+				if logonredirect.action == action and logonredirect.controller == controller and logonredirect.prefix == prefix then
 					self.sessiondata.logonredirect = logonredirect
 				end
 			end

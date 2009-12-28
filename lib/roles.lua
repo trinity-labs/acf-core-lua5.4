@@ -170,7 +170,7 @@ local determine_perms = function(self,roles)
 		if reverseroles[entry.id] then
 			temp = format.string_to_table(entry.entry, ",")
 			for z,perm in pairs(temp) do
-				local prefix,control,action = mvc.parse_path_info(perm)
+				local prefix,control,action = self.parse_path_info(perm)
 				if control then
 					if nil == permissions[prefix] then
 						permissions[prefix] = {}

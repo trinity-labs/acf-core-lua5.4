@@ -6,6 +6,8 @@
   ]]--
 module(..., package.seeall)
 
+require("posix")
+
 mvc = {}
 
 -- the constructor
@@ -155,7 +157,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	-- Because of the inheritance, normally the 
 	-- controller.worker.action will flow up, so that all children have
 	-- actions of all parents.  We use rawget to make sure that only
-	-- controller defined aictions are used on dispatch
+	-- controller defined actions are used on dispatch
 	-- If the action is missing, raise an error
 	if ( type(rawget(controller.worker, action)) ~= "function") then
 		self.conf.type = "dispatch"
@@ -215,8 +217,8 @@ soft_require = function (self, name )
 		-- and if it doesnt exist silently fail.
 		-- This version allows things from /usr/local/lua/5.1 to
 		-- be loaded
-		package.path = self.conf.appdir .. dirname(name) .. "/?.lua;" .. package.path
-		local t = require(basename(name))
+		package.path = self.conf.appdir .. posix.dirname(name) .. "/?.lua;" .. package.path
+		local t = require(posix.basename(name))
 		package.path = PATH
 		return t
 	end
@@ -254,7 +256,7 @@ read_config = function( self, appname )
 	for i, filename in ipairs (confs) do
                 local file = io.open (filename)
                 if (file) then
-			self.conf.confdir = dirname(filename) .. "/"
+			self.conf.confdir = posix.dirname(filename) .. "/"
                         for line in file:lines() do
                                 key, value = string.match(line, "([^[=]*)=[ \t]*(.*)")
                                 if key then -- ugly way of finding blank spots between key and =
@@ -289,15 +291,17 @@ end
 -- return them (or blank strings)
 parse_path_info = function( str )
 	str = str or "" 
-	-- If it ends in a /, then add another to force
-	-- a blank action (the user gave a controller without action)
-	if  string.match (str, "[^/]/$" ) then 
-		str = str .. "/"
+	local words = {}
+	str = string.gsub(str, "/+$", "")
+	for x=1,3 do
+		words[#words+1] = string.match(str, "[^/]+$")
+		str = string.gsub(str, "/+[^/]*$", "")
 	end
-	local action = basename(str)
-	local temp = dirname(str)
-	local controller = basename(temp)
-	local prefix = dirname(temp) .. "/"
+	prefix = "/"..(words[#words] or "").."/"
+	if prefix == "//" then prefix = "/" end
+	controller = words[#words-1] or ""
+	action = words[#words-2] or ""
+
 	return prefix, controller, action
 end
 
@@ -354,3 +358,7 @@ cfe = function ( optiontable )
 	return me
 end
 _G.cfe = cfe
+
+logevent = function ( ... )
+	os.execute ( "logger \"" .. (... or "") .. "\"" )
+end

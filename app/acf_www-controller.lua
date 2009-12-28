@@ -66,7 +66,7 @@ local check_permission = function(self, prefix, controller, action)
 end
 
 local check_permission_string = function (self, str)
-	local prefix, controller, action = self.parse_path_info("/" .. (str or ""))
+	local prefix, controller, action = parse_redir_string(str)
 	if prefix == "/" then prefix = self.conf.prefix end
 	if controller == "" then controller = self.conf.controller end
 	
@@ -98,10 +98,10 @@ find_template = function ( appdir, prefix, controller, action, viewtype )
 		end
 	end
 	-- not found, so try one level higher
-	if prefix == "" then -- already at the top level - fail
+	if prefix == "." then -- already at the top level - fail
 		return nil
 	end
-	prefix = dirname (prefix) 
+	prefix = posix.dirname (prefix) 
 	return find_template ( appdir, prefix, controller, action, viewtype )
 end
 
@@ -145,7 +145,7 @@ local dispatch_component = function(self, str, clientdata, suppress_view)
 	self.clientdata = clientdata or {}
 	self.clientdata.sessionid = tempclientdata.sessionid
 
-	local prefix, controller, action = self.parse_path_info("/" .. str)
+	local prefix, controller, action = parse_redir_string(str)
 	if prefix == "/" then prefix = self.conf.prefix end
 	if controller == "" then controller = self.conf.controller end
 	local viewtable = self.dispatch(self, prefix, controller, action)
@@ -332,6 +332,7 @@ exception_handler = function (self, message )
 			parent_exception_handler(self, message)
 		end
 	else
+		logevent("Exception: "..message)
 		viewtable = {message = message}
 		self.conf.prefix = "/"
 		self.conf.controller = "exception"
@@ -373,7 +374,8 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	end
 
 	-- This is for get / post data saved for after logon
-	if self.sessiondata.logonredirect and self.conf.controller == self.sessiondata.logonredirect.controller
+	if self.sessiondata.logonredirect and self.conf.prefix == self.sessiondata.logonredirect.prefix
+	and self.conf.controller == self.sessiondata.logonredirect.controller
 	and self.conf.action == self.sessiondata.logonredirect.action then
 		ENV.HTTP_REFERER = self.sessiondata.logonredirect.referrer or ENV.HTTP_REFERER
 		self.clientdata = self.sessiondata.logonredirect.clientdata
@@ -481,7 +483,7 @@ redirect = function (self, str, result)
 	if result then
 		self.sessiondata[self.conf.action.."result"] = result
 	end
-	local prefix, controller, action = self.parse_path_info("/" .. (str or ""))
+	local prefix, controller, action = parse_redir_string(str)
 	if prefix ~= "/" then self.conf.prefix = prefix end
 	if controller ~= "" then self.conf.controller = controller end
 	
@@ -506,7 +508,7 @@ redirect_to_referrer = function(self, result)
 			end
 		else
 			local prefix, controller, action = self.parse_path_info(ENV.HTTP_REFERER:gsub("%?.*", ""))
-			if controller ~= self.conf.controller or action ~= self.conf.action then
+			if prefix ~= self.conf.prefix or controller ~= self.conf.controller or action ~= self.conf.action then
 				self.sessiondata[self.conf.action.."result"] = result
 				error({type="redir_to_referrer"})
 			end
@@ -518,6 +520,25 @@ redirect_to_referrer = function(self, result)
 		self.sessiondata[self.conf.action.."result"] = nil
 	end
 	return result
+end
+
+-- parse a "URI" like string into a prefix, controller and action
+-- this is the same as URI string, but opposite preference
+-- if only one is defined, it's assumed to be the action
+parse_redir_string = function( str )
+	str = str or "" 
+	str = string.gsub(str, "/+$", "")
+	local action = string.match(str, "[^/]+$") or ""
+	str = string.gsub(str, "/*[^/]*$", "")
+	local controller = string.match(str, "[^/]+$") or ""
+	str = string.gsub(str, "/*[^/]*$", "")
+	local prefix = string.match(str, "[^/]+$") or ""
+	if prefix == "" then
+		prefix = "/"
+	else
+		prefix = "/"..prefix.."/"
+	end
+	return prefix, controller, action
 end
 
 -- FIXME - need to think more about this..

@@ -5,6 +5,7 @@
   ]]--
 module(..., package.seeall)
 
+require("posix")
 require("format")
 
 -- returns a table of the "*.menu" tables 
@@ -63,8 +64,8 @@ get_menuitems = function (startdir)
 	local reversecats = {}
 	startdir = (string.gsub(startdir, "/$", ""))	--remove trailing /
 	for k,filename in pairs(get_candidates(startdir)) do
-		local controller = mvc.basename(filename, ".menu")
-		local prefix = (string.gsub(mvc.dirname(filename), startdir, "")).."/"
+		local controller = string.gsub(posix.basename(filename), ".menu$", "")
+		local prefix = (string.gsub(posix.dirname(filename), startdir, "")).."/"
 
 		-- open the menu file, and parse the contents
 		local handle = io.open(filename)
