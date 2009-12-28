@@ -183,7 +183,7 @@ function find_files_as_array ( what, where, follow, t )
 				table.insert (t, ( string.gsub ( where .. "/" .. d, "/+", "/" ) ) )
 			end
 		end
-	elseif (string.match (posix.basename(where), "^" .. what .. "$" ))  then
+	elseif (string.match (posix.basename(where), "^" .. what .. "$" )) and posix.stat(where) then
 		table.insert (t, where )
 	end
 
