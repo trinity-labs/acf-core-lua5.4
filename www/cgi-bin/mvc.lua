@@ -242,13 +242,10 @@ read_config = function( self, appname )
                 local file = io.open (filename)
                 if (file) then
 			self.conf.confdir = posix.dirname(filename) .. "/"
+			self.conf.conffile = filename
                         for line in file:lines() do
-                                key, value = string.match(line, "([^[=]*)=[ \t]*(.*)")
-                                if key then -- ugly way of finding blank spots between key and =
-                                        repeat
-                                                local space = string.find ( key, "%s", -1)
-                                                if space then key=string.sub(key,1,space-1) end
-                                        until space == nil
+                                key, value = string.match(line, "^%s*([^[=%s#]*)%s*=%s*(.*)")
+                                if key then
                                         self.conf[key]  = value
                                 end
 			end

@@ -1,13 +1,14 @@
 module(..., package.seeall)
 
+require("posix")
+
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
 
 mvc = {}
 mvc.on_load = function (self, parent)
-	-- Make sure we have some kind of sane defaults for libdir and sessiondir
-	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
-	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
+	-- Make sure we have some kind of sane defaults for libdir
+	self.conf.libdir = self.conf.libdir or ( posix.dirname(self.conf.appdir) .. "/lib/" )
 	self.conf.script = ""
 	self.conf.default_prefix = "/acf-util/"	
 	self.conf.default_controller = "welcome"	

@@ -17,7 +17,7 @@ end
 -- Return a list of *controller.lua files
 list_controllers = function(self)
 	local list = {}
-	for file in fs.find(".*controller%.lua", "/usr/share/acf", true) do
+	for file in fs.find(".*controller%.lua", self.conf.appdir, true) do
 		if not string.find(file, "acf_") then
 			list[#list + 1] = file
 		end
@@ -29,7 +29,7 @@ end
 -- Return information about all or specified controller files
 get_controllers = function(self,pre,controller)
 	--we get all the controllers
-	local list = roles.list_controllers()
+	local list = roles.list_controllers(self)
 	--we need to grab the directory and name of file
 	local temp = {}
 	for k,v in pairs(list) do

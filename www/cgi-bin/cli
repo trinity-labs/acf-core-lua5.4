@@ -18,8 +18,11 @@ Output will be a serialized Lua table.
 	return
 end
 
+require("posix")
 local PATH = package.path
-package.path = "/usr/share/acf/www/cgi-bin/?.lua;" .. package.path
+local p = posix.dirname(arg[0])
+if p:sub(1,1) ~= "/" then p = posix.getcwd().."/"..p end
+package.path = p.."/?.lua;" .. package.path
 require("mvc")
 package.path = PATH
 

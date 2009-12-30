@@ -223,8 +223,9 @@ mvc.on_load = function (self, parent)
 
 	--logevent("acf_www-controller mvc.on_load")
 
-	-- Make sure we have some kind of sane defaults for libdir and sessiondir
-	self.conf.libdir = self.conf.libdir or ( self.conf.appdir .. "/lib/" )
+	-- Make sure we have some kind of sane defaults for libdir, wwwdir, and sessiondir
+	self.conf.libdir = self.conf.libdir or ( posix.dirname(self.conf.appdir) .. "/lib/" )
+	self.conf.wwwdir = self.conf.wwwdir or ( posix.dirname(self.conf.appdir) .. "/www/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.script = ENV.SCRIPT_NAME
 	self.conf.default_prefix = "/acf-util/"
