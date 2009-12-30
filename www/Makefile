@@ -36,8 +36,7 @@ install:
 		mkdir -p "$$dest";\
 		cp "$$i" "$$dest";\
 	done
-	chmod +x $(install_dir)/cgi-bin/acf
-	chmod +x $(install_dir)/cgi-bin/cli
-
+	chmod 755 $(install_dir)/cgi-bin/acf
+	chmod 700 $(install_dir)/cgi-bin/cli
 
 .PHONY: $(phony)
