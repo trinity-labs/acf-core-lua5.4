@@ -219,7 +219,9 @@ end
 mvc = {}
 mvc.on_load = function (self, parent)
 	-- open the log file
-	self.conf.logfile = io.open ("/var/log/acf.log", "a+")
+	if self.conf.logfile then
+		self.conf.loghandle = io.open (self.conf.logfile, "a+")
+	end
 
 	--logevent("acf_www-controller mvc.on_load")
 
@@ -289,7 +291,9 @@ mvc.on_unload = function (self)
         end
 	-- Close the logfile
 	--logevent("acf_www-controller mvc.on_unload")
-	self.conf.logfile:close()
+	if self.conf.loghandle then
+		self.conf.loghandle:close()
+	end
 end
 
 -- Overload the MVC's exception handler with our own to handle redirection
@@ -542,7 +546,11 @@ parse_redir_string = function( str )
 	return prefix, controller, action
 end
 
--- FIXME - need to think more about this..
 logevent = function ( message )
-	conf.logfile:write (string.format("%s: %s\n", os.date(), message or "")) 
+	if conf.loghandle then
+		conf.loghandle:write (string.format("%s: %s\n", os.date(), message or ""))
+	else
+		-- call to parent's handler
+		__index.logevent(message)
+	end
 end

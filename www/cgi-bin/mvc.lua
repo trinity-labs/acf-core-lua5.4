@@ -342,5 +342,5 @@ end
 _G.cfe = cfe
 
 logevent = function ( ... )
-	os.execute ( "logger \"" .. (... or "") .. "\"" )
+	os.execute ( "logger \"ACF: " .. (... or "") .. "\"" )
 end
