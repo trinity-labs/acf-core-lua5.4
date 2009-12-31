@@ -59,61 +59,63 @@ local prio_compare = function(x,y)
 end
 
 -- returns a table of all the menu items found, sorted by priority
-get_menuitems = function (startdir)
+get_menuitems = function (self)
 	local cats = {}
 	local reversecats = {}
-	startdir = (string.gsub(startdir, "/$", ""))	--remove trailing /
-	for k,filename in pairs(get_candidates(startdir)) do
-		local controller = string.gsub(posix.basename(filename), ".menu$", "")
-		local prefix = (string.gsub(posix.dirname(filename), startdir, "")).."/"
+	for p in string.gmatch(self.conf.appdir, "[^,]+") do
+		p = (string.gsub(p, "/$", ""))	--remove trailing /
+		for k,filename in pairs(get_candidates(p)) do
+			local controller = string.gsub(posix.basename(filename), ".menu$", "")
+			local prefix = (string.gsub(posix.dirname(filename), p, "")).."/"
 
-		-- open the menu file, and parse the contents
-		local handle = io.open(filename)
-		for x in handle:lines() do
-			local result = parse_menu_line(x)
-			if result then
-				for i = 1,1 do	-- loop so break works
-				-- Add the category
-				if nil == reversecats[result.cat] then
-					table.insert ( cats, 
-						{ name=result.cat, 
-						groups = {}, 
-						reversegroups = {} } )
-					reversecats[result.cat] = #cats
-				end
-				local cat = cats[reversecats[result.cat]]
-				cat.priority = cat.priority or result.cat_prio
-				-- Add the group
-				if nil == result.group then break end
-				if nil == cat.groups[cat.reversegroups[result.group]] then
-					table.insert ( cat.groups,
-						{ name = result.group,
-						controllers = {},
-						reversetabs = {},
-						tabs = {} } )
-					cat.reversegroups[result.group] = #cat.groups
-				end
-				cat.groups[cat.reversegroups[result.group]].controllers[prefix..controller] = true
-				local group = cat.groups[cat.reversegroups[result.group]]
-				group.priority = group.priority or result.group_prio
-				-- Add the tab
-				if nil == result.tab or nil == result.action then break end
-				local tab = { name = result.tab,
-						controller = controller,
-						prefix = prefix,
-						action = result.action }
-				table.insert(group.tabs, tab)
-				if group.reversetabs[tab.name] then
-					-- Flag for two tabs of same name
-					group.flag = tab.name
-					table.insert(group.reversetabs[tab.name], #group.tabs)
-				else
-					group.reversetabs[tab.name] = {#group.tabs}
-				end
+			-- open the menu file, and parse the contents
+			local handle = io.open(filename)
+			for x in handle:lines() do
+				local result = parse_menu_line(x)
+				if result then
+					for i = 1,1 do	-- loop so break works
+					-- Add the category
+					if nil == reversecats[result.cat] then
+						table.insert ( cats, 
+							{ name=result.cat, 
+							groups = {}, 
+							reversegroups = {} } )
+						reversecats[result.cat] = #cats
+					end
+					local cat = cats[reversecats[result.cat]]
+					cat.priority = cat.priority or result.cat_prio
+					-- Add the group
+					if nil == result.group then break end
+					if nil == cat.groups[cat.reversegroups[result.group]] then
+						table.insert ( cat.groups,
+							{ name = result.group,
+							controllers = {},
+							reversetabs = {},
+							tabs = {} } )
+						cat.reversegroups[result.group] = #cat.groups
+					end
+					cat.groups[cat.reversegroups[result.group]].controllers[prefix..controller] = true
+					local group = cat.groups[cat.reversegroups[result.group]]
+					group.priority = group.priority or result.group_prio
+					-- Add the tab
+					if nil == result.tab or nil == result.action then break end
+					local tab = { name = result.tab,
+							controller = controller,
+							prefix = prefix,
+							action = result.action }
+					table.insert(group.tabs, tab)
+					if group.reversetabs[tab.name] then
+						-- Flag for two tabs of same name
+						group.flag = tab.name
+						table.insert(group.reversetabs[tab.name], #group.tabs)
+					else
+						group.reversetabs[tab.name] = {#group.tabs}
+					end
+					end
 				end
 			end
+			handle:close()
 		end
-		handle:close()
 	end
 
 	-- Now that we have the entire menu, sort by priority

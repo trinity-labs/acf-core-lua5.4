@@ -208,19 +208,21 @@ end
 -- otherwise, returns nil, but no error
 soft_require = function (self, name )
 	local filename, file
-	filename  = self.conf.appdir .. name .. ".lua"
-	file = io.open(filename)
-	if file then
-		file:close()
-		local PATH=package.path
-		-- FIXME - this should really try to open the lua file, 
-		-- and if it doesnt exist silently fail.
-		-- This version allows things from /usr/local/lua/5.1 to
-		-- be loaded
-		package.path = self.conf.appdir .. posix.dirname(name) .. "/?.lua;" .. package.path
-		local t = require(posix.basename(name))
-		package.path = PATH
-		return t
+	for p in string.gmatch(self.conf.appdir, "[^,]+") do
+		filename  = p .. name .. ".lua"
+		file = io.open(filename)
+		if file then
+			file:close()
+			local PATH=package.path
+			-- FIXME - this should really try to open the lua file, 
+			-- and if it doesnt exist silently fail.
+			-- This version allows things from /usr/local/lua/5.1 to
+			-- be loaded
+			package.path = p .. posix.dirname(name) .. "/?.lua;" .. package.path
+			local t = require(posix.basename(name))
+			package.path = PATH
+			return t
+		end
 	end
 	return nil
 end

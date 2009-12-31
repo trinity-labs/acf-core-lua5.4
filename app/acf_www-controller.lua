@@ -27,7 +27,7 @@ local function build_menus(self)
 	self.sessiondata.permissions = permissions
 	
 	--Build the menu
-	local cats = m.get_menuitems(self.conf.appdir)
+	local cats = m.get_menuitems(self)
 	-- now, loop through menu and remove actions without permission
 	-- go in reverse so we can remove entries while looping
 	for x = #cats,1,-1 do
@@ -80,6 +80,15 @@ end
 -- ctlr-action-view, then  ctlr-view, then action-view, then view
 -- cannot be local function because of recursion
 find_template = function ( appdir, prefix, controller, action, viewtype )
+	if string.find(appdir, ",") then
+		local template
+		for p in string.gmatch(appdir, "[^,]+") do
+			template = find_template(p, prefix, controller, action, viewtype)
+			if template then break end
+		end
+		return template
+	end			
+
 	local targets = {
 			appdir .. prefix .. "template-" .. controller .. "-" .. 
 				action .. "-" .. viewtype .. ".lsp",
@@ -108,17 +117,19 @@ end
 -- look for a view
 -- ctlr-action-view, then  ctlr-view
 local find_view = function ( appdir, prefix, controller, action, viewtype )
-	local names = { appdir .. prefix .. controller .. "-" ..
-				action .. "-" .. viewtype .. ".lsp",
-			appdir .. prefix .. controller .. "-" ..
-				viewtype .. ".lsp" }
-	local file
-	-- search for view
-	for i,filename in ipairs (names) do
-		file = io.open(filename)
-		if file then
-			file:close()
-			return filename
+	for p in string.gmatch(appdir, "[^,]+") do
+		local names = { p .. prefix .. controller .. "-" ..
+					action .. "-" .. viewtype .. ".lsp",
+				p .. prefix .. controller .. "-" ..
+					viewtype .. ".lsp" }
+		local file
+		-- search for view
+		for i,filename in ipairs (names) do
+			file = io.open(filename)
+			if file then
+				file:close()
+				return filename
+			end
 		end
 	end
 	return nil
@@ -126,8 +137,11 @@ end
 
 local has_view = function(self)
 	require("fs")
-	local file = posix.stat(self.conf.appdir .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. (self.conf.viewtype or "html") .. ".lsp", "type")
-	return file == "regular" or file == "link"
+	for p in string.gmatch(self.conf.appdir, "[^,]+") do
+		local file = posix.stat(p .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. (self.conf.viewtype or "html") .. ".lsp", "type")
+		if file == "regular" or file == "link" then return true end
+	end
+	return false
 end
 
 -- This function is made available within the view to allow loading of components
@@ -226,8 +240,8 @@ mvc.on_load = function (self, parent)
 	--logevent("acf_www-controller mvc.on_load")
 
 	-- Make sure we have some kind of sane defaults for libdir, wwwdir, and sessiondir
-	self.conf.libdir = self.conf.libdir or ( posix.dirname(self.conf.appdir) .. "/lib/" )
-	self.conf.wwwdir = self.conf.wwwdir or ( posix.dirname(self.conf.appdir) .. "/www/" )
+	self.conf.libdir = self.conf.libdir or ( string.match(self.conf.appdir, "[^,]+/") .. "/lib/" )
+	self.conf.wwwdir = self.conf.wwwdir or ( string.match(self.conf.appdir, "[^,]+/") .. "/www/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.script = ENV.SCRIPT_NAME
 	self.conf.default_prefix = "/acf-util/"
@@ -238,7 +252,9 @@ mvc.on_load = function (self, parent)
 	parent_exception_handler = parent.exception_handler
 	
 	-- this sets the package path for us and our children
-	package.path=  self.conf.libdir .. "?.lua;" .. package.path
+	for p in string.gmatch(self.conf.libdir, "[^,]+") do
+		package.path=  p .. "?.lua;" .. package.path
+	end
 	
 	sessionlib=require ("session")
 

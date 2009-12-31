@@ -5,13 +5,15 @@ require("posix")
 mvc = {}
 mvc.on_load = function (self, parent)
 	-- Make sure we have some kind of sane defaults for libdir
-	self.conf.libdir = self.conf.libdir or ( posix.dirname(self.conf.appdir) .. "/lib/" )
+	self.conf.libdir = self.conf.libdir or ( string.match(self.conf.appdir, "[^,]+/") .. "/lib/" )
 	self.conf.script = ""
 	self.conf.default_prefix = "/acf-util/"	
 	self.conf.default_controller = "welcome"	
 
 	-- this sets the package path for us and our children
-	package.path=  self.conf.libdir .. "?.lua;" .. package.path
+	for p in string.gmatch(self.conf.libdir, "[^,]+") do
+		package.path=  p .. "?.lua;" .. package.path
+	end
 
 	self.session = {}
 	local x=require("session")

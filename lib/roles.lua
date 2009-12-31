@@ -10,16 +10,25 @@ guest_role = "GUEST"
 
 -- returns a table of the *.roles files
 -- startdir should be the app dir
-local get_roles_candidates = function (startdir)
-	return fs.find_files_as_array(".*%.roles", startdir, true) or {}
+local get_roles_candidates = function(self)
+	local list = {}
+	for p in string.gmatch(self.conf.appdir, "[^,]+") do
+		local l = fs.find_files_as_array(".*%.roles", p, true) or {}
+		for i,f in ipairs(l) do
+			list[#list+1] = f
+		end
+	end
+	return list
 end
 
 -- Return a list of *controller.lua files
 list_controllers = function(self)
 	local list = {}
-	for file in fs.find(".*controller%.lua", self.conf.appdir, true) do
-		if not string.find(file, "acf_") then
-			list[#list + 1] = file
+	for p in string.gmatch(self.conf.appdir, "[^,]+") do
+		for file in fs.find(".*controller%.lua", p, true) do
+			if not string.find(file, "acf_") then
+				list[#list + 1] = file
+			end
 		end
 	end
 
@@ -85,7 +94,7 @@ list_default_roles = function(self)
 	local reverseroles = {}
 
 	-- find all of the default roles files and parse them
-	local rolesfiles = get_roles_candidates(self.conf.appdir)
+	local rolesfiles = get_roles_candidates(self)
 
 	for x,file in ipairs(rolesfiles) do
 		f = fs.read_file_as_array(file) or {}
@@ -152,7 +161,7 @@ local determine_perms = function(self,roles)
 	end
 
 	-- find all of the default roles files and parse them
-	local rolesfiles = get_roles_candidates(self.conf.appdir)
+	local rolesfiles = get_roles_candidates(self)
 
 	for x,file in ipairs(rolesfiles) do
 		local prefix = string.match(file, "(/[^/]+/)[^/]+$") or "/"
