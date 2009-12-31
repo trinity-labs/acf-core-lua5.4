@@ -1,13 +1,5 @@
 <% local form, viewlibrary, pageinfo = ... %>
 <% require("viewfunctions") %>
-<%
---[[ DEBUG INFORMATION
-io.write("<H1>DEBUGGING</H1><span style='color:red'><H2>DEBUG INFO: CFE</H2>")
-io.write(html.cfe_unpack(form))
-io.write(html.cfe_unpack(FORM))
-io.write("</span>")
---]]
-%>
 
 <H1><%= html.html_escape(form.label) %></H1>
 <% 

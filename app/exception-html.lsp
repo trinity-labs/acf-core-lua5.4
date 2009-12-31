@@ -1,7 +1,4 @@
 <% view = ... %>
-<% --[[
-	io.write(html.cfe_unpack(view))
---]] %>
 
 <style type="text/css">
 	p.hiddendetail {

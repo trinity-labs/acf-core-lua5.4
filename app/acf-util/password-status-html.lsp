@@ -1,12 +1,5 @@
 <% local form, viewlibrary, page_info, session = ... %>
 <% require("viewfunctions") %>
-<%
---[[ DEBUG INFORMATION
-io.write("<H1>DEBUGGING</H1><span style='color:red'><H2>DEBUG INFO: CFE</H2>")
-io.write(html.cfe_unpack(form))
-io.write("</span>")
---]]
-%>
 
 <% displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>
 

@@ -1,10 +1,6 @@
 <% local view, viewlibrary, page_info, session= ... %>
 <% require("viewfunctions") %>
 
-<% --[[
-	io.write(html.cfe_unpack(view))
---]] %>
-
 <% displaycommandresults({"newrole", "editrole", "deleterole"}, session) %>
 
 <H1>Roles</H1>

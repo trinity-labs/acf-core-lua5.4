@@ -1,6 +1,7 @@
 <% local view= ... %> 
+<% require("viewfunctions") %>
 <h1>Log Out</h1>
 
-<%= html.cfe_unpack(view) %>
+<%= cfe_unpack(view) %>
 
 <%= html.html_escape(view.logout.value) %>

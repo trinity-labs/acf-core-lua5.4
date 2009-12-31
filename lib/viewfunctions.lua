@@ -1,4 +1,5 @@
 require("html")
+require("session")
 
 function displayitem(myitem)
 	if not myitem then return end
@@ -239,5 +240,15 @@ function displaypagination(page_data, page_info)
 			io.write("<a href="..link..(p+1).."><img SRC='/skins/static/tango/16x16/actions/go-next.png' HEIGHT='16' WIDTH='16'></a>")
 		end
 		io.write("</div>")
+	end
+end
+
+-- give a cfe and get back a string of what is inside
+-- great for troubleshooting and seeing what is really being passed to the view
+function cfe_unpack ( a )
+	if type(a) == "table" then
+		value = session.serialize("cfe", a)
+		value = "<pre>" .. html.html_escape(value) .. "</pre>"
+		return value
 	end
 end

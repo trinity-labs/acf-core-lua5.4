@@ -1,20 +1,13 @@
 include ../config.mk
 
-LIB_DIST=fs.lua\
-	html.lua\
-	date.lua\
-	format.lua\
-	menubuilder.lua\
+LIB_DIST=menubuilder.lua\
 	session.lua\
-	validator.lua\
 	authenticator.lua\
 	authenticator-plaintext.lua\
 	roles.lua\
-	processinfo.lua\
 	viewfunctions.lua\
 	controllerfunctions.lua\
 	modelfunctions.lua\
-	apk.lua\
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(LIB_DIST) $(EXTRA_DIST)
