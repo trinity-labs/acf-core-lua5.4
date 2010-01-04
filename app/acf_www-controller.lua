@@ -252,9 +252,7 @@ mvc.on_load = function (self, parent)
 	parent_exception_handler = parent.exception_handler
 	
 	-- this sets the package path for us and our children
-	for p in string.gmatch(self.conf.libdir, "[^,]+") do
-		package.path=  p .. "?.lua;" .. package.path
-	end
+	package.path = string.gsub(self.conf.libdir, ",", "/?.lua;") .. "/?.lua;" .. package.path
 	
 	sessionlib=require ("session")
 
