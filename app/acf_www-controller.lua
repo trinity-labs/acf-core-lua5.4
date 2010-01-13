@@ -226,6 +226,9 @@ local view_resolver = function(self)
 				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
 				clientdata = self.clientdata,
 				}
+	if self.sessiondata.userinfo and self.sessiondata.userinfo.skin and self.sessiondata.userinfo.skin ~= "" then
+		pageinfo.skin = self.sessiondata.userinfo.skin
+	end
 
 	return func, viewlibrary, pageinfo, self.sessiondata
 end

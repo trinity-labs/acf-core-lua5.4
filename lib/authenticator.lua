@@ -18,14 +18,6 @@ roletable = "roles"
 
 -- This will hold the auth structure from the database
 local authstruct
--- This is a list of fields in the database that we are allowed to use.
--- Could be used to check that right variable-name is used.
-local availablefields = {
-	--['userid']=true, 
-	['password']=true, 
-	['username']=true, 
-	['roles']=true, 
-	}
 
 local load_database = function(self)
 	if not authstruct then
@@ -42,6 +34,7 @@ local load_database = function(self)
 				a.password = fields[1] or ""
 				a.username = fields[2] or ""
 				a.roles = fields[3] or ""
+				a.skin = fields[4] or ""
 				table.insert(authstruct, a)
 			end
 		end
@@ -74,22 +67,32 @@ end
 local write_settings = function(self, settings, id)
 	load_database()
 	id = id or get_id(settings.value.userid.value) or {}
-	-- Password, password_confirm, roles are allowed to not exist, just leave the same
+	-- Username, password, roles, skin are allowed to not exist, just leave the same
 	id.userid = settings.value.userid.value
-	id.username = settings.value.username.value
+	if settings.value.username then id.username = settings.value.username.value end
 	if settings.value.password then id.password = md5.sumhexa(settings.value.password.value) end
 	if settings.value.roles then id.roles = table.concat(settings.value.roles.value, ",") end
+	if settings.value.skin then id.skin = settings.value.skin.value end
 
-	return auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or ""))
+	local success = auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or "")..":"..(id.skin or ""))
+
+	if success and self.sessiondata.userinfo.userid == id.userid then
+		self.sessiondata.userinfo = {}
+		for name,value in pairs(id) do
+			self.sessiondata.userinfo[name] = value
+		end
+	end
+
+	return success
 end
 	
 -- validate the settings (ignore password if it's nil)
 local validate_settings = function(settings)
-	-- Password, password_confirm, roles are allowed to not exist, just leave the same
+	-- Username, password, roles, and skin are allowed to not exist, just leave the same
 	-- Set errtxt when entering invalid values
 	if (#settings.value.userid.value == 0) then settings.value.userid.errtxt = "You need to enter a valid userid!" end
 	if string.find(settings.value.userid.value, "[^%w_]") then settings.value.userid.errtxt = "Can only contain letters, numbers, and '_'" end
-	if string.find(settings.value.username.value, "%p") then settings.value.username.value = "Cannot contain punctuation" end
+	if settings.value.username and string.find(settings.value.username.value, "%p") then settings.value.username.errtxt = "Cannot contain punctuation" end
 	if settings.value.password then
 		if (#settings.value.password.value == 0) then
 			settings.value.password.errtxt = "Password cannot be blank!"
@@ -101,6 +104,7 @@ local validate_settings = function(settings)
 		end
 	end
 	if settings.value.roles then modelfunctions.validatemulti(settings.value.roles) end
+	if settings.value.skin then modelfunctions.validateselect(settings.value.skin) end
 
 	-- Return false if any errormessages are set
 	for name,value in pairs(settings.value) do
@@ -142,19 +146,21 @@ end
 -- This function returns the username, roles, ...
 get_userinfo = function(self, userid)
 	load_database(self)
+	local result = {}
+	result.userid = cfe({ value=userid, label="User id" })
+	result.username = cfe({ label="Real name" })
 	local id = get_id(userid)
-	local user = cfe({ value=userid, label="User id" })
-	local username = cfe({ label="Real name" })
 	if id then
-		username.value = id.username
+		result.username.value = id.username
 	elseif userid then
-		user.errtxt = "User does not exist"
+		result.userid.errtxt = "User does not exist"
 	end
-	local password = cfe({ label="Password" })
-	local password_confirm = cfe({ label="Password (confirm)" })
-	local roles = get_userinfo_roles(self, userid)
+	result.password = cfe({ label="Password" })
+	result.password_confirm = cfe({ label="Password (confirm)" })
+	result.roles = get_userinfo_roles(self, userid)
+	result.skin = get_userinfo_skin(self, userid)
 
-	return cfe({ type="group", value={ userid=user, username=username, password=password, password_confirm=password_confirm, roles=roles }, label="User Config" })
+	return cfe({ type="group", value=result, label="User Config" })
 end
 
 get_userinfo_roles = function(self, userid)
@@ -180,6 +186,25 @@ get_userinfo_roles = function(self, userid)
 		roles.option = avail_roles
 	end
 	return roles
+end
+
+get_userinfo_skin = function(self, userid)
+	load_database(self)
+	local id = get_id(userid)
+	local skin = cfe({ type="select", value="", label="Skin", option={""} })
+	if id then
+		skin.value = id.skin or skin.value
+	elseif userid then
+		skins.errtxt = "Could not load skin"
+	end
+	-- Call into skins controller to get the list of skins
+	local contrl = self:new("acf-util/skins")
+	local skins = contrl:read()
+	contrl:destroy()
+	for i,s in ipairs(skins.value) do
+		skin.option[#skin.option + 1] = s.value
+	end
+	return skin
 end
 
 list_users = function (self)
