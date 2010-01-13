@@ -526,7 +526,9 @@ redirect_to_referrer = function(self, result)
 				self:redirect()
 			end
 		else
-			local prefix, controller, action = self.parse_path_info(ENV.HTTP_REFERER:gsub("%?.*", ""))
+			local p = ENV.HTTP_REFERER:gsub("%?.*", ""):gsub("%%(%x%x)",
+				function(h) return string.char(tonumber(h, 16)) end )
+			local prefix, controller, action = self.parse_path_info(p)
 			if prefix ~= self.conf.prefix or controller ~= self.conf.controller or action ~= self.conf.action then
 				self.sessiondata[self.conf.action.."result"] = result
 				error({type="redir_to_referrer"})
