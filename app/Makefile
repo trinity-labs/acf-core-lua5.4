@@ -18,6 +18,10 @@ APP_DIST= \
 	acf-util/password-model.lua \
 	acf-util/password-status-html.lsp \
 	acf-util/password.menu \
+	acf-util/skins-controller.lua \
+	acf-util/skins-model.lua \
+	acf-util/skins-read-html.lsp \
+	acf-util/skins.menu \
 	acf-util/welcome-controller.lua\
 	acf-util/welcome-html.lsp\
 	acf_www-controller.lua\
