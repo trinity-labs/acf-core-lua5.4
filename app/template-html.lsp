@@ -23,10 +23,10 @@ if viewlibrary and viewlibrary.dispatch_component then
 end
 %>
 <title><%= html.html_escape(hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action) %></title>
-<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skindir) %>static/reset.css">
-<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin..".css") %>">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.staticdir) %>/reset.css">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skin.."/"..posix.basename(pageinfo.skin)..".css") %>">
 <!--[if IE]>
-<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skindir .. pageinfo.skin.."/"..pageinfo.skin.."-ie.css") %>">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skin.."/"..posix.basename(pageinfo.skin).."-ie.css") %>">
 <![endif]-->
 </head>
 <body>

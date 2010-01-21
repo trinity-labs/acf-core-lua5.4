@@ -52,5 +52,9 @@ phony+=install
 install: install-recursive $(CONF_FILES)
 	mkdir -p $(DESTDIR)/etc/acf
 	cp $(CONF_FILES) $(DESTDIR)/etc/acf
+	mkdir -p $(DESTDIR)/etc/acf/skins
+	ln -s $(DESTDIR)/etc/acf/skins $(DESTDIR)/$(wwwdir)/userskins
+
+include config.mk
 
 .PHONY: $(phony)

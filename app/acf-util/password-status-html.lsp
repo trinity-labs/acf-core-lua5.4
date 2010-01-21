@@ -12,7 +12,7 @@
 <H2>Existing account</H2>
 <DL>
 <% for name,user in pairs(form.value) do %>
-	<DT><IMG SRC='/skins/static/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> <%= html.html_escape(name) %></DT>
+	<DT><IMG SRC='<%= html.html_escape(page_info.staticdir) %>/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> <%= html.html_escape(name) %></DT>
 	<DD><TABLE>
 		<TR>
 			<TD STYLE='border:none;'><B><%= html.html_escape(user.value.userid.label) %></B></TD>
