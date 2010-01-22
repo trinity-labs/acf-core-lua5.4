@@ -23,7 +23,7 @@ local function list_skins(self)
 			if not ((string.match(file, "^%.")) or (string.match(file, "^cgi[-]bin")) or (string.match(file, "^static")) or (posix.stat(self.conf.wwwdir .. skin .. file).type ~= "directory")) then
 				local entry = cfe({ value=skin..file, label="Skin name" })
 				local current = conf.skin
-				entry.inuse = (file == current)
+				entry.inuse = (skin..file == current)
 				table.insert(skinarray, entry)
 			end
 		end
