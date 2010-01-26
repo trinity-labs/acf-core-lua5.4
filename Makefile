@@ -1,6 +1,6 @@
 APP_NAME=core
 PACKAGE=acf-$(APP_NAME)
-VERSION=0.10.0
+VERSION=0.10.1
 
 P=$(PACKAGE)-$(VERSION)
 DISTDIR:=$(shell pwd)/$(P)
@@ -52,8 +52,7 @@ phony+=install
 install: install-recursive $(CONF_FILES)
 	mkdir -p $(DESTDIR)/etc/acf
 	cp $(CONF_FILES) $(DESTDIR)/etc/acf
-	mkdir -p $(DESTDIR)/etc/acf/skins
-	ln -s $(DESTDIR)/etc/acf/skins $(DESTDIR)/$(wwwdir)/userskins
+	ln -s /etc/acf/skins $(DESTDIR)/$(wwwdir)/userskins
 
 include config.mk
 
