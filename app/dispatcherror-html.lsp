@@ -1,4 +1,4 @@
-<% view = ... %>
+<% view, viewlibrary, page_info = ... %>
 
 <style type="text/css">
 	p.hiddendetail {
@@ -10,7 +10,7 @@
 		font-size: 75%;
 	}
 </style>
-<script type="text/javascript" src="/js/jquery-latest.js"></script>
+<script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/jquery-latest.js"></script>
 <script type="text/javascript">
 	var clickIt = function(){
 			$("p.hiddendetail").removeClass("hiddendetail").show("slow");

@@ -23,10 +23,10 @@ if viewlibrary and viewlibrary.dispatch_component then
 end
 %>
 <title><%= html.html_escape(hostname .. " - " .. pageinfo.controller .. "->" .. pageinfo.action) %></title>
-<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.staticdir) %>/reset.css">
-<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skin.."/"..posix.basename(pageinfo.skin)..".css") %>">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.wwwprefix..pageinfo.staticdir) %>/reset.css">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.wwwprefix..pageinfo.skin.."/"..posix.basename(pageinfo.skin)..".css") %>">
 <!--[if IE]>
-<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.skin.."/"..posix.basename(pageinfo.skin).."-ie.css") %>">
+<link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.wwwprefix..pageinfo.skin.."/"..posix.basename(pageinfo.skin).."-ie.css") %>">
 <![endif]-->
 </head>
 <body>
@@ -52,7 +52,7 @@ end
 			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", html.html_escape(ctlr) .. "logon" ) )
 			end %>
 			 | 
-			<a href="/">home</a> | 
+			<a href="<%= html.html_escape(pageinfo.wwwprefix) %>/">home</a> | 
 			<a href="http://www.alpinelinux.org">about</a>
 			</p></span>
 		<div class="tailer"></div>

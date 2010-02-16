@@ -220,7 +220,7 @@ local view_resolver = function(self)
 				action = self.conf.action,
 				prefix = self.conf.prefix,
 				script = self.conf.script,
-				appname = self.conf.appname,
+				wwwprefix = self.conf.wwwprefix or "",
 				staticdir = self.conf.staticdir or "",
 				skin = self.conf.skin or "",
 				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
@@ -389,6 +389,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	if userprefix == nil then
 		self.conf.prefix, self.conf.controller, self.conf.action =
 			parse_path_info(ENV["PATH_INFO"])
+		self.conf.wwwprefix = string.gsub(ENV["SCRIPT_NAME"] or "", "/?cgi%-bin/acf.*", "")
 	else
 		self.conf.prefix = userprefix
 		self.conf.controller = userctlr or ""
