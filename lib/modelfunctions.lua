@@ -205,6 +205,7 @@ function write_file_with_audit (self, path, str)
 		end
 
 		fs.write_file(tmpfile,str)
+		fs.copy_properties(path, tmpfile)
 
 		if (type(pre) == "string" and #pre) then
 			os.execute(pre)
