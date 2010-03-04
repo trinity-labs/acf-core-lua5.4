@@ -11,7 +11,13 @@
 </form>
 <H2>Existing account</H2>
 <DL>
-<% for name,user in pairs(form.value) do %>
+<% local users = {}
+for name,user in pairs(form.value) do
+	users[#users+1] = name
+end
+table.sort(users)
+for i,name in ipairs(users) do
+	user = form.value[name] %>
 	<DT><IMG SRC='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> <%= html.html_escape(name) %></DT>
 	<DD><TABLE>
 		<TR>
