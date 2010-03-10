@@ -195,10 +195,10 @@ end
 -- Check how many invalid login events
 -- have happened for this id in the last n minutes
 -- this will only effect the lockevent files
-count_events =	function (sessionpath, id_user, ipaddr)
+count_events =	function (sessionpath, id_user, ipaddr, minutes, limit)
 	--we need to have the counts added up? deny off any and or all
 	local now = os.time()
-	local minutes_ago = now - (minutes_count_events * 60)
+	local minutes_ago = now - ((minutes or minutes_count_events) * 60)
 	local t = {}
 	--give me all lockevents then we will sort through them
 	local searchfor = sessionpath .. "/lockevent.*"
@@ -215,7 +215,7 @@ count_events =	function (sessionpath, id_user, ipaddr)
 				end
 			end
 		end
-		if count>limit_count_events then
+		if count>(tonumber(limit) or limit_count_events) then
 			return true
 		else
 			return false
@@ -224,11 +224,11 @@ count_events =	function (sessionpath, id_user, ipaddr)
 end
 
 -- Clear events that are older than n minutes
-expired_events = function (sessionpath)
+expired_events = function (sessionpath, minutes)
 	--current os time in seconds
 	local now = os.time()
 	--take minutes and convert to seconds
-	local minutes_ago = now - (minutes_expired_events * 60)
+	local minutes_ago = now - ((minutes or minutes_expired_events) * 60)
 	local searchfor = sessionpath .. "/lockevent.*"
 	--first do the lockevent files
 	local temp = posix.glob(searchfor)

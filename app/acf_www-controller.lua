@@ -261,7 +261,7 @@ mvc.on_load = function (self, parent)
 
 	-- before we look at sessions, remove old sessions and events
 	-- this prevents us from giving a "session timeout" message, but I'm ok with that
-	sessionlib.expired_events(self.conf.sessiondir)
+	sessionlib.expired_events(self.conf.sessiondir, self.conf.sessiontimeout)
 
 	-- Load the session data
 	self.sessiondata = nil
@@ -281,7 +281,7 @@ mvc.on_load = function (self, parent)
 		else
 			--logevent("Found session")
 			-- We read in a valid session, check if it's ok
-			if sessionlib.count_events(self.conf.sessiondir,self.conf.userid or "", sessionlib.hash_ip_addr(self.conf.clientip)) then
+			if sessionlib.count_events(self.conf.sessiondir,self.conf.userid or "", sessionlib.hash_ip_addr(self.conf.clientip), self.conf.lockouttime, self.conf.lockouteventlimit) then
 				--logevent("Bad session, erasing")
 				-- Too many events on this id / ip, kill the session
 				sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)

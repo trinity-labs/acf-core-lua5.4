@@ -25,7 +25,7 @@ end
 -- if we fail, we leave the session alone (don't log out)
 logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 	-- Check to see if we can login this user id / ip addr
-	local countevent = session.count_events(sessiondir, userid, session.hash_ip_addr(ip_addr))
+	local countevent = session.count_events(sessiondir, userid, session.hash_ip_addr(ip_addr), self.conf.lockouttime, self.conf.lockouteventlimit)
 	if countevent then
 		session.record_event(sessiondir, userid, session.hash_ip_addr(ip_addr))
 	end
