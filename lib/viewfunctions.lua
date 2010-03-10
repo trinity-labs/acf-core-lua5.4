@@ -180,18 +180,28 @@ function paginate(data, clientdata, pagesize)
 		end
 		if page_data.page > page_data.numpages then
 			page_data.page = page_data.numpages
+		elseif page_data.page < 0 then
+			page_data.page = 0
 		end
-		subset = {}
-		for i=((page_data.page-1)*pagesize)+1, page_data.page*pagesize do
-			table.insert(subset, data[i])
+		if page_data.page > 0 then
+			subset = {}
+			for i=((page_data.page-1)*pagesize)+1, page_data.page*pagesize do
+				table.insert(subset, data[i])
+			end
 		end
 	end
 	return subset, page_data
 end
 
 function displaypagination(page_data, page_info)
-	local min = math.min(((page_data.page-1)*page_data.pagesize)+1, page_data.num)
-	local max = math.min(page_data.page*page_data.pagesize, page_data.num)
+	local min, max
+	if page_data.page == 0 then
+		min = 1
+		max = page_data.num
+	else
+		min = math.min(((page_data.page-1)*page_data.pagesize)+1, page_data.num)
+		max = math.min(page_data.page*page_data.pagesize, page_data.num)
+	end
 	if min == max then
 		io.write("Record "..min.." of "..page_data.num.."\n")
 	else
@@ -220,7 +230,9 @@ function displaypagination(page_data, page_info)
 		io.write('<div align="right">Pages:')
 		local p = page_data.page
 		if p > 1 then
-			io.write("<a href="..link..(p-1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-previous.png' HEIGHT='16' WIDTH='16'></a>")
+			io.write("<a href="..link..(p-1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-previous.png' HEIGHT='16' WIDTH='16'></a>\n")
+		end
+		if p ~= 1 then
 			pagelink(1)
 		end
 		local links = {(p-3)-(p-3)%10, p-2, p-1, p, p+1, p+2, (p+12)-(p+12)%10}
@@ -229,7 +241,7 @@ function displaypagination(page_data, page_info)
 		table.insert(links, links[#links]+25-links[#links]%25)
 		table.insert(links, links[#links]+50-links[#links]%50)
 		for i,num in ipairs(links) do
-			if num==p then
+			if num==p and p~=0 then
 				io.write(p.."\n")
 			elseif num>1 and num<page_data.numpages then
 				pagelink(num)
@@ -237,7 +249,12 @@ function displaypagination(page_data, page_info)
 		end
 		if p<page_data.numpages then
 			pagelink(page_data.numpages)
-			io.write("<a href="..link..(p+1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-next.png' HEIGHT='16' WIDTH='16'></a>")
+			if p~= 0 then
+				io.write("<a href="..link..(p+1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-next.png' HEIGHT='16' WIDTH='16'></a>\n")
+			end
+		end
+		if p~=0 then
+			io.write(html.link{value=link.."0", label="all"}.."\n")
 		end
 		io.write("</div>")
 	end
