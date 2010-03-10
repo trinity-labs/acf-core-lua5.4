@@ -220,7 +220,7 @@ function displaypagination(page_data, page_info)
 		io.write('<div align="right">Pages:')
 		local p = page_data.page
 		if p > 1 then
-			io.write("<a href="..link..(p-1).."><img SRC='<%= html.html_escape(page_info.staticdir) %>/tango/16x16/actions/go-previous.png' HEIGHT='16' WIDTH='16'></a>")
+			io.write("<a href="..link..(p-1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-previous.png' HEIGHT='16' WIDTH='16'></a>")
 			pagelink(1)
 		end
 		local links = {(p-3)-(p-3)%10, p-2, p-1, p, p+1, p+2, (p+12)-(p+12)%10}
@@ -237,7 +237,7 @@ function displaypagination(page_data, page_info)
 		end
 		if p<page_data.numpages then
 			pagelink(page_data.numpages)
-			io.write("<a href="..link..(p+1).."><img SRC='<%= html.html_escape(page_info.staticdir) %>/tango/16x16/actions/go-next.png' HEIGHT='16' WIDTH='16'></a>")
+			io.write("<a href="..link..(p+1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-next.png' HEIGHT='16' WIDTH='16'></a>")
 		end
 		io.write("</div>")
 	end
