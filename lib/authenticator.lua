@@ -195,7 +195,7 @@ get_userinfo_skin = function(self, userid)
 	if id then
 		skin.value = id.skin or skin.value
 	elseif userid then
-		skins.errtxt = "Could not load skin"
+		skin.errtxt = "Could not load skin"
 	end
 	-- Call into skins controller to get the list of skins
 	local contrl = self:new("acf-util/skins")
@@ -204,6 +204,7 @@ get_userinfo_skin = function(self, userid)
 	for i,s in ipairs(skins.value) do
 		skin.option[#skin.option + 1] = s.value
 	end
+	table.sort(skin.option)
 	return skin
 end
 
