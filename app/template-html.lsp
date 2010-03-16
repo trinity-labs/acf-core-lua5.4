@@ -79,8 +79,8 @@ end
 						class="class='selected'"
 						tabs = group.tabs
 					end
-					io.write (string.format("\t\t\t\t\t\t<li %s><a href=\"%s%s%s/%s\">%s</a></li>\n", 
-						class,html.html_escape(pageinfo.script),html.html_escape(group.tabs[1].prefix), html.html_escape(group.tabs[1].controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
+					io.write (string.format("\t\t\t\t\t\t<li %s><a %s href=\"%s%s%s/%s\">%s</a></li>\n", 
+						class,class,html.html_escape(pageinfo.script),html.html_escape(group.tabs[1].prefix), html.html_escape(group.tabs[1].controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
 				end
 				io.write ( "\t\t\t\t\t</ul>" )
 			  end
