@@ -43,7 +43,7 @@ function handle_clientdata(form, clientdata)
 			value.value = {}
 			if clientdata[name] and clientdata[name] ~= "" then
 				-- for www we use \r separated list
-				for ip in string.gmatch(clientdata[name].."\n", "%s*(%S[^\n]*%S)%s*\n") do
+				for ip in string.gmatch(clientdata[name].."\n", "%s*([^\n]*%S)%s*\n") do
 					table.insert(value.value, ip)
 				end
 			else
