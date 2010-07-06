@@ -175,7 +175,7 @@ function paginate(data, clientdata, pagesize)
 		page_data.numpages = math.floor((#data + pagesize -1)/pagesize)
 		if clientdata and clientdata.page and tonumber(clientdata.page) then
 			page_data.page = tonumber(clientdata.page)
-		elseif clientdata and tonumber(clientdata.page) then
+		elseif clientdata and tonumber(clientdata) then
 			page_data.page = tonumber(clientdata)
 		end
 		if page_data.page > page_data.numpages then
