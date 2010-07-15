@@ -18,7 +18,7 @@ function handle_clientdata(form, clientdata)
 			clientdata[name] = actualval
 		end
 		if value.type == "boolean" then
-			value.value = (clientdata[name] ~= nil)
+			value.value = (clientdata[name] ~= nil) and (clientdata[name] ~= "false")
 		elseif value.type == "multi" then
 			if clientdata[name] == nil then
 				-- for cli we use name[num] as the name
