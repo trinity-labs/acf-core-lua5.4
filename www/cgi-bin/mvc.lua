@@ -120,7 +120,7 @@ destroy = function (self)
 
 	-- remove packages from package.loaded
 	if self["_NAME"] then package.loaded[self["_NAME"]] = nil end
-	if self.model and self.model["_NAME"]] then package.loaded[self.model["_NAME"]] = nil end
+	if self.model and self.model["_NAME"] then package.loaded[self.model["_NAME"]] = nil end
 end
 
 -- This is a sample front controller/dispatch.   
