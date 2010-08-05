@@ -76,7 +76,7 @@ local write_settings = function(self, settings, id)
 
 	local success = auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or "")..":"..(id.skin or ""))
 
-	if success and self.sessiondata.userinfo.userid == id.userid then
+	if success and self.sessiondata and self.sessiondata.userinfo and self.sessiondata.userinfo.userid == id.userid then
 		self.sessiondata.userinfo = {}
 		for name,value in pairs(id) do
 			self.sessiondata.userinfo[name] = value
