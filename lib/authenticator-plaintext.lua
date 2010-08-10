@@ -40,7 +40,9 @@ read_field = function(self, tabl, field)
 		for l in string.gmatch(m, "([^\n]+)\n?") do
 			local a = {}
 			a.id, a.entry = string.match(l, "^([^:=]*)[:=](.*)")
-			table.insert(row, a)
+			if a.id then
+				table.insert(row, a)
+			end
 		end
 		return row
 	else	
