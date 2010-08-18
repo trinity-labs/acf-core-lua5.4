@@ -1,7 +1,9 @@
 <% local viewtable, viewlibrary, pageinfo, session = ... %>
 Status: 200 OK
 Content-Type: <% print(viewtable.option or "application/octet-stream") %>
-Content-Length: <%= #viewtable.value %>
+<% if viewtable.length then %>
+Content-Length: <%= viewtable.length %>
+<% end %>
 <% if viewtable.label ~= "" then %>
 Content-Disposition: attachment; filename="<%= viewtable.label %>"
 <% end %>
