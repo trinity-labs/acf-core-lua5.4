@@ -10,7 +10,11 @@ require("md5")
 -- This is the sub-authenticator
 -- In the future, this will be set based upon configuration
 -- This is a public variable to allow other controllers (ie tinydns) to do their own permissions
-auth = require("authenticator-plaintext")
+if APP and APP.conf and APP.conf.authenticator and APP.conf.authenticator ~= "" then
+	auth = require(string.gsub(APP.conf.authenticator, "%.lua$", ""))
+else
+	auth = require("authenticator-plaintext")
+end
 
 -- Publicly define the pre-defined tables
 usertable = "passwd"
