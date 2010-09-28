@@ -36,7 +36,8 @@ end
 
 -- Return roles/permissions for specified user
 get_user_roles = function(self, userid)
-	rls = cfe({ type="list", value=authenticator.get_userinfo_roles(self, userid).value, label="Roles" })
+	local userinfo = authenticator.get_userinfo(self, userid) or {}
+	rls = cfe({ type="list", value=userinfo.roles or {}, label="Roles" })
 	permissions = cfe({ type="table", value=roles.get_roles_perm(self, rls.value), label="Permissions" })
 	return cfe({ type="group", value={roles=rls, permissions=permissions} })
 end

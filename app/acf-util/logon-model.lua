@@ -45,8 +45,8 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 			sessiondata.id = session.random_hash(512)
 			local t = authenticator.get_userinfo (self, userid)
 			sessiondata.userinfo = {}
-			for name,value in pairs(t.value) do
-				sessiondata.userinfo[name] = value.value
+			for name,value in pairs(t) do
+				sessiondata.userinfo[name] = value
 			end
 			return cfe({ type="boolean", value=true, label="Logon Success" })
 		else

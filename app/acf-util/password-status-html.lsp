@@ -11,14 +11,9 @@
 </form>
 <H2>Existing account</H2>
 <DL>
-<% local users = {}
-for name,user in pairs(form.value) do
-	users[#users+1] = name
-end
-table.sort(users)
-for i,name in ipairs(users) do
-	user = form.value[name] %>
-	<DT><IMG SRC='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> <%= html.html_escape(name) %></DT>
+<% for i,user in ipairs(form.value) do
+	local name = html.html_escape(user.value.userid.value) %>
+	<DT><IMG SRC='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/apps/system-users.png' HEIGHT='16' WIDTH='16'> <%= name %></DT>
 	<DD><TABLE>
 		<TR>
 			<TD STYLE='border:none;'><B><%= html.html_escape(user.value.userid.label) %></B></TD>
@@ -32,9 +27,9 @@ for i,name in ipairs(users) do
 		</TR><TR>
 			<TD STYLE='border:none;'><B>Option</B></TD>
 			<TD STYLE='border:none;'>
-			[<A HREF='edituser?userid=<%= html.html_escape(name) %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this account</A>]
-			[<A HREF='deleteuser?userid=<%= html.html_escape(name) %>'>Delete this account</A>]
-			[<A HREF='<%= html.html_escape(page_info.script) %>/acf-util/roles/viewuserroles?userid=<%= html.html_escape(name) %>'>View roles for this account</A>]
+			[<A HREF='edituser?userid=<%= name %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this account</A>]
+			[<A HREF='deleteuser?userid=<%= name %>'>Delete this account</A>]
+			[<A HREF='<%= html.html_escape(page_info.script) %>/acf-util/roles/viewuserroles?userid=<%= name %>'>View roles for this account</A>]
 			</TD>
 		</TR>
 	</TABLE></DD>

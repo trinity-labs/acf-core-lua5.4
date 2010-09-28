@@ -8,17 +8,22 @@ module (..., package.seeall)
 
 guest_role = "GUEST"
 
+-- Global variables so we don't have to figure out all the roles multiple times
+local defined_roles, default_roles, reverseroles, roles_candidates, role_table
+
 -- returns a table of the *.roles files
 -- startdir should be the app dir
 local get_roles_candidates = function(self)
-	local list = {}
-	for p in string.gmatch(self.conf.appdir, "[^,]+") do
-		local l = fs.find_files_as_array(".*%.roles", p, true) or {}
-		for i,f in ipairs(l) do
-			list[#list+1] = f
+	if not roles_candidates then
+		roles_candidates = {}
+		for p in string.gmatch(self.conf.appdir, "[^,]+") do
+			local l = fs.find_files_as_array(".*%.roles", p, true) or {}
+			for i,f in ipairs(l) do
+				roles_candidates[#roles_candidates+1] = f
+			end
 		end
 	end
-	return list
+	return roles_candidates
 end
 
 -- Return a list of *controller.lua files
@@ -90,52 +95,61 @@ get_controllers_view = function(self,controller_info)
 end
 
 list_default_roles = function(self)
-	local default_roles = {}
-	local reverseroles = {}
+	if not default_roles then
+		default_roles = {}
+		reverseroles = {}
 
-	-- find all of the default roles files and parse them
-	local rolesfiles = get_roles_candidates(self)
+		-- find all of the default roles files and parse them
+		local rolesfiles = get_roles_candidates(self)
 
-	for x,file in ipairs(rolesfiles) do
-		f = fs.read_file_as_array(file) or {}
-		local rolefile = string.match(file, "(/[^/]+/[^/]+)%.roles$")
-		for y,line in pairs(f) do
-			local role = string.match(line,"^[%w_]+")
-			if role then
-				if not reverseroles[rolefile.."/"..role] then
-					default_roles[#default_roles+1] = rolefile.."/"..role
-					reverseroles[default_roles[#default_roles]] = #default_roles
-				end
-				if not reverseroles[role] then
-					default_roles[#default_roles+1] = role
-					reverseroles[default_roles[#default_roles]] = #default_roles
+		for x,file in ipairs(rolesfiles) do
+			f = fs.read_file_as_array(file) or {}
+			local rolefile = string.match(file, "(/[^/]+/[^/]+)%.roles$")
+			for y,line in pairs(f) do
+				local role = string.match(line,"^[%w_]+")
+				if role then
+					if not reverseroles[rolefile.."/"..role] then
+						default_roles[#default_roles+1] = rolefile.."/"..role
+						reverseroles[default_roles[#default_roles]] = #default_roles
+					end
+					if not reverseroles[role] then
+						default_roles[#default_roles+1] = role
+						reverseroles[default_roles[#default_roles]] = #default_roles
+					end
 				end
 			end
 		end
-	end
 
-	table.sort(default_roles, function(a,b)
-			if string.byte(a, 1) == 47 and string.byte(b,1) ~= 47 then return false
-			elseif string.byte(a, 1) ~= 47 and string.byte(b,1) == 47 then return true
-			else return a<b 
-			end
-		end)
+		table.sort(default_roles, function(a,b)
+				if string.byte(a, 1) == 47 and string.byte(b,1) ~= 47 then return false
+				elseif string.byte(a, 1) ~= 47 and string.byte(b,1) == 47 then return true
+				else return a<b 
+				end
+			end)
+	end
 
 	return default_roles, reverseroles
 end
 
-list_roles = function(self)
-	local defined_roles = {}
-	local default_roles, reverseroles = list_default_roles(self)
-
-	-- Open the roles file and parse for defined roles
-	local entries = authenticator.auth.read_field(self, authenticator.roletable, "") or {}
-	for x,entry in ipairs(entries) do
-		if not reverseroles[entry.id] then
-			defined_roles[#defined_roles + 1] = entry.id
+list_defined_roles = function(self)
+	if not defined_roles then
+		-- Open the roles file and parse for defined roles
+		defined_roles = {}
+		if not role_table then role_table = authenticator.auth.read_field(self, authenticator.roletable, "") or {} end
+		for x,entry in ipairs(role_table) do
+			if not reverseroles[entry.id] then
+				defined_roles[#defined_roles + 1] = entry.id
+			end
 		end
+		table.sort(defined_roles)
 	end
-	table.sort(defined_roles)
+
+	return defined_roles
+end
+
+list_roles = function(self)
+	local default_roles = list_default_roles(self)
+	local defined_roles = list_defined_roles(self)
 
 	return defined_roles, default_roles
 end
@@ -195,8 +209,8 @@ local determine_perms = function(self,roles)
 	end
 
 	-- then look in the user-editable roles
-	local entries = authenticator.auth.read_field(self, authenticator.roletable, "") or {}
-	for x,entry in ipairs(entries) do
+	if not role_table then role_table = authenticator.auth.read_field(self, authenticator.roletable, "") or {} end
+	for x,entry in ipairs(role_table) do
 		if reverseroles[entry.id] then
 			temp = format.string_to_table(entry.entry, ",")
 			for z,perm in pairs(temp) do

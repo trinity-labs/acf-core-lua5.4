@@ -5,7 +5,7 @@ module (..., package.seeall)
 default_action = "status"
 
 -- Logon a new user based upon id and password in clientdata
-logon = function(self)
+local check_users = function(self)
 	-- If there are no users defined, add privileges and dispatch password/newuser
 	local users = self.model:list_users()
 	if #users.value == 0 then
@@ -14,9 +14,14 @@ logon = function(self)
 		self:dispatch(self.conf.prefix, "password", "newuser")
 		self.sessiondata.permissions[self.conf.prefix].password = nil
 		self.conf.suppress_view = true
-		return
+		return true
 	end
 
+	return false
+end
+
+-- Logon a new user based upon id and password in clientdata
+logon = function(self)
 	local userid = cfe({ value=clientdata.userid or "", label="User ID" })
 	local password = cfe({ label="Password" })
 	local redir = cfe({ value=clientdata.redir or "welcome/read", label="" })
@@ -28,6 +33,7 @@ logon = function(self)
 		if logon.value then
 			cmdresult.descr = "Logon Successful"
 		else
+			if check_users(self) then return end
 			cmdresult.errtxt = "Logon Attempt Failed"
 		end
 		cmdresult = self:redirect_to_referrer(cmdresult)
@@ -42,6 +48,7 @@ logon = function(self)
 			redirect(self, cmdresult.value.redir.value)
 		end
 	else
+		if check_users(self) then return end
 		cmdresult = self:redirect_to_referrer() or cmdresult
 	end
 	return cmdresult

@@ -464,7 +464,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			controller.worker.mvc.pre_exec ( controller )
 		end
 
-		-- run the action		
+		-- run the action
 		viewtable = controller.worker[self.conf.action](controller)
 
 		-- run the post_exec code
