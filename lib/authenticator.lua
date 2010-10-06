@@ -37,6 +37,7 @@ local parse_entry = function(id, entry)
 		a.username = fields[2] or ""
 		a.roles = fields[3] or ""
 		a.skin = fields[4] or ""
+		a.home = fields[5] or ""
 		authstruct[id] = a
 	end
 	return a
@@ -106,14 +107,15 @@ write_userinfo = function(self, userinfo)
 		return false
 	end
 	id = get_id(self, userinfo.userid) or {}
-	-- Username, password, roles, skin are allowed to not exist, just leave the same
+	-- Username, password, roles, skin, home are allowed to not exist, just leave the same
 	id.userid = userinfo.userid
 	if userinfo.username then id.username = userinfo.username end
 	if userinfo.password then id.password = md5.sumhexa(userinfo.password) end
 	if userinfo.roles then id.roles = table.concat(userinfo.roles, ",") end
 	if userinfo.skin then id.skin = userinfo.skin end
+	if userinfo.home then id.home = userinfo.home end
 
-	local success = auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or "")..":"..(id.skin or ""))
+	local success = auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or "")..":"..(id.skin or "")..":"..(id.home or ""))
 	authstruct[userinfo.userid] = nil
 	get_id(self, id.userid)
 

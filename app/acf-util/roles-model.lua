@@ -5,35 +5,6 @@ require("modelfunctions")
 require("authenticator")
 require("roles")
 
-local get_all_permissions = function(self)
-	-- need to get a list of all the controllers
-	controllers = roles.get_controllers(self)
-	local table_perm = {}
-	local array_perm = {}
-	for a,b in pairs(controllers) do
-		if nil == table_perm[b.prefix] then
-			table_perm[b.prefix] = {}
-		end
-		if nil == table_perm[b.prefix][b.sname] then
-			table_perm[b.prefix][b.sname] = {}
-		end
-		local temp = roles.get_controllers_func(self,b)
-		for x,y in ipairs(temp) do
-			table_perm[b.prefix][b.sname][y] = {}
-			array_perm[#array_perm + 1] = b.prefix .. b.sname .. "/" .. y
-		end
-		temp = roles.get_controllers_view(self,b)
-		for x,y in ipairs(temp) do
-			if not table_perm[b.prefix][b.sname][y] then
-				table_perm[b.prefix][b.sname][y] = {}
-				array_perm[#array_perm + 1] = b.prefix .. b.sname .. "/" .. y
-			end
-		end
-	end
-
-	return table_perm, array_perm
-end
-
 -- Return roles/permissions for specified user
 get_user_roles = function(self, userid)
 	local userinfo = authenticator.get_userinfo(self, userid) or {}
@@ -49,7 +20,7 @@ end
 	
 -- Return list of all permissions
 get_perms_list = function(self)
-	return cfe({ type="table", value=get_all_permissions(self), label="All Permissions" })
+	return cfe({ type="table", value=roles.get_all_permissions(self), label="All Permissions" })
 end
 
 view_roles = function(self)
@@ -73,7 +44,7 @@ getpermissions = function(self, role)
 		role = ""
 	end
 
-	local tmp, all_perms = get_all_permissions(self)
+	local tmp, all_perms = roles.get_all_permissions(self)
 	table.sort(all_perms)
 	
 	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions", default=default_perms })

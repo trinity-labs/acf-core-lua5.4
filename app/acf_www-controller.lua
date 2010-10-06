@@ -408,6 +408,10 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	-- Find the proper controller/action combo
 	local origconf = {}
 	for name,value in pairs(self.conf) do origconf[name]=value end
+	if "" == self.conf.controller and self.sessiondata.userinfo and self.sessiondata.userinfo.home and self.sessiondata.userinfo.home ~= "" then
+		self.conf.prefix, self.conf.controller, self.conf.action =
+			parse_path_info(self.sessiondata.userinfo.home)
+	end
 	if "" == self.conf.controller then
 		self.conf.prefix = self.conf.default_prefix or "/"
 		self.conf.controller = self.conf.default_controller or ""

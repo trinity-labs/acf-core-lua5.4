@@ -3,7 +3,7 @@ module(..., package.seeall)
 require("authenticator")
 require("roles")
 
-avail_roles, avail_skins = nil
+avail_roles, avail_skins, avail_homes = nil
 
 local weak_password = function(password)
 	-- If password is too short, return false
@@ -19,7 +19,7 @@ end
 
 -- validate the settings (ignore password if it's nil)
 local validate_settings = function(settings)
-	-- Username, password, roles, and skin are allowed to not exist, just leave the same
+	-- Username, password, roles, skin, and home are allowed to not exist, just leave the same
 	-- Set errtxt when entering invalid values
 	if (#settings.value.userid.value == 0) then settings.value.userid.errtxt = "You need to enter a valid userid!" end
 	if string.find(settings.value.userid.value, "[^%w_]") then settings.value.userid.errtxt = "Can only contain letters, numbers, and '_'" end
@@ -36,6 +36,7 @@ local validate_settings = function(settings)
 	end
 	if settings.value.roles then modelfunctions.validatemulti(settings.value.roles) end
 	if settings.value.skin then modelfunctions.validateselect(settings.value.skin) end
+	if settings.value.home then modelfunctions.validateselect(settings.value.home) end
 
 	-- Return false if any errormessages are set
 	for name,value in pairs(settings.value) do
@@ -126,12 +127,23 @@ function read_user(self, user)
 		end
 	end
 
+	-- Call into ?? controller to get the list of home actions
+	if not avail_homes then
+		avail_homes = {""}
+		local tmp1, tmp2 = roles.get_all_permissions(self)
+	        table.sort(tmp2)
+		for i,h in ipairs(tmp2) do
+			avail_homes[#avail_homes+1] = h
+		end
+	end
+
 	-- Passwords are set to empty string
 	result.username = cfe({ value=userinfo.username or "", label="Real name" })
 	result.password = cfe({ value="", label="Password" })
 	result.password_confirm = cfe({ value="", label="Password (confirm)" })
 	result.roles = cfe({ type="multi", value=userinfo.roles or {}, label="Roles", option=avail_roles or {} })
 	result.skin = cfe({ type="select", value=userinfo.skin or "", label="Skin", option=avail_skins or {""} })
+	result.home = cfe({ type="select", value=userinfo.home or "", label="Home", option=avail_homes or {""} })
 
 	return cfe({ type="group", value=result, label="User Config" })
 end

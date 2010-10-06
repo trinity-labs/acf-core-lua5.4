@@ -24,7 +24,7 @@ end
 logon = function(self)
 	local userid = cfe({ value=clientdata.userid or "", label="User ID" })
 	local password = cfe({ label="Password" })
-	local redir = cfe({ value=clientdata.redir or "welcome/read", label="" })
+	local redir = cfe({ value=clientdata.redir, label="" })
 	local cmdresult = cfe({ type="form", value={userid=userid, password=password, redir=redir}, label="Logon", option="Logon" })
 	if clientdata.Logon then
 		local logonredirect = self.sessiondata.logonredirect
@@ -38,6 +38,13 @@ logon = function(self)
 		end
 		cmdresult = self:redirect_to_referrer(cmdresult)
 		if logon.value then
+			if redir.value == "" then
+				if self.sessiondata.userinfo and self.sessiondata.userinfo.home and self.sessiondata.userinfo.home ~= "" then
+					redir.value = self.sessiondata.userinfo.home
+				else
+					redir.value = "/acf-util/welcome/read"
+				end
+			end
 			-- only copy the logonredirect if redirecting to that page
 			if logonredirect and cmdresult.value.redir.value then
 				local prefix, controller, action = self.parse_redir_string(cmdresult.value.redir.value)

@@ -9,7 +9,7 @@ module (..., package.seeall)
 guest_role = "GUEST"
 
 -- Global variables so we don't have to figure out all the roles multiple times
-local defined_roles, default_roles, reverseroles, roles_candidates, role_table
+local defined_roles, default_roles, reverseroles, roles_candidates, role_table, table_perm, array_perm
 
 -- returns a table of the *.roles files
 -- startdir should be the app dir
@@ -43,7 +43,7 @@ end
 -- Return information about all or specified controller files
 get_controllers = function(self,pre,controller)
 	--we get all the controllers
-	local list = roles.list_controllers(self)
+	local list = list_controllers(self)
 	--we need to grab the directory and name of file
 	local temp = {}
 	for k,v in pairs(list) do
@@ -92,6 +92,37 @@ get_controllers_view = function(self,controller_info)
 		temp[#temp + 1] = string.match(file, controller_info.sname.."%-([^%./]+)%-html%.lsp")
 	end
 	return temp	
+end
+
+get_all_permissions = function(self)
+	if not table_perm or not array_perm then
+		-- need to get a list of all the controllers
+		controllers = get_controllers(self)
+		table_perm = {}
+		array_perm = {}
+		for a,b in pairs(controllers) do
+			if nil == table_perm[b.prefix] then
+				table_perm[b.prefix] = {}
+			end
+			if nil == table_perm[b.prefix][b.sname] then
+				table_perm[b.prefix][b.sname] = {}
+			end
+			local temp = get_controllers_func(self,b)
+			for x,y in ipairs(temp) do
+				table_perm[b.prefix][b.sname][y] = {}
+				array_perm[#array_perm + 1] = b.prefix .. b.sname .. "/" .. y
+			end
+			temp = get_controllers_view(self,b)
+			for x,y in ipairs(temp) do
+				if not table_perm[b.prefix][b.sname][y] then
+					table_perm[b.prefix][b.sname][y] = {}
+					array_perm[#array_perm + 1] = b.prefix .. b.sname .. "/" .. y
+				end
+			end
+		end
+	end
+
+	return table_perm, array_perm
 end
 
 list_default_roles = function(self)
