@@ -105,6 +105,21 @@ end
 function displayform(myform, order, finishingorder, page_info)
 	if not myform then return end
 	displayformstart(myform, page_info)
+	if not order and not finishingorder then
+		tmporder = {}
+		for name,item in pairs(myform.value) do
+			if tonumber(item.seq) then
+				tmporder[#tmporder+1] = {seq=tonumber(item.seq), name=name}
+			end
+		end
+		if #tmporder>0 then
+			table.sort(tmporder, function(a,b) return a.seq < b.seq end)
+			order = {}
+			for i,val in ipairs(tmporder) do
+				order[#order+1] = val.name
+			end
+		end
+	end
 	local reverseorder= {["redir"]=0}
 	if order then
 		for x,name in ipairs(order) do
