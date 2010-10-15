@@ -1,9 +1,11 @@
 module(..., package.seeall)
 
-function handle_clientdata(form, clientdata)
+function handle_clientdata(form, clientdata, group)
 	form.errtxt = nil
-	for name,value in pairs(form.value) do
+	for n,value in pairs(form.value) do
 		value.errtxt = nil
+		local name = n
+		if group then name = group.."."..name end
 		if name:find("%.") then
 			-- If the name has a '.' in it, haserl will interpret it as a table
 			local actualval = clientdata
@@ -17,7 +19,9 @@ function handle_clientdata(form, clientdata)
 			end
 			clientdata[name] = actualval
 		end
-		if value.type == "boolean" then
+		if value.type == "group" then
+			handle_clientdata(value, clientdata, name)
+		elseif value.type == "boolean" then
 			value.value = (clientdata[name] ~= nil) and (clientdata[name] ~= "false")
 		elseif value.type == "multi" then
 			if clientdata[name] == nil then

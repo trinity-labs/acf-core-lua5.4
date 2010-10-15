@@ -16,10 +16,11 @@ function displayitem(myitem)
 	io.write("</DD>\n")
 end
 
-function displayformitem(myitem, name, viewtype)
+function displayformitem(myitem, name, viewtype, header_level, group)
 	if not myitem then return end
 	if name then myitem.name = name end
-	if myitem.type ~= "hidden" then
+	if group and group ~= "" then myitem.name = group.."."..myitem.name end
+	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		io.write("<DT")
 		if myitem.errtxt then 
 			myitem.class = "error"
@@ -31,7 +32,13 @@ function displayformitem(myitem, name, viewtype)
 	if (viewtype == "viewonly") then
 		myitem.disabled = "true"
 	end
-	if myitem.type == "multi" then
+	if myitem.type == "group" then
+		header_level = header_level or 2
+		io.write("<H"..tostring(header_level)..">"..html.html_escape(myitem.label).."</H"..tostring(header_level)..">")
+		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
+		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
+		displayformcontents(myitem, nil, nil, tonumber(header_level)+1, myitem.name)
+	elseif myitem.type == "multi" then
 		-- FIXME multiple select doesn't work in haserl, so use series of checkboxes
 		--myitem.type = "select"
 		--myitem.multiple = "true"
@@ -77,7 +84,7 @@ function displayformitem(myitem, name, viewtype)
 	else
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
-	if myitem.type ~= "hidden" then
+	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
 		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 		io.write("</DD>\n")
@@ -102,9 +109,8 @@ function displayformstart(myform, page_info)
 	end
 end
 
-function displayform(myform, order, finishingorder, page_info)
+function displayformcontents(myform, order, finishingorder, header_level, group)
 	if not myform then return end
-	displayformstart(myform, page_info)
 	if not order and not finishingorder then
 		tmporder = {}
 		for name,item in pairs(myform.value) do
@@ -126,7 +132,7 @@ function displayform(myform, order, finishingorder, page_info)
 			reverseorder[name] = x
 			if myform.value[name] then
 				myform.value[name].name = name
-				displayformitem(myform.value[name])
+				displayformitem(myform.value[name], nil, nil, header_level, group)
 			end
 		end
 	end
@@ -139,18 +145,17 @@ function displayform(myform, order, finishingorder, page_info)
 	for name,item in pairs(myform.value) do
 		if nil == reverseorder[name] and nil == reversefinishingorder[name] then
 			item.name = name
-			displayformitem(item)
+			displayformitem(item, nil, nil, header_level, group)
 		end
 	end
 	if finishingorder then
 		for x,name in ipairs(finishingorder) do
 			if myform.value[name] then
 				myform.value[name].name = name
-				displayformitem(myform.value[name])
+				displayformitem(myform.value[name], nil, nil, header_level, group)
 			end
 		end
 	end
-	displayformend(myform)
 end
 
 function displayformend(myform)
@@ -158,6 +163,13 @@ function displayformend(myform)
 	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. html.html_escape(myform.option) .. '" value="' .. html.html_escape(myform.submit or myform.option) .. '"></DD>\n')
 	io.write('</FORM>')
 	io.write('</DL>\n')
+end
+
+function displayform(myform, order, finishingorder, page_info, header_level)
+	if not myform then return end
+	displayformstart(myform, page_info)
+	displayformcontents(myform, order, finishingorder, header_level)
+	displayformend(myform)
 end
 
 function displaycommandresults(commands, session, preserveerrors)
