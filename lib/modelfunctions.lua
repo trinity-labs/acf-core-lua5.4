@@ -134,7 +134,9 @@ end
 
 function validateselect(select)
 	for i,option in ipairs(select.option) do
-	 	if option == select.value then
+		if type(option) == "string" and option == select.value then
+			return true
+		elseif type(option) == "table" and option.value == select.value then
 			return true
 		end
 	end
@@ -145,7 +147,11 @@ end
 function validatemulti(multi)
 	local reverseoption = {}
 	for i,option in ipairs(multi.option) do
-		reverseoption[option] = i
+		if type(option) == "string" then
+			reverseoption[option] = i
+		else
+			reverseoption[option.value] = i
+		end
 	end
 	for i,value in ipairs(multi.value) do
 		if not reverseoption[value] then

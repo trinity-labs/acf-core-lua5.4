@@ -51,11 +51,19 @@ function displayformitem(myitem, name, viewtype, header_level, group)
 		end
 		local reverseopt = {}
 		for x,val in ipairs(myitem.option) do
-			reverseopt[val] = x
-			myitem.value = val
-			myitem.checked = reverseval[val]
+			local v,l
+			if type(val) == "string" then
+				v = val
+				l = val
+			else
+				v = val.value
+				l = val.label
+			end
+			reverseopt[v] = x
+			myitem.value = v
+			myitem.checked = reverseval[v]
 			myitem.name = tempname .. "." .. x
-			io.write(html.form.checkbox(myitem) .. html.html_escape(val) .. "<br>\n")
+			io.write(html.form.checkbox(myitem) .. html.html_escape(l) .. "<br>\n")
 		end
 		-- Check for values not in options
 		if myitem.errtxt then
