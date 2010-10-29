@@ -94,6 +94,7 @@ function displayformitem(myitem, name, viewtype, header_level, group)
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
+		if myitem.default then io.write('<P CLASS="descr">Default:' .. string.gsub(html.html_escape(myitem.default), "\n", "<BR>") .. "</P>\n") end
 		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 		io.write("</DD>\n")
 	end
