@@ -208,9 +208,10 @@ count_events =	function (sessionpath, id_user, ipaddr, minutes, limit)
 		return false
 	else
 		local count = 0
-		for a,b in pairs(t) do 
+		for a,b in pairs(t) do
 			if posix.stat(b,"mtime") > minutes_ago then
-				if string.match(b,id_user) or string.match(b,ipaddr) then
+				local user, ip = string.match(b, "/lockevent%.([^.]*)%.([^.]*)%.")
+				if id_user == user or ipaddr == ip then
 					count = count + 1
 				end
 			end

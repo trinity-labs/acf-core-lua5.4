@@ -281,7 +281,7 @@ mvc.on_load = function (self, parent)
 		else
 			--logevent("Found session")
 			-- We read in a valid session, check if it's ok
-			if sessionlib.count_events(self.conf.sessiondir,self.conf.userid or "", sessionlib.hash_ip_addr(self.conf.clientip), self.conf.lockouttime, self.conf.lockouteventlimit) then
+			if self.sessiondata.userinfo and self.sessiondata.userinfo.userid and sessionlib.count_events(self.conf.sessiondir, self.sessiondata.userinfo.userid, sessionlib.hash_ip_addr(self.conf.clientip), self.conf.lockouttime, self.conf.lockouteventlimit) then
 				--logevent("Bad session, erasing")
 				-- Too many events on this id / ip, kill the session
 				sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)
