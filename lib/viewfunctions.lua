@@ -128,7 +128,7 @@ function displayformcontents(myform, order, finishingorder, header_level, group)
 			end
 		end
 		if #tmporder>0 then
-			table.sort(tmporder, function(a,b) return a.seq < b.seq end)
+			table.sort(tmporder, function(a,b) if a.seq ~= b.seq then return a.seq < b.seq else return a.name < b.name end end)
 			order = {}
 			for i,val in ipairs(tmporder) do
 				order[#order+1] = val.name
