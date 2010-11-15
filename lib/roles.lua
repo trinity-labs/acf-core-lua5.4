@@ -70,10 +70,13 @@ get_controllers_func = function(self,controller_info)
 		-- but, haven't figured that out yet
 		local PATH = package.path
 		local loaded = package.loaded[controller_info.name]
+		package.loaded[controller_info.name] = nil
+		_G[controller_info.name] = nil
 		package.path = controller_info.path .. "?.lua;" .. package.path
 		temp = require (controller_info.name)
 		package.path = PATH
 		package.loaded[controller_info.name] = loaded
+		_G[controller_info.name] = loaded
 		temp1 = {}
 		for a,b in pairs(temp) do
 			local c = string.match(a,"^mvc") or string.match(a,"^_") 
