@@ -136,7 +136,6 @@ local find_view = function ( appdir, prefix, controller, action, viewtype )
 end
 
 local has_view = function(self)
-	require("fs")
 	for p in string.gmatch(self.conf.appdir, "[^,]+") do
 		local file = posix.stat(p .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. (self.conf.viewtype or "html") .. ".lsp", "type")
 		if file == "regular" or file == "link" then return true end
@@ -450,6 +449,13 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		redirect(self, self.conf.action) -- controller and prefix already in self.conf
 	end
 
+	-- Before we start checking for views, set the viewtype
+	if self.clientdata.viewtype then
+		self.conf.viewtype = self.clientdata.viewtype
+	else
+		self.conf.viewtype = "html"
+	end
+
 	-- If the controller or action are missing, display an error view
 	if nil == controller then
 		-- If we have a view w/o an action, just display the view (passing in the clientdata)
@@ -507,6 +513,9 @@ end
 -- We use the self.conf table because it already has prefix,controller,etc
 -- The actual redirection is defined in exception_handler above
 redirect = function (self, str, result)
+	if self.conf.viewtype ~= "html" then
+		return
+	end
 	if result then
 		self.sessiondata[self.conf.action.."result"] = result
 	end
@@ -525,6 +534,9 @@ end
 -- If we've done something, cause a redirect to the referring page (assuming it's different)
 -- Also handles retrieving the result of a previously redirected action
 redirect_to_referrer = function(self, result)
+	if self.conf.viewtype ~= "html" then
+		return result
+	end
 	if result and not self.conf.component then
 		-- If we have a result, then we did something, so we might have to redirect
 		if not ENV.HTTP_REFERER then

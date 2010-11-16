@@ -27,6 +27,7 @@ APP_DIST= \
 	acf_www-controller.lua\
 	acf_cli-controller.lua\
 	menuhints.menu\
+	template-ajax.lsp\
 	template-html.lsp\
 	template-stream.lsp\
 	dispatcherror-html.lsp\
