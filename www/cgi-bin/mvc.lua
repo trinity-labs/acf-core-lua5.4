@@ -222,8 +222,13 @@ soft_require = function (self, name )
 			-- and if it doesnt exist silently fail.
 			-- This version allows things from /usr/local/lua/5.1 to
 			-- be loaded
-			package.path = p .. posix.dirname(name) .. "/?.lua;" .. package.path
-			local t = require(posix.basename(name))
+			package.path = p .. "/?.lua;" .. package.path
+			local t
+			if posix.dirname(name) == "." then
+				t = require(posix.basename(name))
+			else
+				t = require(posix.basename(posix.dirname(name)).."."..posix.basename(name))
+			end
 			package.path = PATH
 			return t
 		end
