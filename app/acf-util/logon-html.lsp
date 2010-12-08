@@ -1,5 +1,12 @@
-<% local form = ... %>
+<% local form, viewlibrary, page_info, session = ... %>
 <% require("viewfunctions") %>
+
+<script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/jquery-latest.js"></script>
+<script type="text/javascript">
+        $(function(){
+		$("input[@name='userid']").focus();
+	});
+</script>
 
 <h1><%= html.html_escape(form.label) %></h1>
 <%
