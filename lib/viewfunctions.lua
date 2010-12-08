@@ -1,6 +1,25 @@
 require("html")
 require("session")
 
+function getlabel(myitem, value)
+	if myitem and (myitem.type == "select" or myitem.type == "multi") then
+		for x,val in ipairs(myitem.option) do
+			local v,l
+			if type(val) == "string" then
+				v = val
+				l = val
+			else
+				v = val.value
+				l = val.label
+			end
+			if v == value then
+				return l
+			end
+		end
+	end
+	return value
+end
+
 function displayitem(myitem)
 	if not myitem then return end
 	io.write("<DT")
@@ -94,7 +113,7 @@ function displayformitem(myitem, name, viewtype, header_level, group)
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
-		if myitem.default then io.write('<P CLASS="descr">Default:' .. string.gsub(html.html_escape(myitem.default), "\n", "<BR>") .. "</P>\n") end
+		if myitem.default then io.write('<P CLASS="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<BR>") .. "</P>\n") end
 		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 		io.write("</DD>\n")
 	end
