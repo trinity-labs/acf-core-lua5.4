@@ -6,7 +6,7 @@ function handle_clientdata(form, clientdata, group)
 		value.errtxt = nil
 		local name = n
 		if group then name = group.."."..name end
-		if name:find("%.") then
+		if name:find("%.") and not clientdata[name] then
 			-- If the name has a '.' in it, haserl will interpret it as a table
 			local actualval = clientdata
 			for entry in name:gmatch("[^%.]+") do
