@@ -19,7 +19,7 @@ end
 displayitem(data.value.autostart)
 if not (data.value.version and data.value.version.errtxt) and data.value.autostart and data.value.autostart.errtxt and viewlibrary.check_permission("alpine-baselayout/rc/edit") then
 %>
-<DT>Enable autoastart</DT>
+<DT>Enable autostart</DT>
 <DD><form action="<%= html.html_escape(page_info.script .. "/alpine-baselayout/rc/edit?servicename="..data.value.autostart.name.."&redir=".. page_info.orig_action) %>" method="POST">
 <input class='submit' type='submit' value='Enable'></form></DD>
 <% end %>
