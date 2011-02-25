@@ -26,3 +26,7 @@ if not (data.value.version and data.value.version.errtxt) and data.value.autosta
 	<input class='submit' type='submit' value='Enable'></form></DD>
 <% end %>
 </DL>
+
+<% if viewlibrary and viewlibrary.dispatch_component and viewlibrary.check_permission("startstop") then
+	viewlibrary.dispatch_component("startstop")
+end %>
