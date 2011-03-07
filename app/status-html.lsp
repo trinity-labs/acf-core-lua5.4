@@ -3,6 +3,7 @@ require("viewfunctions")
 %>
 
 <% displaycommandresults({"install","edit"}, session) %>
+<% displaycommandresults({"startstop"}, session) %>
 
 <H1>System Info</H1>
 <DL>
