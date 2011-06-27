@@ -231,9 +231,13 @@ local determine_perms = function(self,roles)
 								permissions[prefix][control] = {}
 							end
 							if action then
-								permissions[prefix][control][action] = {file}
-								permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
-								default_permissions_array[#default_permissions_array + 1] = prefix .. control .. "/" .. action
+								if not permissions[prefix][control][action] then
+									permissions[prefix][control][action] = {file}
+									permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
+									default_permissions_array[#default_permissions_array + 1] = prefix .. control .. "/" .. action
+								else
+									permissions[prefix][control][action][#permissions[prefix][control][action] + 1] = file
+								end
 							end
 						end
 					end
@@ -256,8 +260,10 @@ local determine_perms = function(self,roles)
 					if nil == permissions[prefix][control] then
 						permissions[prefix][control] = {}
 					end
-					permissions[prefix][control][action] = {}
-					permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
+					if nil == permissions[prefix][control][action] then
+						permissions[prefix][control][action] = {}
+						permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
+					end
 				end
 			end
 		end
