@@ -49,3 +49,5 @@ for i=2,#arg do
 	end
 end
 APP:dispatch()
+APP:destroy()
+FRAMEWORK:destroy()
