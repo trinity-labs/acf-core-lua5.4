@@ -4,7 +4,7 @@
 <script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/jquery-latest.js"></script>
 <script type="text/javascript">
         $(function(){
-		$("input[@name='userid']").focus();
+		$("input[name='userid']").focus();
 	});
 </script>
 
