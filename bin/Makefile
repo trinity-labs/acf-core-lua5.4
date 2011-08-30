@@ -1,12 +1,11 @@
 include ../config.mk
 
-WWW_DIST=cgi-bin/acf\
-	index.html\
+BIN_DIST=acf_cli\
 
 EXTRA_DIST=Makefile
-DISTFILES=$(WWW_DIST) $(EXTRA_DIST)
+DISTFILES=$(BIN_DIST) $(EXTRA_DIST)
 
-install_dir=$(DESTDIR)/$(wwwdir)
+install_dir=$(DESTDIR)/$(bindir)
 dist_dir=$(DISTDIR)/$(notdir $(PWD))
 
 phony+=all
@@ -27,11 +26,11 @@ distdir: $(DISTFILES)
 phony+=install
 install:
 	mkdir -p $(install_dir)
-	for i in $(WWW_DIST); do\
+	for i in $(BIN_DIST); do\
 		dest=`dirname "$(install_dir)/$$i"`;\
 		mkdir -p "$$dest";\
 		cp "$$i" "$$dest";\
 	done
-	chmod 755 $(install_dir)/cgi-bin/acf
+	chmod 700 $(install_dir)/acf_cli
 
 .PHONY: $(phony)

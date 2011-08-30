@@ -1,6 +1,6 @@
 #!/usr/bin/haserl --shell=lua --upload-limit=256
 <% 
-require("mvc")
+mvc = require("acf.mvc")
 
 -- create a new container
 FRAMEWORK=mvc:new()

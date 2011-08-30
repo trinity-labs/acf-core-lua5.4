@@ -6,7 +6,7 @@ P=$(PACKAGE)-$(VERSION)
 DISTDIR:=$(shell pwd)/$(P)
 DISTPKG=$(P).tar.bz2
 
-SUBDIRS=app lib www
+SUBDIRS=app bin lib lua www
 EXTRA_DIST=config.mk Makefile README
 CONF_FILES=acf.conf
 

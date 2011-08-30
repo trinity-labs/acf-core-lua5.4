@@ -2,7 +2,7 @@
 if #arg == 0 then
 	print([[ACF Client interface
 
-Usage: cli [action] [parameter]...
+Usage: acf_cli [action] [parameter]...
 
 Actions are of the form "prefix/controller/action"
 Parameters are of the form "parameter=value"
@@ -10,7 +10,7 @@ Parameters are of the form "parameter=value"
 	boolean parameters are true if defined, false is undefined
 
 Example:
-cli acf-util/password/newuser password="test123" password_confirm="test123" roles[1]="ADMIN" userid="root" Create
+acf_cli acf-util/password/newuser password="test123" password_confirm="test123" roles[1]="ADMIN" userid="root" Create
 
 For forms, remember to pass in the "option" value as a parameter (see Create in example above).
 Output will be a serialized Lua table.
@@ -19,12 +19,12 @@ Output will be a serialized Lua table.
 end
 
 require("posix")
-local PATH = package.path
-local p = posix.dirname(arg[0])
-if p:sub(1,1) ~= "/" then p = posix.getcwd().."/"..p end
-package.path = p.."/?.lua;" .. package.path
-require("mvc")
-package.path = PATH
+--local PATH = package.path
+--local p = posix.dirname(arg[0])
+--if p:sub(1,1) ~= "/" then p = posix.getcwd().."/"..p end
+--package.path = p.."/?.lua;" .. package.path
+mvc = require("acf.mvc")
+--package.path = PATH
 
 -- this is to get around having to store
 -- the config file in /etc/helloworld/helloworld.conf
