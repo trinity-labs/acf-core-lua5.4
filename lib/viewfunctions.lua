@@ -102,12 +102,16 @@ function displayformitem(myitem, name, viewtype, header_level, group)
 		myitem.name = tempname
 		myitem.value = tempval
 	elseif myitem.type == "boolean" then
+		local tempval = myitem.value
 		if (myitem.value == true) then myitem.checked = "" end
 		myitem.value = "true"
 		io.write(html.form.checkbox(myitem) .. "\n")
+		myitem.value = tempval
 	elseif myitem.type == "list" then
+		local tempval = myitem.value
 		myitem.value = table.concat(myitem.value, "\n")
 		io.write(html.form.longtext(myitem) .. "\n")
+		myitem.value = tempval
 	else
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
