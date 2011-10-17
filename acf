@@ -1,0 +1,10 @@
+# ACF logrotate script
+
+/var/log/acf.log {
+        daily
+        missingok
+	copytruncate
+        rotate 7
+        compress
+        notifempty
+}

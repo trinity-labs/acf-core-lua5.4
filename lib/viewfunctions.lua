@@ -20,6 +20,46 @@ function getlabel(myitem, value)
 	return value
 end
 
+function displayitemcustom(myitem, header_level)
+	if not myitem then return end
+	if myitem.type == "group" then
+		header_level = header_level or 2
+		io.write("<H"..tostring(header_level)..">"..html.html_escape(myitem.label).."</H"..tostring(header_level)..">")
+		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
+		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
+		local seqorder = {}
+		local order = {}
+		for name,item in pairs(myitem.value) do
+			if tonumber(item.seq) then
+				seqorder[#seqorder+1] = {seq=tonumber(item.seq), name=name}
+			else
+				order[#order+1] = name
+			end
+		end
+		table.sort(seqorder, function(a,b) if a.seq ~= b.seq then return a.seq > b.seq else return a.name > b.name end end)
+		table.sort(order)
+		for i,val in ipairs(seqorder) do
+			table.insert(order, 1, val.name)
+		end
+		for x,name in ipairs(order) do
+			if myitem.value[name] then
+				displayitemcustom(myitem.value[name], tonumber(header_level)+1)
+			end
+		end
+	elseif myitem.type ~= "hidden" then
+		io.write("<DT")
+		if myitem.errtxt then 
+			myitem.class = "error"
+			io.write(' class="error"')
+		end
+		io.write(">" .. html.html_escape(myitem.label) .. "</DT>\n")
+		io.write("<DD>")
+		io.write(string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<BR>") .. "\n")
+		if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
+		if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
+		io.write("</DD>\n")
+	end
+end
 function displayitem(myitem)
 	if not myitem then return end
 	io.write("<DT")

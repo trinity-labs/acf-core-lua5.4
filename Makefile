@@ -9,8 +9,9 @@ DISTPKG=$(P).tar.bz2
 SUBDIRS=app bin lib lua www
 EXTRA_DIST=config.mk Makefile README
 CONF_FILES=acf.conf
+LOGROTATE_FILES=acf
 
-DISTFILES=$(EXTRA_DIST) $(CONF_FILES)
+DISTFILES=$(EXTRA_DIST) $(CONF_FILES) $(LOGROTATE_FILES)
 
 CP=cp
 TAR=tar
@@ -52,6 +53,8 @@ phony+=install
 install: install-recursive $(CONF_FILES)
 	mkdir -p $(DESTDIR)/etc/acf
 	cp $(CONF_FILES) $(DESTDIR)/etc/acf
+	mkdir -p $(DESTDIR)/etc/logrotate.d
+	cp $(LOGROTATE_FILES) $(DESTDIR)/etc/logrotate.d
 	ln -sf /etc/acf/skins $(DESTDIR)/$(wwwdir)/userskins
 
 include config.mk
