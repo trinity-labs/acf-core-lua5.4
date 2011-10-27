@@ -96,10 +96,17 @@ local verify_password = function(plaintext, pwhash)
 	return (pwhash == md5.sumhexa(plaintext))	
 end
 
--- generate a salt string
+local b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789./"
+
 local mksalt = function()
-	-- use sha-512 algorithm (no 6)
-	return "$6$"..session.random_hash(96).."$"
+	local file = io.open("/dev/urandom")
+	local str = ""
+	if file == nil then return nil end
+	for i = 1,16 do
+		local offset = (string.byte(file:read(1)) % 64) + 1 
+		str = str .. string.sub (b64, offset, offset)
+	end
+	return "$6$"..str.."$"
 end
 
 --- public methods
