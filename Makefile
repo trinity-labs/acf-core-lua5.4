@@ -1,6 +1,6 @@
 APP_NAME=core
 PACKAGE=acf-$(APP_NAME)
-VERSION=0.13.3
+VERSION=0.14.0
 
 P=$(PACKAGE)-$(VERSION)
 DISTDIR:=$(shell pwd)/$(P)
