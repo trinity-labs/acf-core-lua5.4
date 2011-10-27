@@ -6,6 +6,8 @@ module (..., package.seeall)
 require("modelfunctions")
 require("format")
 require("md5")
+require("posix")
+require("session")
 
 -- This is the sub-authenticator
 -- In the future, this will be set based upon configuration
@@ -61,6 +63,45 @@ local get_id = function(self, userid)
 	return authstruct[userid]
 end
 
+-- verify a plaintextword against a hash
+-- returns:
+--	true if password matches or
+--	false if password does not match
+local verify_password = function(plaintext, pwhash)
+	--[[ 
+	from man crypt(3):
+
+	If  salt is a character string starting with the characters "$id$" fol-
+	lowed by a string terminated by "$":
+
+              $id$salt$encrypted
+
+	then instead of using the DES machine,  id  identifies  the  encryption
+	method  used  and  this  then  determines  how the rest of the password
+	string is interpreted.  The following values of id are supported:
+
+              ID  | Method
+              ---------------------------------------------------------
+              1   | MD5
+              2a  | Blowfish (not in mainline glibc; added in some
+                  | Linux distributions)
+              5   | SHA-256 (since glibc 2.7)
+              6   | SHA-512 (since glibc 2.7)
+	]]--
+	local algo_salt, hash = string.match(pwhash, "^(%$%d%$[a-zA-Z0-9./]+%$)(.*)")
+	if algo_salt ~= nil and hash ~= nil then
+		return (pwhash == posix.crypt(plaintext, algo_salt))
+	end
+	-- fall back to old style md5 checksum
+	return (pwhash == md5.sumhexa(plaintext))	
+end
+
+-- generate a salt string
+local mksalt = function()
+	-- use sha-512 algorithm (no 6)
+	return "$6$"..session.random_hash(96).."$"
+end
+
 --- public methods
 
 -- This function returns true or false, and
@@ -75,7 +116,7 @@ authenticate = function(self, userid, password)
 		
 		if not id then
 			errtxt = "Userid not found"
-		elseif id.password ~= md5.sumhexa(password) then
+		elseif not verify_password(password, id.password) then
 			errtxt = "Invalid password"
 		end
 	end
@@ -110,7 +151,7 @@ write_userinfo = function(self, userinfo)
 	-- Username, password, roles, skin, home are allowed to not exist, just leave the same
 	id.userid = userinfo.userid
 	if userinfo.username then id.username = userinfo.username end
-	if userinfo.password then id.password = md5.sumhexa(userinfo.password) end
+	if userinfo.password then id.password = posix.crypt(userinfo.password, mksalt()) end
 	if userinfo.roles then id.roles = table.concat(userinfo.roles, ",") end
 	if userinfo.skin then id.skin = userinfo.skin end
 	if userinfo.home then id.home = userinfo.home end
