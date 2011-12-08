@@ -17,7 +17,7 @@ function getlabel(myitem, value)
 			end
 		end
 	end
-	return value
+	return tostring(value)
 end
 
 function displayitemcustom(myitem, header_level)
