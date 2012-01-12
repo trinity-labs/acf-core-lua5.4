@@ -1,6 +1,6 @@
 include ../config.mk
 
-BIN_DIST=acf_cli acfpasswd
+BIN_DIST=acf-cli acfpasswd
 
 EXTRA_DIST=Makefile
 DISTFILES=$(BIN_DIST) $(EXTRA_DIST)
@@ -30,6 +30,6 @@ install:
 		dest=`dirname "$(install_dir)/$$i"`;\
 		install -Dm755 "$$i" "$$dest"/$$i ;\
 	done
-	chmod 700 $(install_dir)/acf_cli
+	chmod 700 $(install_dir)/acf-cli
 
 .PHONY: $(phony)
