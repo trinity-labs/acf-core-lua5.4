@@ -1,6 +1,8 @@
 include ../config.mk
 
 WWW_DIST=cgi-bin/acf\
+	cgi-bin/mvc.lua\
+	cgi-bin/cli\
 	index.html\
 
 EXTRA_DIST=Makefile
@@ -32,6 +34,7 @@ install:
 		mkdir -p "$$dest";\
 		cp "$$i" "$$dest";\
 	done
-	chmod 755 $(install_dir)/cgi-bin/acf
+	chmod 755 $(install_dir)/cgi-bin/acf \
+		$(install_dir)/cgi-bin/cli
 
 .PHONY: $(phony)
