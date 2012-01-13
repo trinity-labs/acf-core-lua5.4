@@ -2,7 +2,7 @@
 if #arg == 0 then
 	print([[ACF Client interface
 
-Usage: acf_cli [action] [parameter]...
+Usage: acf-cli [action] [parameter]...
 
 Actions are of the form "prefix/controller/action"
 Parameters are of the form "parameter=value"
@@ -10,7 +10,7 @@ Parameters are of the form "parameter=value"
 	boolean parameters are true if defined, false is undefined
 
 Example:
-acf_cli acf-util/password/newuser password="test123" password_confirm="test123" roles[1]="ADMIN" userid="root" Create
+acf-cli acf-util/password/newuser password="test123" password_confirm="test123" roles[1]="ADMIN" userid="root" Create
 
 For forms, remember to pass in the "option" value as a parameter (see Create in example above).
 Output will be a serialized Lua table.
