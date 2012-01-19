@@ -52,7 +52,9 @@ get_controllers = function(self,pre,controller)
 		filename = string.match(v,"[^/]*.lua")
 		name = string.match(filename,"[^.]*")
 		sname = string.match(filename,"[^-]*")
-		temp[prefix..sname] = {path=path,prefix=prefix,filename=filename,name=name,sname=sname}
+		if not temp[prefix..sname] then -- only keep the first of each
+			temp[prefix..sname] = {path=path,prefix=prefix,filename=filename,name=name,sname=sname}
+		end
 	end
 	if pre and controller then
 		return temp[pre..controller]
