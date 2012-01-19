@@ -299,8 +299,8 @@ set_role_perm = function(self, role, permissions, permissions_array)
 	if role==nil or role=="" then
 		return false, "Invalid Role"
 	end
-	if string.find(role, '[^%w_/]') then
-		return false, "Role can only contain letters, numbers, '/', and '_'"
+	if string.find(role, '[^%w_/-]') then
+		return false, "Role can only contain letters, numbers, '/', '-', and '_'"
 	end
 	if permissions and not permissions_array then
 		permissions_array = {}
