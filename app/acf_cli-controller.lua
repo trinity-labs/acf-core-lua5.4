@@ -8,7 +8,8 @@ mvc.on_load = function (self, parent)
 	self.conf.libdir = self.conf.libdir or ( string.match(self.conf.appdir, "[^,]+/") .. "/lib/" )
 	self.conf.script = ""
 	self.conf.default_prefix = "/acf-util/"	
-	self.conf.default_controller = "welcome"	
+	self.conf.default_controller = "welcome"
+	self.conf.viewtype = "serialized"
 
 	-- this sets the package path for us and our children
 	for p in string.gmatch(self.conf.libdir, "[^,]+") do
@@ -25,13 +26,13 @@ end
 mvc.post_exec = function ()
 end
 
-
+--[[
 view_resolver = function(self)
 	return function (viewtable)
 		print(session.serialize("result", viewtable))
 	end
 end
-
+--]]
 --[[ The parent exception handler is just fine
 exception_handler = function (self, message )
 	print(session.serialize("exception", message))

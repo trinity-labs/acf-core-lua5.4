@@ -128,14 +128,9 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	local controller = nil
 	local success, err = xpcall ( function () 
 
-	if userprefix == nil then
-		self.conf.prefix, self.conf.controller, self.conf.action =
-			parse_path_info(ENV["PATH_INFO"])
-	else
-		self.conf.prefix = userprefix
-		self.conf.controller = userctlr or ""
-		self.conf.action = useraction or ""
-	end
+	self.conf.prefix = userprefix or "/"
+	self.conf.controller = userctlr or ""
+	self.conf.action = useraction or ""
 
 	-- If they didn't provide a controller, and a default was specified
 	-- use it
@@ -182,13 +177,17 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		controller.worker.mvc.post_exec ( controller )
 	end
 
-	local viewfunc  = controller:view_resolver()
-
+	if not self.conf.suppress_view then
+		local viewfunc, p1, p2, p3 = controller:view_resolver()
+		viewfunc (viewtable, p1, p2, p3)
+	end
+	
 	-- we're done with the controller, destroy it
 	controller:destroy()
 	controller = nil
-		
-	viewfunc (viewtable)
+
+	return viewtable
+
 	end, 
 	self:soft_traceback(message)
 	)
@@ -237,17 +236,14 @@ soft_require = function (self, name )
 end
 
 -- look in various places for a config file, and store it in self.conf
-read_config = function( self, appname )
+read_config = function( self, appname, home )
 	appname = appname or self.conf.appname
 	self.conf.appname = self.conf.appname or appname
-	
-	local confs = { (ENV["HOME"] or ENV["PWD"] or "") .. "/." ..
-				appname .. "/" .. appname .. ".conf",
-			( ENV["HOME"] or ENV["PWD"] or "") .. "/" .. 
-				appname .. ".conf",
-			ENV["ROOT"] or "" .. "/etc/" .. appname .. "/" .. 
-				appname .. ".conf",
-			ENV["ROOT"] or "" .. "/etc/" .. appname .. ".conf"
+
+	local confs = { (home or "") .. "/." .. appname .. "/" .. appname .. ".conf",
+			(home or "") .. "/" .. appname .. ".conf",
+			"/etc/" .. appname .. "/" .. appname .. ".conf",
+			"/etc/" .. appname .. ".conf"
 	}
 	for i, filename in ipairs (confs) do
                 local file = io.open (filename)
@@ -265,6 +261,11 @@ read_config = function( self, appname )
                 end
         end
 
+	-- this sets the package path for us and our children
+	if self.conf.libdir then
+		package.path = string.gsub(self.conf.libdir, ",", "/?.lua;") .. "/?.lua;" .. package.path
+	end
+	
 	if (#self.conf.confdir) then -- check for an appname-hooks.lua file
 		self.conf.app_hooks = {}
 		setmetatable (self.conf.app_hooks, {__index = _G})
@@ -298,16 +299,73 @@ parse_path_info = function( str )
 	return prefix, controller, action
 end
 
+-- look for a view
+-- ctlr-action-view, then  ctlr-view
+find_view = function ( appdir, prefix, controller, action, viewtype )
+	if not viewtype then return nil end
+	for p in string.gmatch(appdir, "[^,]+") do
+		local names = { p .. prefix .. controller .. "-" ..
+					action .. "-" .. viewtype .. ".lsp",
+				p .. prefix .. controller .. "-" ..
+					viewtype .. ".lsp" }
+		local file
+		-- search for view
+		for i,filename in ipairs (names) do
+			file = io.open(filename)
+			if file then
+				file:close()
+				return filename
+			end
+		end
+	end
+	return nil
+end
+
+create_helper_library = function ( self )
+	local library = {}
+--[[	-- If we have a separate library, here's how we could do it
+	local library = require("library_name")
+	for name,func in pairs(library) do
+		if type(func) == "function" then
+			library.name = function(...) return func(self, ...) end
+		end
+	end
+--]]
+	return library
+end
+
+-- The view of last resort
+auto_view = function()
+end
+
 -- The view resolver of last resort.
 view_resolver = function(self)
-	return function()
-		if ENV["REQUEST_METHOD"] then 
-			io.write ("Content-type: text/plain\n\n")
-		end
-		io.write ("Your controller and application did not specify a view resolver.\n")
-		io.write ("The MVC framework has no view available. sorry.\n")
-	return
+	local viewname, viewlibrary
+
+	-- search for view
+	viewname = find_view ( self.conf.appdir, self.conf.prefix,
+		self.conf.controller, self.conf.action, self.conf.viewtype )
+
+	local func = auto_view
+	if viewname then
+		func = haserl.loadfile (viewname)
 	end
+	
+	-- create the view helper library
+	viewlibrary = create_helper_library ( self )
+
+	local pageinfo =  { viewfile = viewname,
+				controller = self.conf.controller,
+				action = self.conf.action,
+				prefix = self.conf.prefix,
+				script = self.conf.script,
+				wwwprefix = self.conf.wwwprefix or "",
+				staticdir = self.conf.staticdir or "",
+				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
+				clientdata = self.clientdata,
+				}
+
+	return func, viewlibrary, pageinfo, self.sessiondata
 end
 
 -- Generates a debug.traceback if called with no arguments
@@ -321,21 +379,20 @@ end
 
 -- The exception hander of last resort
 exception_handler = function (self, message )
-	if ENV["REQUEST_METHOD"] then
-		print ("Content-Type: text/plain\n\n")
-	end
-	print ("The following unhandled application error occured:\n\n")
+	self.logevent ("The following unhandled application error occured:\n\n")
 
 	if (type(message) == "table" ) then
 		if (message.type == "dispatch") then
-		print ('controller: "' .. message.controller .. '" does not have a "' .. 
-			message.action .. '" action.')
+			logevent ('controller: "' .. message.controller .. '" does not have a "' .. message.action .. '" action.')
 		else
-		print ("An error of type: '" .. (tostring(message.type) or "nil") .. "' was raised." )
+			logevent ("An error of type: '" .. (tostring(message.type) or "nil") .. "' was raised." )
 		end
 	else
-		print (tostring(message))
+		logevent (tostring(message))
 	end
+
+	-- Pass the exception to the calling function
+	error(message)
 end
 
 -- create a Configuration Framework Entity (cfe)

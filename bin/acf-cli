@@ -19,12 +19,7 @@ Output will be a serialized Lua table.
 end
 
 require("posix")
---local PATH = package.path
---local p = posix.dirname(arg[0])
---if p:sub(1,1) ~= "/" then p = posix.getcwd().."/"..p end
---package.path = p.."/?.lua;" .. package.path
 mvc = require("acf.mvc")
---package.path = PATH
 
 -- this is to get around having to store
 -- the config file in /etc/helloworld/helloworld.conf
@@ -38,7 +33,6 @@ APP=FRAMEWORK:new("acf_cli")
 --  (put into ENV.PATH_INFO)
 -- followed by parameters
 --  (put into APP.clientdata)
-ENV.PATH_INFO = arg[1]
 APP.clientdata = {}
 for i=2,#arg do
 	a,v = string.match(arg[i], "([^=]*)=(.*)")
@@ -48,6 +42,6 @@ for i=2,#arg do
 		APP.clientdata[arg[i]] = true
 	end
 end
-APP:dispatch()
+APP:dispatch(APP.parse_path_info(arg[1]))
 APP:destroy()
 FRAMEWORK:destroy()

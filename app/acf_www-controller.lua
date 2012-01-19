@@ -13,6 +13,7 @@ require "posix"
 
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
+local parent_create_helper_library
 
 local function build_menus(self)
 	m=require("menubuilder")
@@ -78,7 +79,7 @@ end
 
 -- look for a template
 -- ctlr-action-view, then  ctlr-view, then action-view, then view
--- cannot be local function because of recursion
+local find_template
 find_template = function ( appdir, prefix, controller, action, viewtype )
 	if string.find(appdir, ",") then
 		local template
@@ -114,35 +115,6 @@ find_template = function ( appdir, prefix, controller, action, viewtype )
 	return find_template ( appdir, prefix, controller, action, viewtype )
 end
 
--- look for a view
--- ctlr-action-view, then  ctlr-view
-local find_view = function ( appdir, prefix, controller, action, viewtype )
-	for p in string.gmatch(appdir, "[^,]+") do
-		local names = { p .. prefix .. controller .. "-" ..
-					action .. "-" .. viewtype .. ".lsp",
-				p .. prefix .. controller .. "-" ..
-					viewtype .. ".lsp" }
-		local file
-		-- search for view
-		for i,filename in ipairs (names) do
-			file = io.open(filename)
-			if file then
-				file:close()
-				return filename
-			end
-		end
-	end
-	return nil
-end
-
-local has_view = function(self)
-	for p in string.gmatch(self.conf.appdir, "[^,]+") do
-		local file = posix.stat(p .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. (self.conf.viewtype or "html") .. ".lsp", "type")
-		if file == "regular" or file == "link" then return true end
-	end
-	return false
-end
-
 -- This function is made available within the view to allow loading of components
 local dispatch_component = function(self, str, clientdata, suppress_view)
 	-- Before we call dispatch, we have to set up conf and clientdata like it was really called for this component
@@ -172,8 +144,18 @@ local dispatch_component = function(self, str, clientdata, suppress_view)
 	return viewtable
 end
 
-local create_helper_library = function ( self )
-	local library = {}
+local has_view = function(self)
+	for p in string.gmatch(self.conf.appdir, "[^,]+") do
+		local file = posix.stat(p .. self.conf.prefix .. self.conf.controller .. "-" .. self.conf.action .. "-" .. self.conf.viewtype .. ".lsp", "type")
+		if file == "regular" or file == "link" then return true end
+	end
+	return false
+end
+
+-- Override the mvc create_helper_library function to add our functions
+create_helper_library = function ( self )
+	-- Call the mvc version
+	local library = parent_create_helper_library(self)
 --[[	-- If we have a separate library, here's how we could do it
 	local library = require("library_name")
 	for name,func in pairs(library) do
@@ -187,8 +169,8 @@ local create_helper_library = function ( self )
 	return library
 end
 
--- Our local view resolver called by our dispatch
-local view_resolver = function(self)
+-- Our local view resolver called by our dispatch - add the template and skin
+view_resolver = function(self)
 	local template, viewname, viewlibrary
 	local viewtype = self.conf.viewtype or "html"
 
@@ -212,7 +194,7 @@ local view_resolver = function(self)
 	end
 	
 	-- create the view helper library
-	viewlibrary = create_helper_library ( self )
+	viewlibrary = self:create_helper_library()
 
 	local pageinfo =  { viewfile = viewname,
 				controller = self.conf.controller,
@@ -252,9 +234,7 @@ mvc.on_load = function (self, parent)
 	self.conf.clientip = ENV.REMOTE_ADDR
 
 	parent_exception_handler = parent.exception_handler
-	
-	-- this sets the package path for us and our children
-	package.path = string.gsub(self.conf.libdir, ",", "/?.lua;") .. "/?.lua;" .. package.path
+	parent_create_helper_library = parent.create_helper_library
 	
 	sessionlib=require ("session")
 
