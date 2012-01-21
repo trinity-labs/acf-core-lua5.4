@@ -294,7 +294,7 @@ end
 
 -- Overload the MVC's exception handler with our own to handle redirection
 exception_handler = function (self, message )
-	local html = require ("html")
+	local html = require ("acf.html")
 	local viewtable
 	if type(message) == "table" then
 		if self.conf.component == true then

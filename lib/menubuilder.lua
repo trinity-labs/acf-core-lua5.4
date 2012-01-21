@@ -6,7 +6,7 @@
 module(..., package.seeall)
 
 require("posix")
-require("format")
+format = require("acf.format")
 
 -- returns a table of the "*.menu" tables 
 -- startdir should be the app dir.

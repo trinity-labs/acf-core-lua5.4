@@ -1,9 +1,9 @@
 module(..., package.seeall)
 
 -- Load libraries
-require("fs")
-require("format")
-require("processinfo")
+fs = require("acf.fs")
+format = require("acf.format")
+processinfo = require("acf.processinfo")
 
 function getenabled(processname)
 	local result = cfe({ label = "Program status", name=processname })

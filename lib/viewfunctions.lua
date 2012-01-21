@@ -1,4 +1,4 @@
-require("html")
+html = require("acf.html")
 require("session")
 
 function getlabel(myitem, value)

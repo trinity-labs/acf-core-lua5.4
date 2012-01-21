@@ -1,8 +1,8 @@
 --this module is for authorization help and group/role management
 
 require ("authenticator")
-require ("fs")
-require ("format")
+fs = require ("acf.fs")
+format = require ("acf.format")
 
 module (..., package.seeall)
 

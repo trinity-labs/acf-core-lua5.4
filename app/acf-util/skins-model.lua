@@ -1,7 +1,7 @@
 module (..., package.seeall)
 
-require("fs")
-require("format")
+fs = require("acf.fs")
+format = require("acf.format")
 
 local function set_skins(self, skin)
 	local content = "\n"..(fs.read_file(self.conf.conffile) or "")

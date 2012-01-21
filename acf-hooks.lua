@@ -15,7 +15,7 @@
 -- self, CONFFILE, and TEMPFILE
 
 -- Example of a general logging function
-require("format")
+format = require("acf.format")
 local precommit=function(self, conf, temp)
   	local logfile = "/var/log/acf-" .. self.conf.controller .. ".log"
 	fs.write_line_file (logfile, "#---- BEGIN TRANSACTION - " .. 

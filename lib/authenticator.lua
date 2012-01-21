@@ -4,7 +4,7 @@
 module (..., package.seeall)
 
 require("modelfunctions")
-require("format")
+format = require("acf.format")
 require("md5")
 require("posix")
 require("session")

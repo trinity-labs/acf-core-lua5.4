@@ -3,8 +3,8 @@
 module (..., package.seeall)
 
 require ("session")
-require ("html")
-require ("fs")
+html = require ("acf.html")
+fs = require ("acf.fs")
 require ("roles")
 require ("authenticator")
 
