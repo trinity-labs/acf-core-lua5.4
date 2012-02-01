@@ -137,20 +137,27 @@ list_default_roles = function(self)
 
 		-- find all of the default roles files and parse them
 		local rolesfiles = get_roles_candidates(self)
+		-- keep track of the prefix and name handled
+		local handled = {}
 
 		for x,file in ipairs(rolesfiles) do
-			f = fs.read_file_as_array(file) or {}
-			local rolefile = string.match(file, "(/[^/]+/[^/]+)%.roles$")
-			for y,line in pairs(f) do
-				local role = string.match(line,"^[%w_]+")
-				if role then
-					if not reverseroles[rolefile.."/"..role] then
-						default_roles[#default_roles+1] = rolefile.."/"..role
-						reverseroles[default_roles[#default_roles]] = #default_roles
-					end
-					if not reverseroles[role] then
-						default_roles[#default_roles+1] = role
-						reverseroles[default_roles[#default_roles]] = #default_roles
+			local prefix, controller = string.match(file, "(/[^/]+/)([^/]+)%.roles$")
+			local rolefile = prefix..controller
+			if not handled[rolefile] then -- only use the first of each
+				handled[rolefile] = true
+
+				f = fs.read_file_as_array(file) or {}
+				for y,line in pairs(f) do
+					local role = string.match(line,"^[%w_]+")
+					if role then
+						if not reverseroles[rolefile.."/"..role] then
+							default_roles[#default_roles+1] = rolefile.."/"..role
+							reverseroles[default_roles[#default_roles]] = #default_roles
+						end
+						if not reverseroles[role] then
+							default_roles[#default_roles+1] = role
+							reverseroles[default_roles[#default_roles]] = #default_roles
+						end
 					end
 				end
 			end
@@ -212,33 +219,39 @@ local determine_perms = function(self,roles)
 
 	-- find all of the default roles files and parse them
 	local rolesfiles = get_roles_candidates(self)
+	-- keep track of the prefix and name handled
+	local handled = {}
 
 	for x,file in ipairs(rolesfiles) do
-		local prefix = string.match(file, "(/[^/]+/)[^/]+$") or "/"
-		f = fs.read_file_as_array(file) or {}
-		local rolefile = string.match(file, "(/[^/]+/[^/]+)%.roles$")
-		for y,line in pairs(f) do
-			local role = string.match(line,"^[%w_]+")
-			if role then
-				if reverseroles[role] or reverseroles[rolefile.."/"..role] then
-					temp = format.string_to_table(string.match(line,"[,%w_:/]+$"),",")
-					for z,perm in pairs(temp) do
-						-- we'll allow for : or / to not break old format
-						local control,action = string.match(perm,"([%w_]+)[:/]([%w_]+)")
-						if control then
-							if nil == permissions[prefix] then
-								permissions[prefix] = {}
-							end
-							if nil == permissions[prefix][control] then
-								permissions[prefix][control] = {}
-							end
-							if action then
-								if not permissions[prefix][control][action] then
-									permissions[prefix][control][action] = {file}
-									permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
-									default_permissions_array[#default_permissions_array + 1] = prefix .. control .. "/" .. action
-								else
-									permissions[prefix][control][action][#permissions[prefix][control][action] + 1] = file
+		local prefix, controller = string.match(file, "(/[^/]+/)([^/]+)%.roles$")
+		local rolefile = prefix..controller
+		if not handled[rolefile] then -- only use the first of each
+			handled[rolefile] = true
+
+			f = fs.read_file_as_array(file) or {}
+			for y,line in pairs(f) do
+				local role = string.match(line,"^[%w_]+")
+				if role then
+					if reverseroles[role] or reverseroles[rolefile.."/"..role] then
+						temp = format.string_to_table(string.match(line,"[,%w_:/]+$"),",")
+						for z,perm in pairs(temp) do
+							-- we'll allow for : or / to not break old format
+							local control,action = string.match(perm,"([%w_]+)[:/]([%w_]+)")
+							if control then
+								if nil == permissions[prefix] then
+									permissions[prefix] = {}
+								end
+								if nil == permissions[prefix][control] then
+									permissions[prefix][control] = {}
+								end
+								if action then
+									if not permissions[prefix][control][action] then
+										permissions[prefix][control][action] = {file}
+										permissions_array[#permissions_array + 1] = prefix .. control .. "/" .. action
+										default_permissions_array[#default_permissions_array + 1] = prefix .. control .. "/" .. action
+									else
+										permissions[prefix][control][action][#permissions[prefix][control][action] + 1] = file
+									end
 								end
 							end
 						end
