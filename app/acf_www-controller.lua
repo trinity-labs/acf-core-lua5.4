@@ -14,6 +14,7 @@ require "posix"
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
 local parent_create_helper_library
+local parent_view_resolver
 
 local function build_menus(self)
 	m=require("menubuilder")
@@ -171,44 +172,27 @@ end
 
 -- Our local view resolver called by our dispatch - add the template and skin
 view_resolver = function(self)
-	local template, viewname, viewlibrary
-	local viewtype = self.conf.viewtype or "html"
+	self.conf.viewtype = self.conf.viewtype or "html"
+	local viewfunc, viewlibrary, pageinfo = parent_view_resolver(self)
+	pageinfo.viewfunc = viewfunc
 
 	-- search for template
+	local template
 	if self.conf.component ~= true then
 		template = find_template ( self.conf.appdir, self.conf.prefix,
-			self.conf.controller, self.conf.action, viewtype )
+			self.conf.controller, self.conf.action, self.conf.viewtype )
 	end
-	
-	-- search for view
-	viewname = find_view ( self.conf.appdir, self.conf.prefix,
-		self.conf.controller, self.conf.action, viewtype )
 
-	local func = function() end
+	local func = viewfunc
 	if template then
-		-- We have a template
+		-- We have a template, use it as the function
 		func = haserl.loadfile (template)
-	elseif viewname then
-		-- No template, but have a view
-		func = haserl.loadfile (viewname)
 	end
-	
-	-- create the view helper library
-	viewlibrary = self:create_helper_library()
 
-	local pageinfo =  { viewfile = viewname,
-				controller = self.conf.controller,
-				action = self.conf.action,
-				prefix = self.conf.prefix,
-				script = self.conf.script,
-				wwwprefix = self.conf.wwwprefix or "",
-				staticdir = self.conf.staticdir or "",
-				skin = self.conf.skin or "",
-				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
-				clientdata = self.clientdata,
-				}
 	if self.sessiondata.userinfo and self.sessiondata.userinfo.skin and self.sessiondata.userinfo.skin ~= "" then
 		pageinfo.skin = self.sessiondata.userinfo.skin
+	else
+		pageinfo.skin = self.conf.skin or ""
 	end
 
 	return func, viewlibrary, pageinfo, self.sessiondata
@@ -235,6 +219,7 @@ mvc.on_load = function (self, parent)
 
 	parent_exception_handler = parent.exception_handler
 	parent_create_helper_library = parent.create_helper_library
+	parent_view_resolver = parent.view_resolver
 	
 	sessionlib=require ("session")
 

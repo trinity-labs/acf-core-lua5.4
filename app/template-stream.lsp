@@ -9,4 +9,4 @@ Content-Length: <%= viewtable.length %>
 Content-Disposition: attachment; filename="<%= viewtable.label %>"
 <% end %>
 <% io.write("\n") %>
-<%= viewtable.value %>
+<% pageinfo.viewfunc(viewtable, viewlibrary, pageinfo, session) %>

@@ -1,8 +1,6 @@
-<% local view, viewlibrary, page_info = ... %>
+<% local view, viewlibrary, page_info, session = ... %>
 <% require("json") %>
 Status: 200 OK
 Content-Type: "application/json"
 <% io.write("\n") %>
-<%
-	print(json.encode(view))
-%>
+<% page_info.viewfunc(view, viewlibrary, page_info, session) %>

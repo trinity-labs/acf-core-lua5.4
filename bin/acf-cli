@@ -30,7 +30,7 @@ APP=FRAMEWORK:new("acf_cli")
 local p,c,a = APP.parse_path_info(arg[1])
 local clientdata = {}
 for i=2,#arg do
-	a,v = string.match(arg[i], "([^=]*)=(.*)")
+	local a,v = string.match(arg[i], "([^=]*)=(.*)")
 	if v then
 		clientdata[a] = v
 	else

@@ -127,7 +127,6 @@ end
 dispatch = function (self, userprefix, userctlr, useraction, clientdata) 
 	local controller = nil
 	local success, err = xpcall ( function () 
-
 	self.conf.prefix = userprefix or "/"
 	self.conf.controller = userctlr or ""
 	self.conf.action = useraction or ""
@@ -336,7 +335,19 @@ create_helper_library = function ( self )
 end
 
 -- The view of last resort
-auto_view = function()
+auto_view = function(viewtable, viewlibrary, pageinfo, session)
+	if pageinfo.viewtype == "html" then
+		require("htmlviewfunctions")
+		htmlviewfunctions.displayitem(viewtable, 1, pageinfo)
+	elseif pageinfo.viewtype == "ajax" then
+		require("json")
+		print(json.encode(viewtable))
+	elseif pageinfo.viewtype == "stream" then
+		print(tostring(viewtable.value))
+	elseif pageinfo.viewtype == "serialized" then
+		local s = require("session")
+		print(s.serialize("result", viewtable))
+	end
 end
 
 -- The view resolver of last resort.
@@ -344,18 +355,19 @@ view_resolver = function(self)
 	local viewname, viewlibrary
 
 	-- search for view
-	viewname = find_view ( self.conf.appdir, self.conf.prefix,
+	viewname = self.find_view ( self.conf.appdir, self.conf.prefix,
 		self.conf.controller, self.conf.action, self.conf.viewtype )
 
-	local func = auto_view
+	local func = self.auto_view
 	if viewname then
 		func = haserl.loadfile (viewname)
 	end
 	
 	-- create the view helper library
-	viewlibrary = create_helper_library ( self )
+	viewlibrary = self:create_helper_library()
 
 	local pageinfo =  { viewfile = viewname,
+				viewtype = self.conf.viewtype,
 				controller = self.conf.controller,
 				action = self.conf.action,
 				prefix = self.conf.prefix,
@@ -365,7 +377,7 @@ view_resolver = function(self)
 				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
 				clientdata = self.clientdata,
 				}
-
+	
 	return func, viewlibrary, pageinfo, self.sessiondata
 end
 

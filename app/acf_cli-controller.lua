@@ -30,12 +30,6 @@ end
 mvc.post_exec = function ()
 end
 
-view_resolver = function(self)
-	return function (viewtable)
-		print(session.serialize("result", viewtable))
-	end
-end
-
 exception_handler = function (self, message )
 	print(session.serialize("exception", message))
 	parent_exception_handler(self, message)

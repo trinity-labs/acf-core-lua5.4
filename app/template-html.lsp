@@ -131,8 +131,7 @@ end
 	<div class="leader">
 	</div>
 
-	<% local func = haserl.loadfile(pageinfo.viewfile) %>
-	<% func (viewtable, viewlibrary, pageinfo, session) %>
+	<% pageinfo.viewfunc(viewtable, viewlibrary, pageinfo, session) %>
 
 	<div class="tailer">
 	</div>
