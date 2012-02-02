@@ -5,7 +5,7 @@ LIB_DIST=menubuilder.lua\
 	authenticator.lua\
 	authenticator-plaintext.lua\
 	roles.lua\
-	viewfunctions.lua\
+	htmlviewfunctions.lua\
 	controllerfunctions.lua\
 	modelfunctions.lua\
 

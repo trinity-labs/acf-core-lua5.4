@@ -1,7 +1,7 @@
 <% local view, viewlibrary, page_info, session = ... %>
-<% require("viewfunctions") %>
+<% require("htmlviewfunctions") %>
 
-<% displaycommandresults({"update"}, session) %>
+<% htmlviewfunctions.displaycommandresults({"update"}, session) %>
 
 <h1>Available skins</h1>
 

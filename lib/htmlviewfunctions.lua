@@ -1,7 +1,9 @@
+module(..., package.seeall)
+
 html = require("acf.html")
 require("session")
 
-function getlabel(myitem, value)
+local function getlabel(myitem, value)
 	if myitem and (myitem.type == "select" or myitem.type == "multi") then
 		for x,val in ipairs(myitem.option) do
 			local v,l
@@ -20,10 +22,14 @@ function getlabel(myitem, value)
 	return tostring(value)
 end
 
-function displayitemcustom(myitem, header_level)
+function displayitem(myitem, header_level, page_info)
 	if not myitem then return end
-	if myitem.type == "group" then
-		header_level = header_level or 2
+	if myitem.type == "form" then
+		header_level = header_level or 1
+		io.write("<H"..tostring(header_level)..">"..html.html_escape(myitem.label).."</H"..tostring(header_level)..">")
+		displayform(myitem, nil, nil, page_info, header_level)
+	elseif myitem.type == "group" then
+		header_level = header_level or 1
 		io.write("<H"..tostring(header_level)..">"..html.html_escape(myitem.label).."</H"..tostring(header_level)..">")
 		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
 		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
@@ -43,7 +49,7 @@ function displayitemcustom(myitem, header_level)
 		end
 		for x,name in ipairs(order) do
 			if myitem.value[name] then
-				displayitemcustom(myitem.value[name], tonumber(header_level)+1)
+				displayitem(myitem.value[name], tonumber(header_level)+1)
 			end
 		end
 	elseif myitem.type ~= "hidden" then
@@ -59,20 +65,6 @@ function displayitemcustom(myitem, header_level)
 		if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 		io.write("</DD>\n")
 	end
-end
-function displayitem(myitem)
-	if not myitem then return end
-	io.write("<DT")
-	if myitem.errtxt then 
-		myitem.class = "error"
-		io.write(" class='error'")
-	end
-	io.write(">" .. html.html_escape(myitem.label) .. "</DT>\n")
-	io.write("<DD>")
-	io.write(string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<BR>") .. "\n")
-	if myitem.descr then io.write("<P CLASS='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
-	if myitem.errtxt then io.write("<P CLASS='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
-	io.write("</DD>\n")
 end
 
 function displayformitem(myitem, name, viewtype, header_level, group)

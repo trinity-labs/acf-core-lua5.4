@@ -1,5 +1,5 @@
 <% local form, viewlibrary, page_info = ... %>
-<% require("viewfunctions") %>
+<% require("htmlviewfunctions") %>
 
 <% if form.type == "form" then %>
 <H1>Configuration</H1>
@@ -10,16 +10,16 @@
 <H3>File Details</H3>
 <DL>
 <% 
-displayitem(form.value.filename)
-displayitem(form.value.filesize)
-displayitem(form.value.mtime)
+htmlviewfunctions.displayitem(form.value.filename)
+htmlviewfunctions.displayitem(form.value.filesize)
+htmlviewfunctions.displayitem(form.value.mtime)
 %>
 </DL>
 
 <H3>File Content</H3>
 <% if form.type == "form" then %>
 <% form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>
-<% displayformstart(form) %>
+<% htmlviewfunctions.displayformstart(form) %>
 <input type="hidden" name="filename" value="<%= html.html_escape(form.value.filename.value) %>">
 <% else %>
 <DL>
@@ -31,7 +31,7 @@ displayitem(form.value.mtime)
 <% if form.value.filecontent.descr then %><P CLASS='descr'><%= string.gsub(html.html_escape(form.value.filecontent.descr), "\n", "<BR>") %></P><% end %>
 
 <% if form.type == "form" then %>
-<% displayformend(form) %>
+<% htmlviewfunctions.displayformend(form) %>
 <% else %>
 </DL>
 <% end %>

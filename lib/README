@@ -18,4 +18,4 @@ processinfo.lua - Start/stop, find running, find version - process helpers
 roles.lua - Used to determine roles and permissions
 session.lua - Helps with Session mangement in ACF
 validator.lua - Validate web input for ACF. 
-viewfunctions.lua - Common view functions
+htmlviewfunctions.lua - Common functions for HTML views

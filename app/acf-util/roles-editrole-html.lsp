@@ -1,14 +1,14 @@
 <% local form, viewtable, page_info = ... %> 
-<% require("viewfunctions") %>
+<% require("htmlviewfunctions") %>
 
 <H1><%= html.html_escape(form.label) %></H1>
 <%
-	displayformstart(form, page_info)
+	htmlviewfunctions.displayformstart(form, page_info)
 	-- If editing existing role, disable role
 	if page_info.action ~= "newrole" then
 		form.value.role.readonly = true
 	end
-	displayformitem(form.value.role, "role")
+	htmlviewfunctions.displayformitem(form.value.role, "role")
 
 	-- copied this code from viewfunctions so we can disable the default boxes
 	local myitem = form.value.permissions
@@ -63,5 +63,5 @@
 	if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
 	io.write("</DD>\n")
 
-	displayformend(form)
+	htmlviewfunctions.displayformend(form)
 %>

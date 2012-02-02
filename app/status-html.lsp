@@ -1,16 +1,16 @@
 <% local data, viewlibrary, page_info, session = ... 
-require("viewfunctions")
+require("htmlviewfunctions")
 %>
 
-<% displaycommandresults({"install","edit"}, session) %>
-<% displaycommandresults({"startstop"}, session) %>
+<% htmlviewfunctions.displaycommandresults({"install","edit"}, session) %>
+<% htmlviewfunctions.displaycommandresults({"startstop"}, session) %>
 
 <H1>System Info</H1>
 <DL>
 <%
-displayitem(data.value.status)
+htmlviewfunctions.displayitem(data.value.status)
 
-displayitem(data.value.version)
+htmlviewfunctions.displayitem(data.value.version)
 if data.value.version and data.value.version.errtxt and viewlibrary.check_permission("apk-tools/apk/install") then
 %>
 	<DT>Install package</DT>
@@ -20,7 +20,7 @@ if data.value.version and data.value.version.errtxt and viewlibrary.check_permis
 <%
 end
 
-displayitem(data.value.autostart)
+htmlviewfunctions.displayitem(data.value.autostart)
 if not (data.value.version and data.value.version.errtxt) and data.value.autostart and data.value.autostart.errtxt and viewlibrary.check_permission("alpine-baselayout/rc/edit") then
 %>
 	<DT>Enable autostart</DT>

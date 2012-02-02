@@ -1,7 +1,7 @@
 <% local form, viewlibrary, page_info, session = ... %>
-<% require("viewfunctions") %>
+<% require("htmlviewfunctions") %>
 
-<% displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>
+<% htmlviewfunctions.displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>
 
 <H1>User Accounts</H1>
 <H2>Create new account</H2>

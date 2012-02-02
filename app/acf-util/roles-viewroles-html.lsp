@@ -1,7 +1,7 @@
 <% local view, viewlibrary, page_info, session= ... %>
-<% require("viewfunctions") %>
+<% require("htmlviewfunctions") %>
 
-<% displaycommandresults({"newrole", "editrole", "deleterole"}, session) %>
+<% htmlviewfunctions.displaycommandresults({"newrole", "editrole", "deleterole"}, session) %>
 
 <H1>Roles</H1>
 <H2>Create new role</H2>

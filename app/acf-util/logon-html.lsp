@@ -1,5 +1,5 @@
 <% local form, viewlibrary, page_info, session = ... %>
-<% require("viewfunctions") %>
+<% require("htmlviewfunctions") %>
 
 <script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/jquery-latest.js"></script>
 <script type="text/javascript">
@@ -13,5 +13,5 @@
 	form.value.password.type = "password"
 	form.value.redir.type = "hidden"
 	local order = { "userid", "password" }
-	displayform(form, order)
+	htmlviewfunctions.displayform(form, order)
 %>

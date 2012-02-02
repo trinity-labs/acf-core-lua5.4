@@ -1,5 +1,5 @@
 <% local form, viewlibrary, pageinfo = ... %>
-<% require("viewfunctions") %>
+<% require("htmlviewfunctions") %>
 
 <H1><%= html.html_escape(form.label) %></H1>
 <% 
@@ -12,5 +12,5 @@
 		form.value.userid.readonly = true
 	end
 	local order = { "userid", "username", "roles", "password", "password_confirm" }
-	displayform(form, order)
+	htmlviewfunctions.displayform(form, order)
 %>
