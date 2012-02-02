@@ -21,27 +21,22 @@ end
 require("posix")
 mvc = require("acf.mvc")
 
--- this is to get around having to store
--- the config file in /etc/helloworld/helloworld.conf
-ENV={}
-ENV.HOME="."
 FRAMEWORK=mvc:new()
 FRAMEWORK:read_config("acf") 
 APP=FRAMEWORK:new("acf_cli")
 
 -- command line will have URI-type string defining prefix/controller/action
---  (put into ENV.PATH_INFO)
 -- followed by parameters
---  (put into APP.clientdata)
-APP.clientdata = {}
+local p,c,a = APP.parse_path_info(arg[1])
+local clientdata = {}
 for i=2,#arg do
 	a,v = string.match(arg[i], "([^=]*)=(.*)")
 	if v then
-		APP.clientdata[a] = v
+		clientdata[a] = v
 	else
-		APP.clientdata[arg[i]] = true
+		clientdata[arg[i]] = true
 	end
 end
-APP:dispatch(APP.parse_path_info(arg[1]))
+APP:dispatch(p,c,a,clientdata)
 APP:destroy()
 FRAMEWORK:destroy()

@@ -124,13 +124,14 @@ destroy = function (self)
 end
 
 -- This is a sample front controller/dispatch.   
-dispatch = function (self, userprefix, userctlr, useraction) 
+dispatch = function (self, userprefix, userctlr, useraction, clientdata) 
 	local controller = nil
 	local success, err = xpcall ( function () 
 
 	self.conf.prefix = userprefix or "/"
 	self.conf.controller = userctlr or ""
 	self.conf.action = useraction or ""
+	if clientdata then self.clientdata = clientdata end
 
 	-- If they didn't provide a controller, and a default was specified
 	-- use it
