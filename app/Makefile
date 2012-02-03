@@ -3,9 +3,7 @@ include ../config.mk
 APP_DIST= \
 	acf-util/acf-util.roles \
 	acf-util/logon-controller.lua \
-	acf-util/logon-html.lsp \
 	acf-util/logon-model.lua \
-	acf-util/logon-status-html.lsp \
 	acf-util/roles-controller.lua \
 	acf-util/roles-model.lua \
 	acf-util/roles-html.lsp \

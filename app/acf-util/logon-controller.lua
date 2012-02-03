@@ -22,9 +22,9 @@ end
 
 -- Logon a new user based upon id and password in clientdata
 logon = function(self)
-	local userid = cfe({ value=clientdata.userid or "", label="User ID" })
-	local password = cfe({ label="Password" })
-	local redir = cfe({ value=clientdata.redir, label="" })
+	local userid = cfe({ value=clientdata.userid or "", label="User ID", seq=1 })
+	local password = cfe({ type="password", label="Password", seq=2 })
+	local redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 	local cmdresult = cfe({ type="form", value={userid=userid, password=password, redir=redir}, label="Logon", option="Logon" })
 	if clientdata.Logon then
 		local logonredirect = self.sessiondata.logonredirect
