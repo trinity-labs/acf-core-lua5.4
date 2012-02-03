@@ -177,6 +177,11 @@ dispatch = function (self, userprefix, userctlr, useraction, clientdata)
 		controller.worker.mvc.post_exec ( controller )
 	end
 
+	-- Before we start checking for views, set the viewtype
+	if self.clientdata.viewtype then
+		self.conf.viewtype = self.clientdata.viewtype
+	end
+
 	if not self.conf.suppress_view then
 		local viewfunc, p1, p2, p3 = controller:view_resolver()
 		viewfunc (viewtable, p1, p2, p3)
