@@ -66,6 +66,7 @@ logout = function(self)
 	local logout = self.model.logoff(conf.sessiondir, sessiondata)
 	-- We have to redirect so a new session / menu is created
 	redirect(self, "logon")
+	return logout
 end
 
 -- Report the login status
@@ -75,5 +76,5 @@ status = function(self)
 	if self.sessiondata.userinfo then
 		name.value = self.sessiondata.userinfo.username or ""
 	end
-	return cfe({ type="group", value={username=name, sessionid=sessionid} })
+	return cfe({ type="group", value={username=name, sessionid=sessionid}, label="Logon Status" })
 end

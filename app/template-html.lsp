@@ -28,6 +28,11 @@ end
 <!--[if IE]>
 <link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.wwwprefix..pageinfo.skin.."/"..posix.basename(pageinfo.skin).."-ie.css") %>">
 <![endif]-->
+<script type="text/javascript" src="<%= html.html_escape(pageinfo.wwwprefix) %>/js/jquery-latest.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$(":input:not(:submit):enabled:not([readonly]):first").focus();
+	});</script>
 </head>
 <body>
 
