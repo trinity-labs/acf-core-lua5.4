@@ -18,24 +18,31 @@ function getenabled(processname)
 	return result
 end
 
-function startstop_service(servicename, action, actions)
-	local result = {}
-	actions = actions or {"Start", "Stop", "Restart"}
-	result.actions = cfe({ type="list", value=actions, label="Start/Stop actions" })
-	
-	if action then
+function get_startstop(servicename)
+	local service = cfe({ type="hidden", value=servicename, label="Service Name" })
+        local actions, descr = processinfo.daemon_actions(servicename)
+	local errtxt
+	if not actions then
+		errtxt = descr
+	end
+	return cfe({ type="group", label="Management", value={servicename=service}, option=actions, errtxt=errtxt })
+end
+
+function startstop_service(startstop, action)
+	if not action then
+		startstop.errtxt = "Invalid Action"
+	else
 		local reverseactions = {}
-		for i,act in ipairs(actions) do reverseactions[string.lower(act)] = i end
-		result.result = cfe({ label="Start/Stop result" })
+		for i,act in ipairs(startstop.option) do reverseactions[string.lower(act)] = i end
 		if reverseactions[string.lower(action)] then
-			local cmdresult, errtxt = processinfo.daemoncontrol(servicename, action)
-			result.result.value = cmdresult
-			result.result.errtxt = errtxt
+			local cmdresult, errtxt = processinfo.daemoncontrol(startstop.value.servicename.value, string.lower(action))
+			startstop.descr = cmdresult
+			startstop.errtxt = errtxt
 		else
-			result.result.errtxt = "Unknown command!"
+			startstop.errtxt = "Unknown command!"
 		end
 	end
-	return cfe({ type="group", value=result, label="Start/Stop result" })
+	return startstop
 end
 
 function getstatus(processname, packagename, label, servicename)

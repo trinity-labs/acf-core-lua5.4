@@ -97,10 +97,3 @@ function handle_form(self, getFunction, setFunction, clientdata, option, label, 
 
 	return form
 end
-
-function handle_startstop(self, startstopfunction, clientdata)
-	local result = startstopfunction(clientdata.action)
-	result.value.result = self:redirect_to_referrer(result.value.result)
-	return result
-end
-
