@@ -92,8 +92,8 @@ function handle_form(self, getFunction, setFunction, clientdata, option, label, 
 	end
 
 	form.type = "form"
-	form.option = option
-	form.label = label
+	form.option = option or form.option
+	form.label = label or form.label
 
 	return form
 end
