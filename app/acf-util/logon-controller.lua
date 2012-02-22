@@ -26,7 +26,7 @@ logon = function(self)
 	local password = cfe({ type="password", label="Password", seq=2 })
 	local redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 	local cmdresult = cfe({ type="form", value={userid=userid, password=password, redir=redir}, label="Logon", option="Logon" })
-	if clientdata.Logon then
+	if clientdata.submit then
 		local logonredirect = self.sessiondata.logonredirect
 		local logon = self.model:logon(clientdata.userid, clientdata.password, conf.clientip, conf.sessiondir, sessiondata)
 		-- If successful logon, redirect to welcome-page, otherwise try again

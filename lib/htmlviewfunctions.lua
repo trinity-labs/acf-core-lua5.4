@@ -224,7 +224,16 @@ end
 
 function displayformend(myform)
 	if not myform then return end
-	io.write('<DT></DT><DD><input class="submit" type="submit" name="' .. html.html_escape(myform.option) .. '" value="' .. html.html_escape(myform.submit or myform.option) .. '"></DD>\n')
+	local option = myform.submit or myform.option
+	io.write('<DT></DT><DD>')
+	if type(option) == "table" then
+		for i,v in ipairs(option) do
+			io.write('<input class="submit" type="submit" name="submit" value="' .. html.html_escape(v) .. '">\n')
+		end
+	else
+		io.write('<input class="submit" type="submit" name="submit" value="' .. html.html_escape(myform.submit or myform.option) .. '">\n')
+	end
+	io.write('</DD>\n')
 	io.write('</FORM>')
 	io.write('</DL>\n')
 end

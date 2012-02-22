@@ -65,12 +65,12 @@ function handle_clientdata(form, clientdata, group)
 end
 
 function handle_form(self, getFunction, setFunction, clientdata, option, label, descr)
-	local form = getFunction()
+	local form = getFunction(clientdata)
 
-	if clientdata[option] then
+	if clientdata.submit then
 		handle_clientdata(form, clientdata)
 
-		form = setFunction(form)
+		form = setFunction(form, clientdata.submit)
 		if not form.errtxt and descr then
 			form.descr = descr
 		end
