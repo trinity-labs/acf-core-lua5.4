@@ -24,6 +24,10 @@ function get_startstop(servicename)
 	local errtxt
 	if not actions then
 		errtxt = descr
+	else
+		for i,v in ipairs(actions) do
+			actions[i] = v:gsub("^%l", string.upper)
+		end
 	end
 	return cfe({ type="group", label="Management", value={servicename=service}, option=actions, errtxt=errtxt })
 end
