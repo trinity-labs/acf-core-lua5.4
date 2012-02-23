@@ -558,9 +558,8 @@ end
 
 handle_clientdata = function(form, clientdata)
 	form.errtxt = nil
-	for n,value in pairs(form.value) do
+	for name,value in pairs(form.value) do
 		value.errtxt = nil
-		local name = n
 		if name:find("%.") and not clientdata[name] then
 			-- If the name has a '.' in it, haserl will interpret it as a table
 			local actualval = clientdata
@@ -577,18 +576,11 @@ handle_clientdata = function(form, clientdata)
 		if value.type == "group" then
 			handle_clientdata(value, clientdata[name])
 		elseif value.type == "boolean" then
+			--- HTML forms simply don't include checkboxes unless they're checked
 			value.value = (clientdata[name] ~= nil) and (clientdata[name] ~= "false")
 		elseif value.type == "multi" then
-			if clientdata[name] == nil then
-				-- for cli we use name[num] as the name
-				clientdata[name] = {}
-				for n,val in pairs(clientdata) do
-					if string.find(n, "^"..name.."%[%d+%]$") then
-						clientdata[name][tonumber(string.match(n, "%[(%d+)%]$"))] = val
-					end
-				end
-			end
 			-- FIXME this is because multi selects don't work in haserl
+			-- Multi-selects are implemented as checkboxes, so if none exists, it means nothing is selected
 			local oldtable = clientdata[name] or {}
 			-- Assume it's a sparse array, and remove blanks
 			local newtable={}
@@ -598,23 +590,19 @@ handle_clientdata = function(form, clientdata)
 				end
 			end
 			value.value = newtable
-		elseif value.type == "list" then
-			value.value = {}
-			if clientdata[name] and clientdata[name] ~= "" then
-				-- for www we use \r separated list
-				for ip in string.gmatch(clientdata[name].."\n", "%s*([^\n]*%S)%s*\n") do
-					table.insert(value.value, ip)
-				end
-			else
-				-- for cli we use name[num] as the name
-				for n,val in pairs(clientdata) do
-					if string.find(n, "^"..name.."%[%d+%]$") then
-						value.value[tonumber(string.match(n, "%[(%d+)%]$"))] = val
+		elseif clientdata[name] then
+			-- The other types will be returned in clientdata even if set to blank, so if no result, leave the default
+			if value.type == "list" then
+				value.value = {}
+				if clientdata[name] ~= "" then
+					-- for www we use \r separated list
+					for l in string.gmatch(clientdata[name].."\n", "%s*([^\n]*%S)%s*\n") do
+						table.insert(value.value, l)
 					end
 				end
+			else
+				value.value = clientdata[name]
 			end
-		else
-			value.value = clientdata[name] or value.value
 		end
 	end
 end

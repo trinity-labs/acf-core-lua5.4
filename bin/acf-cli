@@ -7,13 +7,15 @@ Usage: acf-cli [action] [parameter]...
 Actions are of the form "prefix/controller/action"
 Parameters are of the form "parameter=value"
 	list and multi select parameters are of the form "parameter[1]=value"
-	boolean parameters are true if defined, false is undefined
+	to set a list or multi to blank use "parameter" without any value
+	parameters within groups are of the form "group.parameter=value"
+	boolean parameters should be specified as "true" or "false"
 
 Example:
-acf-cli acf-util/password/newuser password="test123" password_confirm="test123" roles[1]="ADMIN" userid="root" Create
+acf-cli acf-util/password/newuser password="test123" password_confirm="test123" roles[1]="ADMIN" userid="root" submit="Create"
 
-For forms, remember to pass in the "option" value as a parameter (see Create in example above).
-Output will be a serialized Lua table.
+For forms, remember to pass in "submit" as a parameter with an appropriate value from the form "option" (see Create in example above).
+Output will be a serialized Lua table unless specified otherwise with "viewtype" parameter.
 	]])
 	return
 end
