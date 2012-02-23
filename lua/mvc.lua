@@ -430,3 +430,34 @@ _G.cfe = cfe
 logevent = function ( ... )
 	os.execute ( "logger \"ACF: " .. (... or "") .. "\"" )
 end
+
+handle_clientdata = function(form, clientdata)
+	form.errtxt = nil
+	for name,value in pairs(form.value) do
+		value.errtxt = nil
+		if value.type == "group" then
+			handle_clientdata(value, clientdata[name])
+		else
+			value.value = clientdata[name] or value.value
+		end
+	end
+end
+
+handle_form = function(self, getFunction, setFunction, clientdata, option, label, descr)
+	local form = getFunction(clientdata)
+
+	if clientdata.submit then
+		self.handle_clientdata(form, clientdata)
+
+		form = setFunction(form, clientdata.submit)
+		if not form.errtxt and descr then
+			form.descr = descr
+		end
+	end
+
+	form.type = "form"
+	form.option = option or form.option
+	form.label = label or form.label
+
+	return form
+end

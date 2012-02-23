@@ -6,7 +6,6 @@ LIB_DIST=menubuilder.lua\
 	authenticator-plaintext.lua\
 	roles.lua\
 	htmlviewfunctions.lua\
-	controllerfunctions.lua\
 	modelfunctions.lua\
 
 EXTRA_DIST=README Makefile

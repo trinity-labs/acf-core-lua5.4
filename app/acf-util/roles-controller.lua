@@ -1,7 +1,6 @@
 -- Roles/Group functions
 module (..., package.seeall)
 
-require("controllerfunctions")
 
 default_action = "read"
 
@@ -44,14 +43,14 @@ viewroles = function(self)
 end
 
 newrole = function(self)
-	return controllerfunctions.handle_form(self, 
+	return self.handle_form(self, 
 		function() return self.model.getpermissions(self) end, 
 		function(value) return self.model.setpermissions(self, value, true) end, 
 		self.clientdata, "Create", "Create New Role", "New Role Created")
 end
 
 editrole = function(self)
-	return controllerfunctions.handle_form(self, 
+	return self.handle_form(self, 
 		function() return self.model.getpermissions(self, self.clientdata.role) end, 
 		function(value) return self.model.setpermissions(self, value, false) end, 
 		self.clientdata, "Save", "Edit Role", "Role Saved")

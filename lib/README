@@ -7,7 +7,6 @@ Also we use Lua Posix for the rest of the functionality.
 apk.lua - Helps with package version/install/remove
 authenticator-plaintext.lua - sub-authenticator for plaintext files 
 authenticator.lua - Used for authentication and roles, generic and uses sub-authenticator
-controllerfunctions.lua - Common controller functions
 date.lua - Date and Time functions
 format.lua - Library to help reformat strings and tables.
 fs.lua - File and filesystem library

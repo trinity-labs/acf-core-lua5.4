@@ -1,5 +1,4 @@
 module(..., package.seeall)
-require("controllerfunctions")
 require("roles")
 
 default_action = "editme"
@@ -11,7 +10,7 @@ end
 function editme(self)
 	-- just to make sure can't modify any other user from this action
 	self.clientdata.userid = self.sessiondata.userinfo.userid
-	return controllerfunctions.handle_form(self, function()
+	return self.handle_form(self, function()
 			local value = self.model.read_user(self, self.sessiondata.userinfo.userid)
 			-- We don't allow a user to modify his own roles
 			-- Since they can't modify roles, we should restrict the available options for home
@@ -44,7 +43,7 @@ function editme(self)
 end
 
 function edituser(self)
-	return controllerfunctions.handle_form(self, function()
+	return self.handle_form(self, function()
 			return self.model.read_user(self, self.clientdata.userid)
 		end, function(value)
 			-- If password and password_confirm are blank, don't set them
@@ -65,7 +64,7 @@ function edituser(self)
 end
 
 function newuser(self)
-	return controllerfunctions.handle_form(self, function()
+	return self.handle_form(self, function()
 			return self.model.read_user(self)
 		end, function(value)
 			return self.model.create_user(self, value)
