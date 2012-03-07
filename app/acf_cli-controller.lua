@@ -24,23 +24,9 @@ mvc.on_load = function (self, parent)
 	local x=require("session")
 end
 
-mvc.pre_exec = function ()
-end
-
-mvc.post_exec = function ()
-end
-
 exception_handler = function (self, message )
 	print(session.serialize("exception", message))
 	parent_exception_handler(self, message)
-end
-
-redirect = function (self, str, result)
-	return result
-end
-
-redirect_to_referrer = function(self, result)
-	return result
 end
 
 -- syslog something
