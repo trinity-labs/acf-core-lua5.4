@@ -29,11 +29,6 @@ exception_handler = function (self, message )
 	parent_exception_handler(self, message)
 end
 
--- syslog something
-logevent = function ( ... )
-	os.execute ( "logger \"" .. ... .. "\"" )
-end
-
 handle_clientdata = function(form, clientdata, group)
 	form.errtxt = nil
 	for n,value in pairs(form.value) do

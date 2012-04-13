@@ -428,8 +428,9 @@ cfe = function ( optiontable )
 end
 _G.cfe = cfe
 
-logevent = function ( ... )
-	os.execute ( "logger \"ACF: " .. format.escapespecialcharacters(...) .. "\"" )
+logevent = function ( message )
+	os.execute ( "logger \"ACF: " .. string.gsub(message or "", "[`\\\"]", "\\%1") .. "\"" )
+
 end
 
 handle_clientdata = function(form, clientdata)
