@@ -7,6 +7,7 @@
 module(..., package.seeall)
 
 require("posix")
+format = require("acf.format")
 
 mvc = {}
 
@@ -428,7 +429,7 @@ end
 _G.cfe = cfe
 
 logevent = function ( ... )
-	os.execute ( "logger \"ACF: " .. (... or "") .. "\"" )
+	os.execute ( "logger \"ACF: " .. format.escapespecialcharacters(...) .. "\"" )
 end
 
 handle_clientdata = function(form, clientdata)
