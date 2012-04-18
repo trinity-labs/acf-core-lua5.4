@@ -16,7 +16,7 @@ if data.value.version and data.value.version.errtxt and viewlibrary.check_permis
 	<DT>Install package</DT>
 	<DD><form action="<%= html.html_escape(page_info.script .. "/apk-tools/apk/install") %>" method="POST">
 	<input type='hidden' name='package' value='<%= html.html_escape(data.value.version.name) %>'>
-	<input class='submit' type='submit' value='Install'></form></DD>
+	<input class='submit' type='submit' name='submit' value='Install'></form></DD>
 <%
 end
 
