@@ -88,7 +88,10 @@ end
 
 function read_user(self, user)
 	local result = {}
-        result.userid = cfe({ value=user, label="User id" })
+        result.userid = cfe({ value=user, label="User id", seq=1 })
+	if user and user ~= "" then
+		result.userid.readonly = true
+	end
 	
 	local userinfo = {}
 	if not user then
@@ -138,12 +141,12 @@ function read_user(self, user)
 	end
 
 	-- Passwords are set to empty string
-	result.username = cfe({ value=userinfo.username or "", label="Real name" })
-	result.password = cfe({ value="", label="Password" })
-	result.password_confirm = cfe({ value="", label="Password (confirm)" })
-	result.roles = cfe({ type="multi", value=userinfo.roles or {}, label="Roles", option=avail_roles or {} })
-	result.skin = cfe({ type="select", value=userinfo.skin or "", label="Skin", option=avail_skins or {""} })
-	result.home = cfe({ type="select", value=userinfo.home or "", label="Home", option=avail_homes or {""} })
+	result.username = cfe({ value=userinfo.username or "", label="Real name", seq=2 })
+	result.password = cfe({ type="password", value="", label="Password", seq=4 })
+	result.password_confirm = cfe({ type="password", value="", label="Password (confirm)", seq=5 })
+	result.roles = cfe({ type="multi", value=userinfo.roles or {}, label="Roles", option=avail_roles or {}, seq=3 })
+	result.skin = cfe({ type="select", value=userinfo.skin or "", label="Skin", option=avail_skins or {""}, seq=7 })
+	result.home = cfe({ type="select", value=userinfo.home or "", label="Home", option=avail_homes or {""}, seq=6 })
 
 	return cfe({ type="group", value=result, label="User Config" })
 end
@@ -161,11 +164,15 @@ function get_users(self)
 	return cfe({ type="group", value=users, label="User Configs" })
 end
 
-function delete_user(self, userid)
-	result = cfe({ label="Delete user result", errtxt="Failed to delete user"})
-	if authenticator.delete_user(self, userid) then
-		result.value = "User deleted"
-		result.errtxt = nil
+function get_delete_user(self, user)
+	local userid = cfe({ label="User id", value=user or "" })
+	return cfe({ type="group", value={userid=userid}, label="Delete User" })
+end
+
+function delete_user(self, deleteuser)
+	deleteuser.errtxt = "Failed to delete user"
+	if authenticator.delete_user(self, deleteuser.value.userid.value) then
+		deleteuser.errtxt = nil
 	end
-	return result
+	return deleteuser
 end

@@ -72,5 +72,9 @@ function newuser(self)
 end
 
 function deleteuser(self)
-	return self:redirect_to_referrer(self.model.delete_user(self, self.clientdata.userid))
+	return self.handle_form(self, function()
+			return self.model.get_delete_user(self, self.clientdata.userid)
+		end, function(value)
+			return self.model.delete_user(self, value)
+		end, self.clientdata, "Delete", "Delete User", "Deleted user")
 end
