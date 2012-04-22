@@ -1,5 +1,6 @@
 module (..., package.seeall)
 
+require("modelfunctions")
 fs = require("acf.fs")
 format = require("acf.format")
 
@@ -11,8 +12,6 @@ local function set_skins(self, skin)
 		content = "\nskin="..skin..content
 	end
 	fs.write_file(self.conf.conffile, string.sub(content,2))
-	local cmdoutput = "New skin selected"
-	return cmdoutput, errtxt
 end
 
 local function list_skins(self)
@@ -21,30 +20,36 @@ local function list_skins(self)
 		for i,file in ipairs(posix.dir(self.conf.wwwdir ..skin) or {}) do
 			-- Ignore files that begins with a '.' and 'cgi-bin' and only list folders
 			if not ((string.match(file, "^%.")) or (string.match(file, "^cgi[-]bin")) or (string.match(file, "^static")) or (posix.stat(self.conf.wwwdir .. skin .. file).type ~= "directory")) then
-				local entry = cfe({ value=skin..file, label="Skin name" })
-				local current = conf.skin
+				local entry = cfe({ value=skin..file, label=file })
+				local current = self.conf.skin
 				entry.inuse = (skin..file == current)
 				table.insert(skinarray, entry)
 			end
 		end
 	end
-	return cfe({ type="list", value=skinarray, label="Skins" })
+	return skinarray
 end
 
 
 get = function (self)
-	return list_skins(self)
+	return cfe({ type="list", value=list_skins(self), label="Skins" })
+end
+
+get_update = function (self)
+	local skin = cfe({ type="select", value="", label="Skin", option=list_skins(self) })
+	if self and self.conf and self.conf.skin then
+		skin.value = self.conf.skin
+	end
+	return cfe({ type="group", value={skin=skin}, label="Update Skin" })
 end
 
 update = function (self, newskin)
-	-- Make sure no one can inject code into the model.
-	local availableskins = list_skins(self)
-	local cmdoutput = "Failed to set skin"
-	local errtxt = "Invalid selection"
-	for i,skin in ipairs(availableskins.value) do
-		if ( skin.value == newskin) then
-			cmdoutput, errtxt = set_skins(self, newskin)
-		end
+	local success = modelfunctions.validateselect(newskin.value.skin)
+	if success then
+		set_skins(self, newskin.value.skin.value)
+		self.conf.skin = newskin.value.skin.value
+	else
+		newskin.errtxt = "Failed to set skin"
 	end
-	return cfe({ value=cmdoutput, errtxt=errtxt, label="Set skin result" })
+	return newskin
 end

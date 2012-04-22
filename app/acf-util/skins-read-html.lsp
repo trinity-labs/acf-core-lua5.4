@@ -11,7 +11,7 @@
 	<% if (skin.inuse) then %>
 		<dd>in use</dd>
 	<% else %>
-		<dd>[<a href="update?skin=<%= html.html_escape(skin.value) %>">use this skin</a>]</dd>
+		<dd>[<a href="update?skin=<%= html.html_escape(skin.value) %>&submit=true">use this skin</a>]</dd>
 	<% end %>
 <% end %>
 </DL>

@@ -164,8 +164,8 @@ function get_users(self)
 	return cfe({ type="group", value=users, label="User Configs" })
 end
 
-function get_delete_user(self, user)
-	local userid = cfe({ label="User id", value=user or "" })
+function get_delete_user(self, clientdata)
+	local userid = cfe({ label="User id", value=clientdata.userid or "" })
 	return cfe({ type="group", value={userid=userid}, label="Delete User" })
 end
 

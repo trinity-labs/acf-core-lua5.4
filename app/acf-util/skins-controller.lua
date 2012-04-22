@@ -9,6 +9,6 @@ read = function (self )
 end
 
 update = function (self )
-	return self:redirect_to_referrer(self.model.update(self, self.clientdata.skin or ""))
+	return self.handle_form(self, self.model.get_update, self.model.update, self.clientdata, "Update", "Update Skin", "Skin updated")
 end
 

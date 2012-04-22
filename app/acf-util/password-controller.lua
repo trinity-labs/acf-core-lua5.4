@@ -24,7 +24,7 @@ function editme(self)
 			end
 			value.value.roles = nil
 			return value
-		end, function(value)
+		end, function(self, value)
 			-- If password and password_confirm are blank, don't set them
 			local pw, pwc
 			if value.value.password.value == "" and value.value.password_confirm.value == "" then
@@ -45,7 +45,7 @@ end
 function edituser(self)
 	return self.handle_form(self, function()
 			return self.model.read_user(self, self.clientdata.userid)
-		end, function(value)
+		end, function(self, value)
 			-- If password and password_confirm are blank, don't set them
 			local pw, pwc
 			if value.value.password.value == "" and value.value.password_confirm.value == "" then
@@ -64,17 +64,9 @@ function edituser(self)
 end
 
 function newuser(self)
-	return self.handle_form(self, function()
-			return self.model.read_user(self)
-		end, function(value)
-			return self.model.create_user(self, value)
-		end, self.clientdata, "Create", "Create New User", "Created user")
+	return self.handle_form(self, self.model.read_user, self.model.create_user, self.clientdata, "Create", "Create New User", "Created user")
 end
 
 function deleteuser(self)
-	return self.handle_form(self, function()
-			return self.model.get_delete_user(self, self.clientdata.userid)
-		end, function(value)
-			return self.model.delete_user(self, value)
-		end, self.clientdata, "Delete", "Delete User", "Deleted user")
+	return self.handle_form(self, self.model.get_delete_user, self.model.delete_user, self.clientdata, "Delete", "Delete User", "Deleted user")
 end
