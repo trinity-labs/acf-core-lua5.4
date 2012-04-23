@@ -109,6 +109,7 @@ function displayformitem(myitem, name, viewtype, header_level, group)
 			else
 				v = val.value
 				l = val.label
+				myitem.disabled = val.disabled
 			end
 			reverseopt[v] = x
 			myitem.value = v
