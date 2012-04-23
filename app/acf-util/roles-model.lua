@@ -31,29 +31,48 @@ view_roles = function(self)
 	return cfe({ type="group", value={defined_roles=defined_roles_cfe, default_roles=default_roles_cfe} })
 end
 
-getpermissions = function(self, role)
-	local my_perms = {}
-	local default_perms = {} 
-
-	if role then
-		local tmp
-		tmp, my_perms, default_perms = roles.get_role_perm(self, role)
-		my_perms = my_perms or {}
-		default_perms = default_perms or {}
-	else
-		role = ""
-	end
+getpermissions = function(self, clientdata)
+	local role_cfe = cfe({ value=clientdata.role or "", label="Role", seq=1 })
 
 	local tmp, all_perms = roles.get_all_permissions(self)
 	table.sort(all_perms)
+	local my_perms = {}
+	local default_perms = {} 
+
+	if clientdata.role then
+		role_cfe.readonly = true
+		local tmp
+		tmp, my_perms, default_perms = roles.get_role_perm(self, clientdata.role)
+		my_perms = my_perms or {}
+		default_perms = default_perms or {}
+		if #default_perms > 0 then
+			-- Mark the default permissions as disabled
+			local rev = {}
+			for i,d in ipairs(default_perms) do
+				rev[d] = i
+			end
+			local newall = {}
+			for i,p in ipairs(all_perms) do
+				local tmp = {value=p, label=p}
+				if rev[p] then
+					tmp.disabled = true
+				end
+				newall[#newall+1] = tmp
+			end
+			all_perms = newall
+		end
+	end
 	
-	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions", default=default_perms })
-	local role_cfe = cfe({ value=role, label="Role" })
+	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions", seq=2 })
 
 	return cfe({ type="table", value={role=role_cfe, permissions=permissions_cfe} })
 end
 
-setpermissions = function(self, permissions, newrole)
+setnewpermissions = function(self, permissions, action)
+	return setpermissions(self, permissions, action, true)
+end
+
+setpermissions = function(self, permissions, action, newrole)
 	-- Validate entries and create error strings
 	local result = true
 	if newrole then
@@ -79,7 +98,26 @@ setpermissions = function(self, permissions, newrole)
 	return permissions
 end
 
+get_delete_role = function(self, clientdata)
+	local defined_roles, default_roles = roles.list_roles(self)
+	local role = cfe({ type="select", value = clientdata.role or "", label="Role", option=defined_roles })
+	return cfe({ type="group", value={role=role}, label="Delete Role" })
+end
+
 delete_role = function(self, role)
-	local result, cmdresult = roles.delete_role(self, role)
-	return cfe({ value=cmdresult })
+	local result, cmdresult = roles.delete_role(self, role.value.role.value)
+	if not result then
+		role.value.role.errtxt = cmdresult
+		role.errtxt = "Failed to Delete Role"
+	else
+		-- remove the just deleted role
+		for i,r in ipairs(role.value.role.option) do
+			if r == role.value.role.value then
+				role.value.role.value =""
+				role.value.role.option[i] = nil
+				break
+			end
+		end
+	end
+	return role
 end

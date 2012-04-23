@@ -43,19 +43,13 @@ viewroles = function(self)
 end
 
 newrole = function(self)
-	return self.handle_form(self, 
-		function() return self.model.getpermissions(self) end, 
-		function(value) return self.model.setpermissions(self, value, true) end, 
-		self.clientdata, "Create", "Create New Role", "New Role Created")
+	return self.handle_form(self, self.model.getpermissions, self.model.setnewpermissions, self.clientdata, "Create", "Create New Role", "New Role Created")
 end
 
 editrole = function(self)
-	return self.handle_form(self, 
-		function() return self.model.getpermissions(self, self.clientdata.role) end, 
-		function(value) return self.model.setpermissions(self, value, false) end, 
-		self.clientdata, "Save", "Edit Role", "Role Saved")
+	return self.handle_form(self, self.model.getpermissions, self.model.setpermissions, self.clientdata, "Save", "Edit Role", "Role Saved")
 end
 
 deleterole = function(self)
-	return self:redirect_to_referrer(self.model.delete_role(self, self.clientdata.role))
+	return self.handle_form(self, self.model.get_delete_role, self.model.delete_role, self.clientdata, "Delete", "Delete Role", "Role Deleted")
 end

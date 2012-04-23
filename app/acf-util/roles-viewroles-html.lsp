@@ -19,7 +19,7 @@
 		<dd>
 		[<a href='viewroleperms?role=<%= html.html_escape(role) %>'>View this role</a>]
 		[<a href='editrole?role=<%= html.html_escape(role) %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this role</a>]
-		[<a href='deleterole?role=<%= html.html_escape(role) %>'>Delete this role</a>]
+		[<a href='deleterole?role=<%= html.html_escape(role) %>&submit=true'>Delete this role</a>]
 		</dd></TD></TR>
 	<% end %>
 <% end %>
