@@ -111,7 +111,7 @@ function getfiledetails(file, validatefilename, validatefiledetails)
 	return filedetails
 end
 
-function setfiledetails(filedetails, validatefilename, validatefiledetails)
+function setfiledetails(self, filedetails, validatefilename, validatefiledetails)
 	filedetails.value.filecontent.value = string.gsub(format.dostounix(filedetails.value.filecontent.value), "\n+$", "")
 	local success = true
 	if type(validatefilename) == "function" then
@@ -134,7 +134,7 @@ function setfiledetails(filedetails, validatefilename, validatefiledetails)
 	end
 	if success then
 		--fs.write_file(filedetails.value.filename.value, filedetails.value.filecontent.value)
-		write_file_with_audit(filedetails.value.filename.value, filedetails.value.filecontent.value)
+		write_file_with_audit(self, filedetails.value.filename.value, filedetails.value.filecontent.value)
 		filedetails = getfiledetails(filedetails.value.filename.value)
 	else
 		filedetails.errtxt = "Failed to set file"
@@ -174,21 +174,6 @@ function validatemulti(multi)
 end
 
 function write_file_with_audit (self, path, str)
-	-- if there are only two parameters, assume self was omitted
-	if not str then
-		str = path
-		path = self
-		self = nil
-	end
-	-- attempt to find self
-	if not self then
-		if SELF and #SELF > 0 then
-			self = SELF[#SELF]
-		elseif APP then
-			self = APP
-		end
-	end
-
 	if self then
 		local pre = ""
 		local post = ""
