@@ -4,6 +4,10 @@ APP_DIST= \
 	acf-util/acf-util.roles \
 	acf-util/logon-controller.lua \
 	acf-util/logon-model.lua \
+	acf-util/password-controller.lua \
+	acf-util/password-model.lua \
+	acf-util/password-status-html.lsp \
+	acf-util/password.menu \
 	acf-util/roles-controller.lua \
 	acf-util/roles-getpermslist-html.lsp \
 	acf-util/roles-model.lua \
@@ -12,11 +16,6 @@ APP_DIST= \
 	acf-util/roles-viewroles-html.lsp \
 	acf-util/roles-viewuserroles-html.lsp \
 	acf-util/roles.menu \
-	acf-util/password-controller.lua \
-	acf-util/password-html.lsp \
-	acf-util/password-model.lua \
-	acf-util/password-status-html.lsp \
-	acf-util/password.menu \
 	acf-util/skins-controller.lua \
 	acf-util/skins-model.lua \
 	acf-util/skins-read-html.lsp \
