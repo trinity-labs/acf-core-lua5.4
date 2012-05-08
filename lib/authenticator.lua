@@ -109,25 +109,6 @@ local mksalt = function()
 	return "$6$"..str.."$"
 end
 
-local duplicatestructure
-duplicatestructure = function(value, saved)
-	saved = saved or {}
-	if type(value) == "table" then
-		if saved[value] then
-			return saved[value]
-		else
-			local output = {}
-			saved[value] = output
-			for k,v in pairs(value) do
-				output[k] = duplicatestructure(v, saved)
-			end
-			return output
-		end
-	else
-		return value
-	end
-end
-
 --- public methods
 
 -- This function returns true or false, and
@@ -187,7 +168,20 @@ write_userinfo = function(self, userinfo)
 	get_id(self, id.userid)
 
 	if success and self.sessiondata and self.sessiondata.userinfo and self.sessiondata.userinfo.userid == id.userid then
-		self.sessiondata.userinfo = duplicatestructure(id)
+		self.sessiondata.userinfo = {}
+		for name,value in pairs(id) do
+			if name == "roles" then
+				if value == "" then
+					value = "GUEST"
+				else
+					value = value..",GUEST"
+				end
+				self.sessiondata.userinfo.roles = format.string_to_table(value, "%s*,%s*")
+			else
+				self.sessiondata.userinfo[name] = value
+			end
+		end
+self.logevent(session.serialize("userinfo", self.sessiondata.userinfo))
 	end
 
 	return success
