@@ -64,7 +64,7 @@ function edituser(self)
 end
 
 function newuser(self)
-	return self.handle_form(self, self.model.read_user, self.model.create_user, self.clientdata, "Create", "Create New User", "Created user")
+	return self.handle_form(self, function() return self.model.read_user(self) end, self.model.create_user, self.clientdata, "Create", "Create New User", "Created user")
 end
 
 function deleteuser(self)
