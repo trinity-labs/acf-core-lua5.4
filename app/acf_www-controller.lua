@@ -178,7 +178,7 @@ view_resolver = function(self)
 
 	-- search for template
 	local template
-	if self.conf.component ~= true then
+	if self.conf.component ~= true and self.clientdata.skinned ~= "false" then
 		template = find_template ( self.conf.appdir, self.conf.prefix,
 			self.conf.controller, self.conf.action, self.conf.viewtype )
 	end
