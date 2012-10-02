@@ -349,7 +349,7 @@ auto_view = function(viewtable, viewlibrary, pageinfo, session)
 		require("json")
 		print(json.encode(viewtable))
 	elseif pageinfo.viewtype == "stream" then
-		print(tostring(viewtable.value))
+		io.write(viewtable.value)
 	elseif pageinfo.viewtype == "serialized" then
 		local s = require("session")
 		print(s.serialize("result", viewtable))
