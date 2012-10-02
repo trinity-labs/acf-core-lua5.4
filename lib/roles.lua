@@ -176,9 +176,10 @@ end
 
 list_defined_roles = function(self)
 	if not defined_roles then
+		local auth = authenticator.get_subauth(self)
 		-- Open the roles file and parse for defined roles
 		defined_roles = {}
-		if not role_table then role_table = authenticator.auth.read_field(self, authenticator.roletable, "") or {} end
+		if not role_table then role_table = auth.read_field(self, authenticator.roletable, "") or {} end
 		for x,entry in ipairs(role_table) do
 			if not reverseroles[entry.id] then
 				defined_roles[#defined_roles + 1] = entry.id
@@ -262,7 +263,8 @@ local determine_perms = function(self,roles)
 	end
 
 	-- then look in the user-editable roles
-	if not role_table then role_table = authenticator.auth.read_field(self, authenticator.roletable, "") or {} end
+	local auth = authenticator.get_subauth(self)
+	if not role_table then role_table = auth.read_field(self, authenticator.roletable, "") or {} end
 	for x,entry in ipairs(role_table) do
 		if reverseroles[entry.id] then
 			temp = format.string_to_table(entry.entry, ",")
@@ -300,7 +302,8 @@ end
 
 -- Delete a role from role file
 delete_role = function(self, role)
-	local result = authenticator.auth.delete_entry(self, authenticator.roletable, "", role)
+	local auth = authenticator.get_subauth(self)
+	local result = auth.delete_entry(self, authenticator.roletable, "", role)
 	local cmdresult = "Role entry not found"
 	if result then cmdresult = "Role deleted" end
 
@@ -326,5 +329,6 @@ set_role_perm = function(self, role, permissions, permissions_array)
 		end
 	end
 	
-	return authenticator.auth.write_entry(self, authenticator.roletable, "", role, table.concat(permissions_array or {},","))
+	local auth = authenticator.get_subauth(self)
+	return auth.write_entry(self, authenticator.roletable, "", role, table.concat(permissions_array or {},","))
 end

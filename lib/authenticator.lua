@@ -10,13 +10,10 @@ require("posix")
 require("session")
 
 -- This is the sub-authenticator
--- In the future, this will be set based upon configuration
 -- This is a public variable to allow other controllers (ie tinydns) to do their own permissions
-if APP and APP.conf and APP.conf.authenticator and APP.conf.authenticator ~= "" then
-	auth = require(string.gsub(APP.conf.authenticator, "%.lua$", ""))
-else
-	auth = require("authenticator-plaintext")
-end
+-- When tinydns (and any others using the auth variable) are updated to use the get_subauth function
+-- we can make this local and remove the call to get_subauth at the end of this file
+auth = nil
 
 -- Publicly define the pre-defined tables
 usertable = "passwd"
@@ -111,9 +108,21 @@ end
 
 --- public methods
 
+get_subauth = function(self)
+	if not auth then
+		if self and self.conf and self.conf.authenticator and self.conf.authenticator ~= "" then
+			auth = require(string.gsub(self.conf.authenticator, "%.lua$", ""))
+		else
+			auth = require("authenticator-plaintext")
+		end
+	end
+	return auth
+end
+
 -- This function returns true or false, and
 -- if false:  the reason for failure
 authenticate = function(self, userid, password)
+	auth = get_subauth(self)
 	local errtxt
 
 	if not userid or not password then
@@ -133,6 +142,7 @@ end
 
 -- This function returns the username, roles, ...
 get_userinfo = function(self, userid)
+	auth = get_subauth(self)
 	local id = get_id(self, userid)
 	if id then
 		-- Make a copy so roles don't get changed in the authstruct
@@ -151,6 +161,7 @@ get_userinfo = function(self, userid)
 end
 
 write_userinfo = function(self, userinfo)
+	auth = get_subauth(self)
 	if not userinfo or not userinfo.userid or userinfo.userid == "" then
 		return false
 	end
@@ -188,6 +199,7 @@ self.logevent(session.serialize("userinfo", self.sessiondata.userinfo))
 end
 	
 list_users = function (self)
+	auth = get_subauth(self)
 	load_database(self)
 	local output = {}
 	for k in pairs(authstruct) do
@@ -197,6 +209,9 @@ list_users = function (self)
 end
 
 delete_user = function (self, userid)
+	auth = get_subauth(self)
 	authstruct[userid] = nil	
 	return auth.delete_entry(self, usertable, "", userid)
 end
+
+auth = get_subauth(APP)
