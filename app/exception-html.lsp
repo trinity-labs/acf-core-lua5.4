@@ -1,4 +1,5 @@
 <% view, viewlibrary, page_info = ... %>
+<% html = require("acf.html") %>
 
 <style type="text/css">
 	p.hiddendetail {

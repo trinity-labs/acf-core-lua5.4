@@ -1,4 +1,5 @@
 <% local view= ... %> 
+<% html = require("acf.html") %>
 
 <% if view.value.userid then %>
 	<H1>Roles/Permission list for <%= html.html_escape(view.value.userid.value) %>:</H1>

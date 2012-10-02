@@ -1,5 +1,6 @@
 <% local form, viewlibrary, page_info = ... %>
 <% require("htmlviewfunctions") %>
+<% html = require("acf.html") %>
 
 <% if form.type == "form" then %>
 <H1>Configuration</H1>

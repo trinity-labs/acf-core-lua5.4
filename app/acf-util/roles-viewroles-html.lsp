@@ -1,5 +1,6 @@
 <% local view, viewlibrary, page_info, session= ... %>
 <% require("htmlviewfunctions") %>
+<% html = require("acf.html") %>
 
 <% htmlviewfunctions.displaycommandresults({"newrole", "editrole", "deleterole"}, session) %>
 

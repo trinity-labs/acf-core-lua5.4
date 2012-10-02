@@ -1,5 +1,6 @@
 <% local data, viewlibrary, page_info, session = ... 
 require("htmlviewfunctions")
+html = require("acf.html")
 %>
 
 <% htmlviewfunctions.displaycommandresults({"install","edit"}, session) %>
