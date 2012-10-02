@@ -13,6 +13,7 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<% if pageinfo.skinned ~= "false" then %>
 <%
 local hostname = ""
 if viewlibrary and viewlibrary.dispatch_component then
@@ -33,9 +34,11 @@ end
 	$(function(){
 		$(":input:not(:submit):enabled:not([readonly]):first").focus();
 	});</script>
+<% end -- pageinfo.skinned %>
 </head>
 <body>
 
+<% if pageinfo.skinned ~= "false" then %>
 <div id="page">
 	<div id="header">
 		<div class="leader">
@@ -135,9 +138,11 @@ end
 <div id="content">
 	<div class="leader">
 	</div>
+<% end --pageinfo.skinned %>
 
 	<% pageinfo.viewfunc(viewtable, viewlibrary, pageinfo, session) %>
 
+<% if pageinfo.skinned ~= "false" then %>
 	<div class="tailer">
 	</div>
 </div>	<!-- content -->
@@ -152,6 +157,7 @@ end
 		</div>
 	</div> <!-- footer -->
 </div> <!-- page -->
+<% end --pageinfo.skinned %>
 
 </body>
 </html>

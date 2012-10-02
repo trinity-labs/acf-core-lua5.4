@@ -175,6 +175,7 @@ view_resolver = function(self)
 	self.conf.viewtype = self.conf.viewtype or "html"
 	local viewfunc, viewlibrary, pageinfo = parent_view_resolver(self)
 	pageinfo.viewfunc = viewfunc
+	pageinfo.skinned = self.clientdata.skinned or "true"
 
 	-- search for template
 	local template
