@@ -177,23 +177,30 @@ view_resolver = function(self)
 	pageinfo.viewfunc = viewfunc
 	pageinfo.skinned = self.clientdata.skinned or "true"
 
+	if self.sessiondata.userinfo and self.sessiondata.userinfo.skin and self.sessiondata.userinfo.skin ~= "" then
+		pageinfo.skin = self.sessiondata.userinfo.skin
+	else
+		pageinfo.skin = self.conf.skin or ""
+	end
+
 	-- search for template
 	local template
 	if self.conf.component ~= true then
-		template = find_template ( self.conf.appdir, self.conf.prefix,
-			self.conf.controller, self.conf.action, self.conf.viewtype )
+		-- First, check for skin-specific template
+		if pageinfo.skin ~= "" then
+			template = find_template ( self.conf.wwwdir..pageinfo.skin, "/",
+				self.conf.controller, self.conf.action, self.conf.viewtype )
+		end
+		if not template then
+			template = find_template ( self.conf.appdir, self.conf.prefix,
+				self.conf.controller, self.conf.action, self.conf.viewtype )
+		end
 	end
 
 	local func = viewfunc
 	if template then
 		-- We have a template, use it as the function
 		func = haserl.loadfile (template)
-	end
-
-	if self.sessiondata.userinfo and self.sessiondata.userinfo.skin and self.sessiondata.userinfo.skin ~= "" then
-		pageinfo.skin = self.sessiondata.userinfo.skin
-	else
-		pageinfo.skin = self.conf.skin or ""
 	end
 
 	return func, viewlibrary, pageinfo, self.sessiondata
