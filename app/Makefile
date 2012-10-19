@@ -31,11 +31,9 @@ APP_DIST= \
 	dispatcherror-html.lsp\
 	exception-html.lsp\
 	status-html.lsp\
-	startstop-html.lsp\
 	filedetails-html.lsp\
 	expert-html.lsp\
 	debug-html.lsp\
-	form-html.lsp\
 
 EXTRA_DIST=README Makefile
 DISTFILES=$(APP_DIST) $(EXTRA_DIST)
