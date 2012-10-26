@@ -10,10 +10,7 @@ require("posix")
 require("session")
 
 -- This is the sub-authenticator
--- This is a public variable to allow other controllers (ie tinydns) to do their own permissions
--- When tinydns (and any others using the auth variable) are updated to use the get_subauth function
--- we can make this local and remove the call to get_subauth at the end of this file
-auth = nil
+local auth = nil
 
 -- Publicly define the pre-defined tables
 usertable = "passwd"
@@ -213,5 +210,3 @@ delete_user = function (self, userid)
 	authstruct[userid] = nil	
 	return auth.delete_entry(self, usertable, "", userid)
 end
-
-auth = get_subauth(APP)
