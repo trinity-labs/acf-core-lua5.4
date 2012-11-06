@@ -345,7 +345,7 @@ auto_view = function(viewtable, viewlibrary, pageinfo, session)
 	if pageinfo.viewtype == "html" then
 		require("htmlviewfunctions")
 		htmlviewfunctions.displayitem(viewtable, 1, pageinfo)
-	elseif pageinfo.viewtype == "ajax" then
+	elseif pageinfo.viewtype == "json" then
 		require("json")
 		print(json.encode(viewtable))
 	elseif pageinfo.viewtype == "stream" then
