@@ -13,9 +13,11 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<% if pageinfo.skinned ~= "false" then %>
 <%
 local hostname = ""
+
+if pageinfo.skinned ~= "false" then
+
 if viewlibrary and viewlibrary.dispatch_component then
 	local result = viewlibrary.dispatch_component("alpine-baselayout/hostname/read", nil, true)
 	if result and result.value then
