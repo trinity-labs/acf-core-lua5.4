@@ -5,9 +5,9 @@ fs = require("acf.fs")
 format = require("acf.format")
 processinfo = require("acf.processinfo")
 
-function getenabled(processname)
-	local result = cfe({ label = "Program status", name=processname })
-	result.value, result.errtxt = processinfo.daemoncontrol(processname, "status")
+function getenabled(servicename)
+	local result = cfe({ label = "Program status", name=servicename })
+	result.value, result.errtxt = processinfo.daemoncontrol(servicename, "status")
 	if string.find(result.value, ": not found") then
 		result.value = ""
 		result.errtxt = "Program not installed"
@@ -49,27 +49,31 @@ function startstop_service(startstop, action)
 	return startstop
 end
 
-function getstatus(processname, packagename, label, servicename)
+function getstatus(servicename, packagename, label)
 	local status = {}
-	
-	local value, errtxt = processinfo.package_version(packagename)
-	status.version = cfe({
-		label="Program version",
-		value=value,
-		errtxt=errtxt,
-		name=packagename
-		})
 
-	status.status = getenabled(processname)
+	if packagename then
+		local value, errtxt = processinfo.package_version(packagename)
+		status.version = cfe({
+			label="Program version",
+			value=value,
+			errtxt=errtxt,
+			name=packagename
+			})
+	end
 
-	local autostart_value, autostart_errtxt = processinfo.process_autostart(servicename or processname)
-	status.autostart = cfe({
-		label="Autostart status",
-		value=autostart_value,
-		errtxt=autostart_errtxt,
-		name=servicename or processname
-		})
+	if servicename then
+		status.status = getenabled(servicename)
 	
+		local autostart_value, autostart_errtxt = processinfo.process_autostart(servicename)
+		status.autostart = cfe({
+			label="Autostart status",
+			value=autostart_value,
+			errtxt=autostart_errtxt,
+			name=servicename
+			})
+	end
+
 	return cfe({ type="group", value=status, label=label })
 end
 
