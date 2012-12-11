@@ -4,6 +4,8 @@ module(..., package.seeall)
 fs = require("acf.fs")
 format = require("acf.format")
 processinfo = require("acf.processinfo")
+require("posix")
+require("subprocess")
 
 function getenabled(servicename)
 	local result = cfe({ label = "Program status", name=servicename })
@@ -231,4 +233,37 @@ function write_file_with_audit (self, path, str)
 	end
 
 	return
+end
+
+-- Run an executable and return the output and errtxt
+-- args should be an array where args[1] is the executable
+-- output will never be nil
+-- errtxt will be nil for success and non-nil for failure
+run_executable = function(args)
+	local output = ""
+	local errtxt
+       	local res, err = pcall(function()
+		-- For security, set the path
+		posix.setenv("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin")
+
+		args.stdout = subprocess.PIPE
+		args.stderr = subprocess.PIPE
+		local proc, errmsg, errno = subprocess.popen(args)
+		if proc then
+			proc:wait()
+			output = (proc.stdout:read("*a")) or ""
+			proc.stdout:close()
+			errtxt = (proc.stderr:read("*a"))
+			proc.stderr:close()
+			if proc.exitcode == 0 and string.find(errtxt, "^%s*$") then
+				errtxt = nil
+			end
+		else
+			errtxt = errmsg or "Unknown failure"
+		end
+	end)
+	if not res or err then
+		errtxt = err or "Unknown failure"
+	end
+	return output, errtxt
 end
