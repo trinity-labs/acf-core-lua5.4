@@ -9,6 +9,9 @@ module(..., package.seeall)
 require("posix")
 format = require("acf.format")
 
+-- For security, set the path
+posix.setenv("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin")
+
 mvc = {}
 
 -- the constructor
