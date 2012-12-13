@@ -239,24 +239,40 @@ end
 -- args should be an array where args[1] is the executable
 -- output will never be nil
 -- errtxt will be nil for success and non-nil for failure
-run_executable = function(args)
+-- if include_err, then stderr will be prepended to stdout (if executable doesn't fail)
+run_executable = function(args, include_err)
 	local output = ""
 	local errtxt
        	local res, err = pcall(function()
 		-- For security, set the path
 		posix.setenv("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin")
 
+		args.stdin = "/dev/null"
 		args.stdout = subprocess.PIPE
 		args.stderr = subprocess.PIPE
 		local proc, errmsg, errno = subprocess.popen(args)
 		if proc then
+			local out = {}
+			local err = {}
+			function readpipes()
+				local o = proc.stdout:read("*a")
+				if o ~= "" then out[#out+1] = o end
+				local e = proc.stderr:read("*a")
+				if e ~= "" then err[#err+1] = e end
+			end
+			while nil == proc:poll() do
+				readpipes()
+				posix.sleep(0)
+			end
+			readpipes()
 			proc:wait()
-			output = (proc.stdout:read("*a")) or ""
 			proc.stdout:close()
-			errtxt = (proc.stderr:read("*a"))
 			proc.stderr:close()
-			if proc.exitcode == 0 and string.find(errtxt, "^%s*$") then
-				errtxt = nil
+			output = table.concat(out, "") or ""
+			if proc.exitcode == 0 and include_err and #err > 0 then
+				output = table.concat(err, "")..output
+			elseif proc.exitcode ~= 0 then
+				errtxt = table.concat(err, "") or "Unknown error"
 			end
 		else
 			errtxt = errmsg or "Unknown failure"
