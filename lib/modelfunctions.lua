@@ -240,18 +240,26 @@ end
 -- output will never be nil
 -- errtxt will be nil for success and non-nil for failure
 -- if include_err, then stderr will be prepended to stdout (if executable doesn't fail)
-run_executable = function(args, include_err)
+run_executable = function(args, include_err, input)
 	local output = ""
 	local errtxt
        	local res, err = pcall(function()
 		-- For security, set the path
 		posix.setenv("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin")
 
-		args.stdin = "/dev/null"
+		if input then
+			args.stdin = subprocess.PIPE
+		else
+			args.stdin = "/dev/null"
+		end
 		args.stdout = subprocess.PIPE
 		args.stderr = subprocess.PIPE
 		local proc, errmsg, errno = subprocess.popen(args)
 		if proc then
+			if input then
+				proc.stdin:write(input)
+				proc.stdin:close()
+			end
 			local out = {}
 			local err = {}
 			function readpipes()
