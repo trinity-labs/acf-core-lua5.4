@@ -437,6 +437,7 @@ logevent = function ( message )
 end
 
 handle_clientdata = function(form, clientdata)
+	clientdata = clientdata or {}
 	form.errtxt = nil
 	for name,value in pairs(form.value) do
 		value.errtxt = nil
