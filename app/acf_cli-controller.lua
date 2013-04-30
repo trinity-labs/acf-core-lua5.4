@@ -30,6 +30,7 @@ exception_handler = function (self, message )
 end
 
 handle_clientdata = function(form, clientdata, group)
+	clientdata = clientdata or {}
 	form.errtxt = nil
 	for n,value in pairs(form.value) do
 		value.errtxt = nil

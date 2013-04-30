@@ -582,7 +582,7 @@ handle_clientdata = function(form, clientdata)
 			end
 			clientdata[name] = actualval
 		end
-		if value.type == "group" and clientdata[name] then
+		if value.type == "group" then
 			handle_clientdata(value, clientdata[name])
 		elseif value.type == "boolean" then
 			--- HTML forms simply don't include checkboxes unless they're checked
