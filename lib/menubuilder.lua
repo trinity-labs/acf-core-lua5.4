@@ -108,8 +108,13 @@ get_menuitems = function (self)
 								action = result.action }
 							table.insert(group.tabs, tab)
 							if group.reversetabs[tab.name] then
-								-- Flag for two tabs of same name
-								group.flag = tab.name
+								-- Flag for two tabs of same name in different controllers
+								for i,t in ipairs(group.reversetabs[tab.name]) do
+									if group.tabs[t].controller ~= tab.controller or group.tabs[t].prefix ~= tab.prefix then
+										group.flag = tab.name
+										break
+									end
+								end
 								table.insert(group.reversetabs[tab.name], #group.tabs)
 							else
 								group.reversetabs[tab.name] = {#group.tabs}
