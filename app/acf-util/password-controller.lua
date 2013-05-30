@@ -18,7 +18,7 @@ function editme(self)
 			local tmp1, tmp2 = roles.get_roles_perm(self, value.value.roles.value)
 	        	table.sort(tmp2)
 			for i,h in ipairs(tmp2) do
-				if h ~= "/acf-util/logon/logout" and h ~= "/acf-util/logon/logon" then
+				if h ~= "/acf-util/logon/logoff" and h ~= "/acf-util/logon/logon" then
 					value.value.home.option[#value.value.home.option+1] = h
 				end
 			end

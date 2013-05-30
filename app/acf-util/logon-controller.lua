@@ -61,15 +61,15 @@ logon = function(self)
 	return cmdresult
 end
 
--- Log out current user and go to login screen
-logout = function(self)
-	local logout = self.model.logoff(conf.sessiondir, sessiondata)
+-- Log off current user and go to logon screen
+logoff = function(self)
+	local logoff = self.model.logoff(conf.sessiondir, sessiondata)
 	-- We have to redirect so a new session / menu is created
 	redirect(self, "logon")
-	return logout
+	return logoff
 end
 
--- Report the login status
+-- Report the logon status
 status = function(self)
 	local name = cfe({ label="User Name" })
 	local sessionid = cfe({ value=self.sessiondata.id or "", label="Session ID" })

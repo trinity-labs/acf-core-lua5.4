@@ -272,7 +272,7 @@ mvc.on_load = function (self, parent)
 		self.sessiondata.id = sessionlib.random_hash(512)
 		require("authenticator")
 		self.sessiondata.userinfo = authenticator.get_userinfo(self, ENV.REMOTE_USER)
-		logevent("Automatic login as ENV.REMOTE_USER: "..tostring(ENV.REMOTE_USER))
+		logevent("Automatic logon as ENV.REMOTE_USER: "..tostring(ENV.REMOTE_USER))
 	end
 
 	if nil == self.sessiondata.id then

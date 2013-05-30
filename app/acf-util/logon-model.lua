@@ -22,9 +22,9 @@ logoff = function (sessiondir, sessiondata)
 end
 
 -- Log on new user if possible and set up userinfo in session
--- if we fail, we leave the session alone (don't log out)
+-- if we fail, we leave the session alone (don't log off)
 logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
-	-- Check to see if we can login this user id / ip addr
+	-- Check to see if we can log on this user id / ip addr
 	local countevent = session.count_events(sessiondir, userid, session.hash_ip_addr(ip_addr), self.conf.lockouttime, self.conf.lockouteventlimit)
 	if countevent then
 		session.record_event(sessiondir, userid, session.hash_ip_addr(ip_addr))
@@ -32,9 +32,9 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 
 	if false == countevent and userid and password then
 		if authenticator.authenticate (self, userid, password) then
-			-- We have a successful login, change sessiondata
+			-- We have a successful logon, change sessiondata
 			-- for some reason, can't call this function or it skips rest of logon
-			-- logout(sessiondir, sessiondata)
+			-- logoff(sessiondir, sessiondata)
 			---[[ so, do this instead
 			session.unlink_session(sessiondir, sessiondata.id)
 			-- Clear the current session data
@@ -50,7 +50,7 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 			end
 			return cfe({ type="boolean", value=true, label="Logon Success" })
 		else
-			-- We have a bad login, log the event
+			-- We have a bad logon, log the event
 			session.record_event(sessiondir, userid, session.hash_ip_addr(ip_addr))
 		end
 	end

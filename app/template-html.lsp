@@ -58,9 +58,9 @@ end
 			<% local ctlr = pageinfo.script .. "/acf-util/logon/"
 			
 			if session.userinfo and session.userinfo.userid then
-			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log out as '" .. html.html_escape(session.userinfo.userid) .. "'</a>\n", html.html_escape(ctlr) .. "logout" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log off as '" .. html.html_escape(session.userinfo.userid) .. "'</a>\n", html.html_escape(ctlr) .. "logoff" ) )
 			else
-			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log in</a>\n", html.html_escape(ctlr) .. "logon" ) )
+			   io.write ( string.format("\t\t\t\t\t\t<a href=\"%s\">Log on</a>\n", html.html_escape(ctlr) .. "logon" ) )
 			end %>
 			 | 
 			<a href="<%= html.html_escape(pageinfo.wwwprefix) %>/">home</a> | 
@@ -108,7 +108,7 @@ end
 			</div>
 			<h2><%= html.html_escape(pageinfo.controller) %> : <%= html.html_escape(pageinfo.action) %></h2>
 			<!-- FIXME: Next row is 'dead' data! Remove 'class=hide' when done! -->
-			<p class='hide'>[ welcome ] > [ login ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
+			<p class='hide'>[ welcome ] > [ logon ] > [ bgp ] > [ firewall ] > [ content filter ] > [ interfaces ]</p>
 			<div class="tailer">
 			</div>
 		</div>	<!-- postnav -->

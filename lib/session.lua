@@ -182,7 +182,7 @@ unlink_session = function (sessionpath, session)
 	return statos
 end
 
--- Record an invalid login event 
+-- Record an invalid logon event 
 -- ID would typically be an ip address or username
 -- the format is lockevent.id.datetime.processid
 record_event = function( sessionpath, id_u, id_ip )
@@ -192,7 +192,7 @@ record_event = function( sessionpath, id_u, id_ip )
 	io.close(x)
 end
 
--- Check how many invalid login events
+-- Check how many invalid logon events
 -- have happened for this id in the last n minutes
 -- this will only effect the lockevent files
 count_events =	function (sessionpath, id_user, ipaddr, minutes, limit)

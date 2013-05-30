@@ -1,5 +1,5 @@
 -- ACF Authenticator - does validation and loads sub-authenticator to read/write database
--- We store the login info in the passwd table, "" field.  It looks like
+-- We store the logon info in the passwd table, "" field.  It looks like
 --	password:username:ROLE1[,ROLE2...]
 module (..., package.seeall)
 
