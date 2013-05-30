@@ -220,8 +220,6 @@ mvc.on_load = function (self, parent)
 	self.conf.wwwdir = self.conf.wwwdir or ( string.match(self.conf.appdir, "[^,]+/") .. "/www/" )
 	self.conf.sessiondir = self.conf.sessiondir or "/tmp/"
 	self.conf.script = ENV.SCRIPT_NAME
-	self.conf.default_prefix = "/acf-util/"
-	self.conf.default_controller = self.conf.default_controller or "welcome"
 	self.clientdata = FORM
 	self.conf.clientip = ENV.REMOTE_ADDR
 
@@ -325,7 +323,11 @@ exception_handler = function (self, message )
 				self.sessiondata.logonredirect.clientdata = self.clientdata
 				self.sessiondata.logonredirect.clientdata.sessionid = nil
 				self.sessiondata.logonredirect.referrer = ENV.HTTP_REFERER
-				io.write ("Location: " .. ENV["SCRIPT_NAME"] .. "/acf-util/logon/logon?redir="..message.prefix..message.controller.."/"..message.action.."\n")
+				if message.controller ~= "" then
+					io.write ("Location: " .. ENV["SCRIPT_NAME"] .. "/acf-util/logon/logon?redir="..message.prefix..message.controller.."/"..message.action.."\n")
+				else
+					io.write ("Location: " .. ENV["SCRIPT_NAME"] .. "/acf-util/logon/logon\n")
+				end
 			else
 				io.write ("Location: " .. ENV.HTTP_REFERER .. "\n")
 			end
@@ -376,7 +378,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			parse_path_info(ENV["PATH_INFO"])
 		self.conf.wwwprefix = string.gsub(ENV["SCRIPT_NAME"] or "", "/?cgi%-bin/acf.*", "")
 	else
-		self.conf.prefix = userprefix
+		self.conf.prefix = userprefix or "/"
 		self.conf.controller = userctlr or ""
 		self.conf.action = useraction or ""
 	end
@@ -390,20 +392,37 @@ dispatch = function (self, userprefix, userctlr, useraction)
 		self.sessiondata.logonredirect = nil
 	end
 
-	-- Find the proper controller/action combo
+	-- Before we start checking for views, set the viewtype (also before any redirect or dispatch error)
+	if self.clientdata.viewtype then
+		self.conf.viewtype = self.clientdata.viewtype
+	else
+		self.conf.viewtype = "html"
+	end
+
+	-- Find the proper prefix/controller/action combo
 	local origconf = {}
 	for name,value in pairs(self.conf) do origconf[name]=value end
 	if "" == self.conf.controller and self.sessiondata.userinfo and self.sessiondata.userinfo.home and self.sessiondata.userinfo.home ~= "" then
 		self.conf.prefix, self.conf.controller, self.conf.action =
 			parse_path_info(self.sessiondata.userinfo.home)
 	end
-	if "" == self.conf.controller then
-		self.conf.prefix = self.conf.default_prefix or "/"
-		self.conf.controller = self.conf.default_controller or ""
-		self.conf.action = ""
+	if "" == self.conf.controller and self.conf.home and self.conf.home ~= "" then
+		self.conf.prefix, self.conf.controller, self.conf.action =
+			parse_path_info(self.conf.home)
 	end
+	if "" == self.conf.controller then
+		self.conf.prefix = "/acf-util/"
+		self.conf.controller = "welcome"
+		self.conf.action = "read"
+	end
+
+	-- If we have different prefix / controller / action, redirect
+	if self.conf.prefix ~= origconf.prefix or self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
+		redirect(self, self.conf.action) -- controller and prefix already in self.conf
+	end
+
 	if "" ~= self.conf.controller then
-		-- We now know the controller / action combo, check if we're allowed to do it
+		-- We now know the prefix / controller / action combo, check if we're allowed to do it
 		local perm = check_permission(self, self.conf.prefix, self.conf.controller)
 		local worker_loaded = false
 
@@ -428,18 +447,6 @@ dispatch = function (self, userprefix, userctlr, useraction)
 			controller:destroy()
 			controller = nil
 		end
-	end
-
-	-- If we have different controller / action, redirect
-	if self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
-		redirect(self, self.conf.action) -- controller and prefix already in self.conf
-	end
-
-	-- Before we start checking for views, set the viewtype
-	if self.clientdata.viewtype then
-		self.conf.viewtype = self.clientdata.viewtype
-	else
-		self.conf.viewtype = "html"
 	end
 
 	-- If the controller or action are missing, display an error view

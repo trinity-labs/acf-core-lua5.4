@@ -136,13 +136,6 @@ dispatch = function (self, userprefix, userctlr, useraction, clientdata)
 	self.conf.action = useraction or ""
 	if clientdata then self.clientdata = clientdata end
 
-	-- If they didn't provide a controller, and a default was specified
-	-- use it
-	if self.conf.controller == "" and self.conf.default_controller then
-		self.conf.controller = self.conf.default_controller
-		self.conf.prefix = self.conf.default_prefix or "/"
-	end
-
 	local worker_loaded
 	controller, worker_loaded = self:new(self.conf.prefix .. self.conf.controller)
 

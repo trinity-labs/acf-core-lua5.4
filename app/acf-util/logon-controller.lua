@@ -29,7 +29,7 @@ logon = function(self)
 	if clientdata.submit then
 		local logonredirect = self.sessiondata.logonredirect
 		local logon = self.model:logon(clientdata.userid, clientdata.password, conf.clientip, conf.sessiondir, sessiondata)
-		-- If successful logon, redirect to welcome-page, otherwise try again
+		-- If successful logon, redirect to home or welcome page, otherwise try again
 		if logon.value then
 			cmdresult.descr = "Logon Successful"
 		else
@@ -41,6 +41,8 @@ logon = function(self)
 			if redir.value == "" then
 				if self.sessiondata.userinfo and self.sessiondata.userinfo.home and self.sessiondata.userinfo.home ~= "" then
 					redir.value = self.sessiondata.userinfo.home
+				elseif self.conf.home and self.conf.home ~= "" then
+					redir.value = self.conf.home
 				else
 					redir.value = "/acf-util/welcome/read"
 				end
