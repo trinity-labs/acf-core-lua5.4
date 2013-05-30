@@ -29,7 +29,7 @@
 			<TD STYLE='border:none;'><B>Option</B></TD>
 			<TD STYLE='border:none;'>
 			[<A HREF='edituser?userid=<%= name %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this account</A>]
-			[<A HREF='deleteuser?userid=<%= name %>'>Delete this account</A>]
+			[<A HREF='deleteuser?userid=<%= name %>&submit=true'>Delete this account</A>]
 			[<A HREF='<%= html.html_escape(page_info.script) %>/acf-util/roles/viewuserroles?userid=<%= name %>'>View roles for this account</A>]
 			</TD>
 		</TR>
