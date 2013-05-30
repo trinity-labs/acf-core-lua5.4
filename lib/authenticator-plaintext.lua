@@ -9,6 +9,9 @@ create a different file for each field.
 
 module (..., package.seeall)
 
+fs = require("acf.fs")
+require("posix")
+
 list_fields = function(self, tabl)
 	if not self or not tabl or tabl == "" then
 		return {}
