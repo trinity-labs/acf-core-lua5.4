@@ -262,6 +262,19 @@ mvc.on_load = function (self, parent)
 		end
 	end
 
+	if not (self.sessiondata.userinfo and self.sessiondata.userinfo.userid) and ENV.REMOTE_USER then
+		-- We do not have a valid user in session data, but we have successful HTTP auth
+		-- Kill the existing session
+		if (self.sessiondata.id and self.clientdata.sessionid) then
+			sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)
+		end
+		self.sessiondata = {}
+		self.sessiondata.id = sessionlib.random_hash(512)
+		require("authenticator")
+		self.sessiondata.userinfo = authenticator.get_userinfo(self, ENV.REMOTE_USER)
+		logevent("Automatic login as ENV.REMOTE_USER: "..tostring(ENV.REMOTE_USER))
+	end
+
 	if nil == self.sessiondata.id then
 		self.sessiondata = {}
 		self.sessiondata.id = sessionlib.random_hash(512)
