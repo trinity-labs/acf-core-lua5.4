@@ -10,7 +10,86 @@ require("posix")
 require("session")
 
 -- This is the sub-authenticator
-local auth = nil
+local auth = {}
+auth.list_fields = function(self, tabl)
+	if not auth.subauths then
+		return nil
+	end
+	local fields = {}
+	local revfields = {}
+	for i,sub in ipairs(auth.subauths) do
+		local subf = sub.list_fields(self, tabl)
+		for j,f in ipairs(subf) do
+			if not revfields[f] then
+				fields[#fields+1] = f
+				revfields[#revfields+1] = #fields
+			end
+		end
+	end
+	return fields
+end
+
+auth.read_field = function(self, tabl, field)
+	if not auth.subauths then
+		return nil
+	end
+	for i,sub in ipairs(auth.subauths) do
+		local f = sub.read_field(self, tabl, field)
+		if f then
+			return f
+		end
+	end
+	return nil
+end
+
+auth.delete_field = function(self, tabl, field)
+	if not auth.subauths then
+		return nil
+	end
+	for i,sub in ipairs(auth.subauths) do
+		if sub.delete_field(self, tabl, field) then
+			return true
+		end
+	end
+	return false
+end
+
+auth.write_entry = function(self, tabl, field, id, entry)
+	if not auth.subauths then
+		return nil
+	end
+	for i,sub in ipairs(auth.subauths) do
+		if sub.write_entry(self, tabl, field, id, entry) then
+			return true
+		end
+	end
+	return false
+end
+
+auth.read_entry = function(self, tabl, field, id)
+	if not auth.subauths then
+		return nil
+	end
+	for i,sub in ipairs(auth.subauths) do
+		local e = sub.read_entry(self, tabl, field, id)
+		if e then
+			return e
+		end
+	end
+	return nil
+end
+
+auth.delete_entry = function (self, tabl, field, id)
+	if not auth.subauths then
+		return nil
+	end
+	for i,sub in ipairs(auth.subauths) do
+		if sub.delete_entry(self, tabl, field, id) then
+			return true
+		end
+	end
+	return false
+end
 
 -- Publicly define the pre-defined tables
 usertable = "passwd"
@@ -106,11 +185,14 @@ end
 --- public methods
 
 get_subauth = function(self)
-	if not auth then
+	if not auth.subauths then
+		auth.subauths = {}
 		if self and self.conf and self.conf.authenticator and self.conf.authenticator ~= "" then
-			auth = require(string.gsub(self.conf.authenticator, "%.lua$", ""))
+			for a in string.gmatch(self.conf.authenticator, "[^,]+") do
+				auth.subauths[#auth.subauths+1] = require(string.gsub(a, "%.lua$", ""))
+			end
 		else
-			auth = require("authenticator-plaintext")
+			auth.subauths[1] = require("authenticator-plaintext")
 		end
 	end
 	return auth
@@ -189,7 +271,6 @@ write_userinfo = function(self, userinfo)
 				self.sessiondata.userinfo[name] = value
 			end
 		end
-self.logevent(session.serialize("userinfo", self.sessiondata.userinfo))
 	end
 
 	return success
