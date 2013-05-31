@@ -7,6 +7,7 @@
 module(..., package.seeall)
 
 require("posix")
+require("subprocess")
 format = require("acf.format")
 
 -- For security, set the path
@@ -425,8 +426,7 @@ end
 _G.cfe = cfe
 
 logevent = function ( message )
-	os.execute ( "logger \"ACF: " .. string.gsub(message or "", "[`\\\"]", "\\%1") .. "\"" )
-
+	subprocess.call({"logger", "ACF: " .. (message or "")})
 end
 
 handle_clientdata = function(form, clientdata)
