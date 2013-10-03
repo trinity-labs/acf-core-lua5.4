@@ -13,6 +13,7 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <%
 local hostname = ""
 
@@ -31,12 +32,17 @@ end
 <!--[if IE]>
 <link rel="stylesheet" type="text/css" href="<%= html.html_escape(pageinfo.wwwprefix..pageinfo.skin.."/"..posix.basename(pageinfo.skin).."-ie.css") %>">
 <![endif]-->
-<script type="text/javascript" src="<%= html.html_escape(pageinfo.wwwprefix) %>/js/jquery-latest.js"></script>
+<script type="text/javascript">
+	if (typeof jQuery == 'undefined') {
+		document.write('<script type="text/javascript" src="<%= html.html_escape(pageinfo.wwwprefix) %>/js/jquery-latest.js"><\/script>');
+	}
+</script>
 <script type="text/javascript" src="<%= html.html_escape(pageinfo.wwwprefix..pageinfo.skin.."/"..posix.basename(pageinfo.skin)..".js") %>"></script>
 <script type="text/javascript">
 	$(function(){
 		$(":input:not(:submit):enabled:not([readonly]):first").focus();
-	});</script>
+	});
+</script>
 <% end -- pageinfo.skinned %>
 </head>
 <body>
