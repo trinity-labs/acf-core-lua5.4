@@ -1,5 +1,5 @@
 <% local data, viewlibrary, page_info, session = ... %>
-<% require("htmlviewfunctions") %>
+<% htmlviewfunctions = require("htmlviewfunctions") %>
 <H1>Debugging</H1>
 <H2>View Data:</H2>
 <%= htmlviewfunctions.cfe_unpack(data) %>

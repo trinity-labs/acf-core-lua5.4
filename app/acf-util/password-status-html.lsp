@@ -1,5 +1,5 @@
 <% local form, viewlibrary, page_info, session = ... %>
-<% require("htmlviewfunctions") %>
+<% htmlviewfunctions = require("htmlviewfunctions") %>
 <% html = require("acf.html") %>
 
 <% htmlviewfunctions.displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>

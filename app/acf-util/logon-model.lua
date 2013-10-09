@@ -2,11 +2,11 @@
 
 module (..., package.seeall)
 
-require ("session")
+session = require ("session")
 html = require ("acf.html")
 fs = require ("acf.fs")
-require ("roles")
-require ("authenticator")
+roles = require ("roles")
+authenticator = require ("authenticator")
 
 -- Logoff the user by deleting session data
 logoff = function (sessiondir, sessiondata)

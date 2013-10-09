@@ -1,6 +1,7 @@
 module(..., package.seeall)
 
-require("posix")
+posix = require("posix")
+session = require("session")
 
 local parent_exception_handler
 
@@ -19,7 +20,6 @@ mvc.on_load = function (self, parent)
 	end
 
 	self.session = {}
-	local x=require("session")
 end
 
 exception_handler = function (self, message )

@@ -3,11 +3,11 @@
 --	password:username:ROLE1[,ROLE2...]
 module (..., package.seeall)
 
-require("modelfunctions")
+modelfunctions = require("modelfunctions")
 format = require("acf.format")
-require("md5")
-require("posix")
-require("session")
+md5 = require("md5")
+posix = require("posix")
+session = require("session")
 
 -- This is the sub-authenticator
 local auth = {}

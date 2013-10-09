@@ -1,6 +1,6 @@
 module (..., package.seeall)
 
-require("modelfunctions")
+modelfunctions = require("modelfunctions")
 fs = require("acf.fs")
 format = require("acf.format")
 

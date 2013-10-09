@@ -12,7 +12,7 @@
 
 module (..., package.seeall)
 
-require "posix"
+posix = require("posix")
 
 minutes_expired_events=30
 minutes_count_events=30

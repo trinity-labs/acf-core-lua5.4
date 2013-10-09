@@ -20,7 +20,7 @@ Output will be a serialized Lua table unless specified otherwise with "viewtype"
 	return
 end
 
-require("posix")
+posix = require("posix")
 mvc = require("acf.mvc")
 
 FRAMEWORK=mvc:new()

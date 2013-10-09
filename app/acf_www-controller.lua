@@ -9,7 +9,7 @@ module(..., package.seeall)
 
 -- This is not in the global namespace, but future
 -- require statements shouldn't need to go to the disk lib
-require "posix"
+posix = require("posix")
 
 -- We use the parent exception handler in a last-case situation
 local parent_exception_handler
@@ -268,7 +268,7 @@ mvc.on_load = function (self, parent)
 		end
 		self.sessiondata = {}
 		self.sessiondata.id = sessionlib.random_hash(512)
-		require("authenticator")
+		authenticator = require("authenticator")
 		self.sessiondata.userinfo = authenticator.get_userinfo(self, ENV.REMOTE_USER)
 		logevent("Automatic logon as ENV.REMOTE_USER: "..tostring(ENV.REMOTE_USER))
 	end

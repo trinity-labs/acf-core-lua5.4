@@ -1,5 +1,5 @@
 module(..., package.seeall)
-require("roles")
+roles = require("roles")
 
 default_action = "editme"
 

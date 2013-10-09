@@ -1,5 +1,5 @@
 <% local form, viewlibrary, page_info = ... %>
-<% require("htmlviewfunctions") %>
+<% htmlviewfunctions = require("htmlviewfunctions") %>
 <% html = require("acf.html") %>
 
 <% if form.type == "form" then %>

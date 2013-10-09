@@ -1,7 +1,7 @@
 module(..., package.seeall)
 
 html = require("acf.html")
-require("session")
+session = require("session")
 
 local function getlabel(myitem, value)
 	if myitem and (myitem.type == "select" or myitem.type == "multi") then

@@ -6,8 +6,8 @@
   ]]--
 module(..., package.seeall)
 
-require("posix")
-require("subprocess")
+posix = require("posix")
+subprocess = require("subprocess")
 format = require("acf.format")
 
 -- For security, set the path
@@ -340,10 +340,10 @@ end
 -- The view of last resort
 auto_view = function(viewtable, viewlibrary, pageinfo, session)
 	if pageinfo.viewtype == "html" then
-		require("htmlviewfunctions")
+		local htmlviewfunctions = require("htmlviewfunctions")
 		htmlviewfunctions.displayitem(viewtable, 1, pageinfo)
 	elseif pageinfo.viewtype == "json" then
-		require("json")
+		local json = require("json")
 		print(json.encode(viewtable))
 	elseif pageinfo.viewtype == "stream" then
 		io.write(viewtable.value)

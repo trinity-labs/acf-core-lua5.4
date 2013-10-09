@@ -1,7 +1,7 @@
 module(..., package.seeall)
 
-require("authenticator")
-require("roles")
+authenticator = require("authenticator")
+roles = require("roles")
 
 avail_roles, avail_skins, avail_homes = nil
 

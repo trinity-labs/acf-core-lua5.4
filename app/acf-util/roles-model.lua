@@ -1,9 +1,9 @@
 -- Roles/Group functions
 module (..., package.seeall)
 
-require("modelfunctions")
-require("authenticator")
-require("roles")
+modelfunctions = require("modelfunctions")
+authenticator = require("authenticator")
+roles = require("roles")
 
 -- Return roles/permissions for specified user
 get_user_roles = function(self, userid)
