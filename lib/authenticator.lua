@@ -1,7 +1,7 @@
 -- ACF Authenticator - does validation and loads sub-authenticator to read/write database
 -- We store the logon info in the passwd table, "" field.  It looks like
 --	password:username:ROLE1[,ROLE2...]
-module (..., package.seeall)
+local mymodule = {}
 
 modelfunctions = require("modelfunctions")
 format = require("acf.format")
@@ -92,8 +92,8 @@ auth.delete_entry = function (self, tabl, field, id)
 end
 
 -- Publicly define the pre-defined tables
-usertable = "passwd"
-roletable = "roles"
+mymodule.usertable = "passwd"
+mymodule.roletable = "roles"
 
 -- This will hold the auth structure from the database
 local authstruct = {}
@@ -120,7 +120,7 @@ end
 
 local load_database = function(self)
 	if not complete then
-		local authtable = auth.read_field(self, usertable, "") or {}
+		local authtable = auth.read_field(self, mymodule.usertable, "") or {}
 		authstruct = {}
 		for i,value in ipairs(authtable) do
 			parse_entry(value.id, value.entry)
@@ -131,7 +131,7 @@ end
 	
 local get_id = function(self, userid)
 	if not authstruct[userid] then
-		parse_entry(userid, auth.read_entry(self, usertable, "", userid))
+		parse_entry(userid, auth.read_entry(self, mymodule.usertable, "", userid))
 	end
 	return authstruct[userid]
 end
@@ -184,7 +184,7 @@ end
 
 --- public methods
 
-get_subauth = function(self)
+mymodule.get_subauth = function(self)
 	if not auth.subauths then
 		auth.subauths = {}
 		if self and self.conf and self.conf.authenticator and self.conf.authenticator ~= "" then
@@ -200,8 +200,8 @@ end
 
 -- This function returns true or false, and
 -- if false:  the reason for failure
-authenticate = function(self, userid, password)
-	auth = get_subauth(self)
+mymodule.authenticate = function(self, userid, password)
+	auth = mymodule.get_subauth(self)
 	local errtxt
 
 	if not userid or not password then
@@ -220,8 +220,8 @@ authenticate = function(self, userid, password)
 end
 
 -- This function returns the username, roles, ...
-get_userinfo = function(self, userid)
-	auth = get_subauth(self)
+mymodule.get_userinfo = function(self, userid)
+	auth = mymodule.get_subauth(self)
 	local id = get_id(self, userid)
 	if id then
 		-- Make a copy so roles don't get changed in the authstruct
@@ -239,8 +239,8 @@ get_userinfo = function(self, userid)
 	return nil
 end
 
-write_userinfo = function(self, userinfo)
-	auth = get_subauth(self)
+mymodule.write_userinfo = function(self, userinfo)
+	auth = mymodule.get_subauth(self)
 	if not userinfo or not userinfo.userid or userinfo.userid == "" then
 		return false
 	end
@@ -253,7 +253,7 @@ write_userinfo = function(self, userinfo)
 	if userinfo.skin then id.skin = userinfo.skin end
 	if userinfo.home then id.home = userinfo.home end
 
-	local success = auth.write_entry(self, usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or "")..":"..(id.skin or "")..":"..(id.home or ""))
+	local success = auth.write_entry(self, mymodule.usertable, "", id.userid, (id.password or "")..":"..(id.username or "")..":"..(id.roles or "")..":"..(id.skin or "")..":"..(id.home or ""))
 	authstruct[userinfo.userid] = nil
 	get_id(self, id.userid)
 
@@ -276,8 +276,8 @@ write_userinfo = function(self, userinfo)
 	return success
 end
 	
-list_users = function (self)
-	auth = get_subauth(self)
+mymodule.list_users = function (self)
+	auth = mymodule.get_subauth(self)
 	load_database(self)
 	local output = {}
 	for k in pairs(authstruct) do
@@ -286,8 +286,10 @@ list_users = function (self)
 	return output
 end
 
-delete_user = function (self, userid)
-	auth = get_subauth(self)
+mymodule.delete_user = function (self, userid)
+	auth = mymodule.get_subauth(self)
 	authstruct[userid] = nil	
-	return auth.delete_entry(self, usertable, "", userid)
+	return auth.delete_entry(self, mymodule.usertable, "", userid)
 end
+
+return mymodule

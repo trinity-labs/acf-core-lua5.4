@@ -1,4 +1,4 @@
-module(..., package.seeall)
+local mymodule = {}
 
 authenticator = require("authenticator")
 roles = require("roles")
@@ -48,11 +48,11 @@ local validate_settings = function(settings)
 	return true, settings
 end
 
-function create_user(self, settings)
-	return update_user(self, settings, true)
+function mymodule.create_user(self, settings)
+	return mymodule.update_user(self, settings, true)
 end
 
-function update_user(self, settings, create)
+function mymodule.update_user(self, settings, create)
 	local success, settings = validate_settings(settings)
 
 	if success then
@@ -86,7 +86,7 @@ function update_user(self, settings, create)
 end
 
 
-function read_user(self, user)
+function mymodule.read_user(self, user)
 	local result = {}
         result.userid = cfe({ value=user, label="User id", seq=1 })
 	if user and user ~= "" then
@@ -151,28 +151,30 @@ function read_user(self, user)
 	return cfe({ type="group", value=result, label="User Config" })
 end
 
-function get_users(self)
+function mymodule.get_users(self)
 	--List all users and their userinfo
 	local users = {}
 	local userlist = authenticator.list_users(self)
 	table.sort(userlist)
 	
 	for x,user in pairs(userlist) do
-		users[#users+1] = read_user(self, user)
+		users[#users+1] = mymodule.read_user(self, user)
 	end
 
 	return cfe({ type="group", value=users, label="User Configs" })
 end
 
-function get_delete_user(self, clientdata)
+function mymodule.get_delete_user(self, clientdata)
 	local userid = cfe({ label="User id", value=clientdata.userid or "" })
 	return cfe({ type="group", value={userid=userid}, label="Delete User" })
 end
 
-function delete_user(self, deleteuser)
+function mymodule.delete_user(self, deleteuser)
 	deleteuser.errtxt = "Failed to delete user"
 	if authenticator.delete_user(self, deleteuser.value.userid.value) then
 		deleteuser.errtxt = nil
 	end
 	return deleteuser
 end
+
+return mymodule

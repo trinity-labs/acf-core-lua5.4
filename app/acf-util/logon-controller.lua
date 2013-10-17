@@ -1,8 +1,8 @@
 -- Logon / Logoff functions
 
-module (..., package.seeall)
+local mymodule = {}
 
-default_action = "status"
+mymodule.default_action = "status"
 
 -- Logon a new user based upon id and password in clientdata
 local check_users = function(self)
@@ -21,14 +21,14 @@ local check_users = function(self)
 end
 
 -- Logon a new user based upon id and password in clientdata
-logon = function(self)
-	local userid = cfe({ value=clientdata.userid or "", label="User ID", seq=1 })
+mymodule.logon = function(self)
+	local userid = cfe({ value=self.clientdata.userid or "", label="User ID", seq=1 })
 	local password = cfe({ type="password", label="Password", seq=2 })
-	local redir = cfe({ type="hidden", value=clientdata.redir, label="" })
+	local redir = cfe({ type="hidden", value=self.clientdata.redir, label="" })
 	local cmdresult = cfe({ type="form", value={userid=userid, password=password, redir=redir}, label="Logon", option="Logon" })
-	if clientdata.submit then
+	if self.clientdata.submit then
 		local logonredirect = self.sessiondata.logonredirect
-		local logon = self.model:logon(clientdata.userid, clientdata.password, conf.clientip, conf.sessiondir, sessiondata)
+		local logon = self.model:logon(self.clientdata.userid, self.clientdata.password, self.conf.clientip, self.conf.sessiondir, self.sessiondata)
 		-- If successful logon, redirect to home or welcome page, otherwise try again
 		if logon.value then
 			cmdresult.descr = "Logon Successful"
@@ -54,7 +54,7 @@ logon = function(self)
 					self.sessiondata.logonredirect = logonredirect
 				end
 			end
-			redirect(self, cmdresult.value.redir.value)
+			self:redirect(cmdresult.value.redir.value)
 		end
 	else
 		if check_users(self) then return end
@@ -64,15 +64,15 @@ logon = function(self)
 end
 
 -- Log off current user and go to logon screen
-logoff = function(self)
-	local logoff = self.model.logoff(conf.sessiondir, sessiondata)
+mymodule.logoff = function(self)
+	local logoff = self.model.logoff(self.conf.sessiondir, self.sessiondata)
 	-- We have to redirect so a new session / menu is created
-	redirect(self, "logon")
+	self:redirect("logon")
 	return logoff
 end
 
 -- Report the logon status
-status = function(self)
+mymodule.status = function(self)
 	local name = cfe({ label="User Name" })
 	local sessionid = cfe({ value=self.sessiondata.id or "", label="Session ID" })
 	if self.sessiondata.userinfo then
@@ -80,3 +80,5 @@ status = function(self)
 	end
 	return cfe({ type="group", value={username=name, sessionid=sessionid}, label="Logon Status" })
 end
+
+return mymodule

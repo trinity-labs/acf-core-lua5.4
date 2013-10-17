@@ -3,7 +3,7 @@
      Copyright (C) 2007  Nathan Angelacos
      Licensed under the terms of GPL2
   ]]--
-module(..., package.seeall)
+local mymodule = {}
 
 posix = require("posix")
 format = require("acf.format")
@@ -60,7 +60,7 @@ local prio_compare = function(x,y)
 end
 
 -- returns a table of all the menu items found, sorted by priority
-get_menuitems = function (self)
+mymodule.get_menuitems = function (self)
 	local cats = {}
 	local reversecats = {}
 	local foundcontrollers = {}
@@ -193,4 +193,4 @@ get_menuitems = function (self)
 	return cats
 end
 
-
+return mymodule

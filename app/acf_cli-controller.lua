@@ -1,12 +1,12 @@
-module(..., package.seeall)
+local mymodule = {}
 
 posix = require("posix")
 session = require("session")
 
 local parent_exception_handler
 
-mvc = {}
-mvc.on_load = function (self, parent)
+mymodule.mvc = {}
+mymodule.mvc.on_load = function (self, parent)
 	-- Make sure we have some kind of sane defaults for libdir
 	self.conf.libdir = self.conf.libdir or ( string.match(self.conf.appdir, "[^,]+/") .. "/lib/" )
 	self.conf.script = ""
@@ -22,12 +22,12 @@ mvc.on_load = function (self, parent)
 	self.session = {}
 end
 
-exception_handler = function (self, message )
+mymodule.exception_handler = function (self, message )
 	print(session.serialize("exception", message))
 	parent_exception_handler(self, message)
 end
 
-handle_clientdata = function(form, clientdata, group)
+mymodule.handle_clientdata = function(form, clientdata, group)
 	clientdata = clientdata or {}
 	form.errtxt = nil
 	for n,value in pairs(form.value) do
@@ -35,7 +35,7 @@ handle_clientdata = function(form, clientdata, group)
 		local name = n
 		if group then name = group.."."..name end
 		if value.type == "group" then
-			handle_clientdata(value, clientdata, name)
+			mymodule.handle_clientdata(value, clientdata, name)
 		-- Don't update from the default unless a value exists
 		elseif value.type == "boolean" and clientdata[name] then
 			value.value = (clientdata[name] == "true")
@@ -56,3 +56,5 @@ handle_clientdata = function(form, clientdata, group)
 		end
 	end
 end
+
+return mymodule

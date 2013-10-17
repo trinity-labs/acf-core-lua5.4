@@ -7,12 +7,12 @@ create a different file for each field.
 
 ]]--
 
-module (..., package.seeall)
+local mymodule = {}
 
 fs = require("acf.fs")
 posix = require("posix")
 
-list_fields = function(self, tabl)
+mymodule.list_fields = function(self, tabl)
 	if not self or not tabl or tabl == "" then
 		return {}
 	end
@@ -27,7 +27,7 @@ list_fields = function(self, tabl)
 	return fields
 end
 
-read_field = function(self, tabl, field)
+mymodule.read_field = function(self, tabl, field)
 	if not self or not tabl or tabl == "" or not field then
 		return nil
 	end
@@ -53,7 +53,7 @@ read_field = function(self, tabl, field)
 	end
 end
 
-delete_field = function(self, tabl, field)
+mymodule.delete_field = function(self, tabl, field)
 	if not self or not tabl or tabl == "" or not field then
 		return false
 	end
@@ -62,7 +62,7 @@ delete_field = function(self, tabl, field)
 	return true
 end
 
-write_entry = function(self, tabl, field, id, entry)
+mymodule.write_entry = function(self, tabl, field, id, entry)
 	if not self or not tabl or tabl == "" or not field or not id or not entry then
 		return false
 	end
@@ -83,7 +83,7 @@ write_entry = function(self, tabl, field, id, entry)
 	return true
 end
 
-read_entry = function(self, tabl, field, id)
+mymodule.read_entry = function(self, tabl, field, id)
 	if not self or not tabl or tabl == "" or not field or not id then
 		return nil
 	end
@@ -99,7 +99,7 @@ read_entry = function(self, tabl, field, id)
 	return nil
 end
 
-delete_entry = function (self, tabl, field, id)
+mymodule.delete_entry = function (self, tabl, field, id)
 	if not self or not tabl or tabl == "" or not field or not id then
 		return false
 	end
@@ -123,11 +123,13 @@ delete_entry = function (self, tabl, field, id)
 
 	-- If deleting the main field, delete all other fields also
 	if field == "" then
-		local fields = list_fields(self, tabl)
+		local fields = mymodule.list_fields(self, tabl)
 		for i,fld in ipairs(fields) do
-			delete_entry(self, tabl, fld, id)
+			mymodule.delete_entry(self, tabl, fld, id)
 		end
 	end
 
 	return result
 end
+
+return mymodule

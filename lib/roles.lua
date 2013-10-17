@@ -4,9 +4,9 @@ authenticator = require ("authenticator")
 fs = require ("acf.fs")
 format = require ("acf.format")
 
-module (..., package.seeall)
+local mymodule = {}
 
-guest_role = "GUEST"
+mymodule.guest_role = "GUEST"
 
 -- Global variables so we don't have to figure out all the roles multiple times
 local defined_roles, default_roles, reverseroles, roles_candidates, role_table, table_perm, array_perm
@@ -27,7 +27,7 @@ local get_roles_candidates = function(self)
 end
 
 -- Return a list of *controller.lua files
-list_controllers = function(self)
+mymodule.list_controllers = function(self)
 	local list = {}
 	for p in string.gmatch(self.conf.appdir, "[^,]+") do
 		for file in fs.find(".*controller%.lua", p, true) do
@@ -41,9 +41,9 @@ list_controllers = function(self)
 end
 
 -- Return information about all or specified controller files
-get_controllers = function(self,pre,controller)
+mymodule.get_controllers = function(self,pre,controller)
 	--we get all the controllers
-	local list = list_controllers(self)
+	local list = mymodule.list_controllers(self)
 	--we need to grab the directory and name of file
 	local temp = {}
 	for k,v in pairs(list) do
@@ -64,7 +64,7 @@ get_controllers = function(self,pre,controller)
 end
 
 -- Find all public functions in a controller
-get_controllers_func = function(self,controller_info)
+mymodule.get_controllers_func = function(self,controller_info)
 	if controller_info == nil then
 		return "Could not be processed"
 	else
@@ -91,7 +91,7 @@ get_controllers_func = function(self,controller_info)
 end
 
 -- Find all views for a controller
-get_controllers_view = function(self,controller_info)
+mymodule.get_controllers_view = function(self,controller_info)
 	local temp = {}
 	for file in fs.find(controller_info.sname.."%-[^%.]+%-html%.lsp", controller_info.path) do
 		temp[#temp + 1] = string.match(file, controller_info.sname.."%-([^%./]+)%-html%.lsp")
@@ -99,10 +99,10 @@ get_controllers_view = function(self,controller_info)
 	return temp	
 end
 
-get_all_permissions = function(self)
+mymodule.get_all_permissions = function(self)
 	if not table_perm or not array_perm then
 		-- need to get a list of all the controllers
-		controllers = get_controllers(self)
+		controllers = mymodule.get_controllers(self)
 		table_perm = {}
 		array_perm = {}
 		for a,b in pairs(controllers) do
@@ -112,12 +112,12 @@ get_all_permissions = function(self)
 			if nil == table_perm[b.prefix][b.sname] then
 				table_perm[b.prefix][b.sname] = {}
 			end
-			local temp = get_controllers_func(self,b)
+			local temp = mymodule.get_controllers_func(self,b)
 			for x,y in ipairs(temp) do
 				table_perm[b.prefix][b.sname][y] = {}
 				array_perm[#array_perm + 1] = b.prefix .. b.sname .. "/" .. y
 			end
-			temp = get_controllers_view(self,b)
+			temp = mymodule.get_controllers_view(self,b)
 			for x,y in ipairs(temp) do
 				if not table_perm[b.prefix][b.sname][y] then
 					table_perm[b.prefix][b.sname][y] = {}
@@ -130,7 +130,7 @@ get_all_permissions = function(self)
 	return table_perm, array_perm
 end
 
-list_default_roles = function(self)
+mymodule.list_default_roles = function(self)
 	if not default_roles then
 		default_roles = {}
 		reverseroles = {}
@@ -174,7 +174,7 @@ list_default_roles = function(self)
 	return default_roles, reverseroles
 end
 
-list_defined_roles = function(self)
+mymodule.list_defined_roles = function(self)
 	if not defined_roles then
 		local auth = authenticator.get_subauth(self)
 		-- Open the roles file and parse for defined roles
@@ -191,15 +191,15 @@ list_defined_roles = function(self)
 	return defined_roles
 end
 
-list_roles = function(self)
-	local default_roles = list_default_roles(self)
-	local defined_roles = list_defined_roles(self)
+mymodule.list_roles = function(self)
+	local default_roles = mymodule.list_default_roles(self)
+	local defined_roles = mymodule.list_defined_roles(self)
 
 	return defined_roles, default_roles
 end
 
-list_all_roles = function(self)
-	local defined_roles, default_roles = list_roles(self)
+mymodule.list_all_roles = function(self)
+	local defined_roles, default_roles = mymodule.list_roles(self)
 	-- put the defined roles first
 	for x,role in ipairs(default_roles) do
 		defined_roles[#defined_roles + 1] = role
@@ -270,7 +270,7 @@ local determine_perms = function(self,roles)
 			temp = format.string_to_table(entry.entry, ",")
 			for z,perm in pairs(temp) do
 				local prefix,control,action = self.parse_path_info(perm)
-				if control then
+				if control and "" ~= control then
 					if nil == permissions[prefix] then
 						permissions[prefix] = {}
 					end
@@ -290,18 +290,18 @@ local determine_perms = function(self,roles)
 end
 
 -- Go through the roles files and determine the permissions for the specified list of roles (including guest)
-get_roles_perm = function(self,roles)
-	roles[#roles+1] = guest_role
+mymodule.get_roles_perm = function(self,roles)
+	roles[#roles+1] = mymodule.guest_role
 	return determine_perms(self, roles)
 end
 
 -- Go through the roles files and determine the permissions for the specified role
-get_role_perm = function(self,role)
+mymodule.get_role_perm = function(self,role)
 	return determine_perms(self, {role})
 end
 
 -- Delete a role from role file
-delete_role = function(self, role)
+mymodule.delete_role = function(self, role)
 	local auth = authenticator.get_subauth(self)
 	local result = auth.delete_entry(self, authenticator.roletable, "", role)
 	local cmdresult = "Role entry not found"
@@ -311,7 +311,7 @@ delete_role = function(self, role)
 end
 
 -- Set permissions for a role in role file
-set_role_perm = function(self, role, permissions, permissions_array)
+mymodule.set_role_perm = function(self, role, permissions, permissions_array)
 	if role==nil or role=="" then
 		return false, "Invalid Role"
 	end
@@ -332,3 +332,5 @@ set_role_perm = function(self, role, permissions, permissions_array)
 	local auth = authenticator.get_subauth(self)
 	return auth.write_entry(self, authenticator.roletable, "", role, table.concat(permissions_array or {},","))
 end
+
+return mymodule

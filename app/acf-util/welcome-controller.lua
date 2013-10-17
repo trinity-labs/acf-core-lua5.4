@@ -1,10 +1,10 @@
 -- A standin controller for testing
-module (..., package.seeall)
+local mymodule = {}
 
-default_action = "read"
+mymodule.default_action = "read"
 
-read = function (self )
+mymodule.read = function (self )
 	return ( {self = self} )
 end
 
-
+return mymodule

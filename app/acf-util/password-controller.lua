@@ -1,13 +1,13 @@
-module(..., package.seeall)
+local mymodule = {}
 roles = require("roles")
 
-default_action = "editme"
+mymodule.default_action = "editme"
 
-function status(self)
+function mymodule.status(self)
 	return self.model.get_users(self)
 end
 
-function editme(self)
+function mymodule.editme(self)
 	-- just to make sure can't modify any other user from this action
 	self.clientdata.userid = self.sessiondata.userinfo.userid
 	return self.handle_form(self, function()
@@ -42,7 +42,7 @@ function editme(self)
 		end, self.clientdata, "Save", "Edit My Settings", "Saved user")
 end
 
-function edituser(self)
+function mymodule.edituser(self)
 	return self.handle_form(self, function()
 			return self.model.read_user(self, self.clientdata.userid)
 		end, function(self, value)
@@ -63,10 +63,12 @@ function edituser(self)
 		end, self.clientdata, "Save", "Edit User Settings", "Saved user")
 end
 
-function newuser(self)
+function mymodule.newuser(self)
 	return self.handle_form(self, function() return self.model.read_user(self) end, self.model.create_user, self.clientdata, "Create", "Create New User", "Created user")
 end
 
-function deleteuser(self)
+function mymodule.deleteuser(self)
 	return self.handle_form(self, self.model.get_delete_user, self.model.delete_user, self.clientdata, "Delete", "Delete User", "Deleted user")
 end
+
+return mymodule

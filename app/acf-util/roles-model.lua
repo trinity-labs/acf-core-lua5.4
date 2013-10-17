@@ -1,12 +1,12 @@
 -- Roles/Group functions
-module (..., package.seeall)
+local mymodule = {}
 
 modelfunctions = require("modelfunctions")
 authenticator = require("authenticator")
 roles = require("roles")
 
 -- Return roles/permissions for specified user
-get_user_roles = function(self, userid)
+mymodule.get_user_roles = function(self, userid)
 	local userinfo = authenticator.get_userinfo(self, userid) or {}
 	rls = cfe({ type="list", value=userinfo.roles or {}, label="Roles" })
 	permissions = cfe({ type="table", value=roles.get_roles_perm(self, rls.value), label="Permissions" })
@@ -14,16 +14,16 @@ get_user_roles = function(self, userid)
 end
 
 -- Return permissions for specified role
-get_role_perms = function(self, role)
+mymodule.get_role_perms = function(self, role)
 	return cfe({ type="table", value=roles.get_role_perm(self, role), label="Permissions" })
 end
 	
 -- Return list of all permissions
-get_perms_list = function(self)
+mymodule.get_perms_list = function(self)
 	return cfe({ type="table", value=roles.get_all_permissions(self), label="All Permissions" })
 end
 
-view_roles = function(self)
+mymodule.view_roles = function(self)
 	local defined_roles, default_roles = roles.list_roles(self)
 	local defined_roles_cfe=cfe({ type="list", value=defined_roles, label="Locally-defined roles" })
 	local default_roles_cfe=cfe({ type="list", value=default_roles, label="System-defined roles" })
@@ -31,7 +31,7 @@ view_roles = function(self)
 	return cfe({ type="group", value={defined_roles=defined_roles_cfe, default_roles=default_roles_cfe} })
 end
 
-getpermissions = function(self, clientdata)
+mymodule.getpermissions = function(self, clientdata)
 	local role_cfe = cfe({ value=clientdata.role or "", label="Role", seq=1 })
 
 	local tmp, all_perms = roles.get_all_permissions(self)
@@ -68,11 +68,11 @@ getpermissions = function(self, clientdata)
 	return cfe({ type="table", value={role=role_cfe, permissions=permissions_cfe} })
 end
 
-setnewpermissions = function(self, permissions, action)
-	return setpermissions(self, permissions, action, true)
+mymodule.setnewpermissions = function(self, permissions, action)
+	return mymodule.setpermissions(self, permissions, action, true)
 end
 
-setpermissions = function(self, permissions, action, newrole)
+mymodule.setpermissions = function(self, permissions, action, newrole)
 	-- Validate entries and create error strings
 	local result = true
 	if newrole then
@@ -98,13 +98,13 @@ setpermissions = function(self, permissions, action, newrole)
 	return permissions
 end
 
-get_delete_role = function(self, clientdata)
+mymodule.get_delete_role = function(self, clientdata)
 	local defined_roles, default_roles = roles.list_roles(self)
 	local role = cfe({ type="select", value = clientdata.role or "", label="Role", option=defined_roles })
 	return cfe({ type="group", value={role=role}, label="Delete Role" })
 end
 
-delete_role = function(self, role)
+mymodule.delete_role = function(self, role)
 	local result, cmdresult = roles.delete_role(self, role.value.role.value)
 	if not result then
 		role.value.role.errtxt = cmdresult
@@ -121,3 +121,5 @@ delete_role = function(self, role)
 	end
 	return role
 end
+
+return mymodule

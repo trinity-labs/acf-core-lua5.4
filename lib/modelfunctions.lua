@@ -1,4 +1,4 @@
-module(..., package.seeall)
+local mymodule = {}
 
 -- Load libraries
 fs = require("acf.fs")
@@ -7,7 +7,7 @@ processinfo = require("acf.processinfo")
 posix = require("posix")
 subprocess = require("subprocess")
 
-function getenabled(servicename)
+function mymodule.getenabled(servicename)
 	local result = cfe({ label = "Program status", name=servicename })
 	result.value, result.errtxt = processinfo.daemoncontrol(servicename, "status")
 	if string.find(result.value, ": not found") then
@@ -20,7 +20,7 @@ function getenabled(servicename)
 	return result
 end
 
-function get_startstop(servicename)
+function mymodule.get_startstop(servicename)
 	local service = cfe({ type="hidden", value=servicename, label="Service Name" })
         local actions, descr = processinfo.daemon_actions(servicename)
 	local errtxt
@@ -34,7 +34,7 @@ function get_startstop(servicename)
 	return cfe({ type="group", label="Management", value={servicename=service}, option=actions, errtxt=errtxt })
 end
 
-function startstop_service(startstop, action)
+function mymodule.startstop_service(startstop, action)
 	if not action then
 		startstop.errtxt = "Invalid Action"
 	else
@@ -51,7 +51,7 @@ function startstop_service(startstop, action)
 	return startstop
 end
 
-function getstatus(servicename, packagename, label)
+function mymodule.getstatus(servicename, packagename, label)
 	local status = {}
 
 	if packagename then
@@ -65,7 +65,7 @@ function getstatus(servicename, packagename, label)
 	end
 
 	if servicename then
-		status.status = getenabled(servicename)
+		status.status = mymodule.getenabled(servicename)
 	
 		local autostart_value, autostart_errtxt = processinfo.process_autostart(servicename)
 		status.autostart = cfe({
@@ -79,7 +79,7 @@ function getstatus(servicename, packagename, label)
 	return cfe({ type="group", value=status, label=label })
 end
 
-function getfiledetails(file, validatefilename, validatefiledetails)
+function mymodule.getfiledetails(file, validatefilename, validatefiledetails)
 	local filename = cfe({ value=file or "", label="File name" })
 	local filecontent = cfe({ type="longtext", label="File content" })
 	local filesize = cfe({ value="0", label="File size" })
@@ -117,7 +117,7 @@ function getfiledetails(file, validatefilename, validatefiledetails)
 	return filedetails
 end
 
-function setfiledetails(self, filedetails, validatefilename, validatefiledetails)
+function mymodule.setfiledetails(self, filedetails, validatefilename, validatefiledetails)
 	filedetails.value.filecontent.value = string.gsub(format.dostounix(filedetails.value.filecontent.value), "\n+$", "")
 	local success = true
 	if type(validatefilename) == "function" then
@@ -140,8 +140,8 @@ function setfiledetails(self, filedetails, validatefilename, validatefiledetails
 	end
 	if success then
 		--fs.write_file(filedetails.value.filename.value, filedetails.value.filecontent.value)
-		write_file_with_audit(self, filedetails.value.filename.value, filedetails.value.filecontent.value)
-		filedetails = getfiledetails(filedetails.value.filename.value)
+		mymodule.write_file_with_audit(self, filedetails.value.filename.value, filedetails.value.filecontent.value)
+		filedetails = mymodule.getfiledetails(filedetails.value.filename.value)
 	else
 		filedetails.errtxt = "Failed to set file"
 	end
@@ -149,7 +149,7 @@ function setfiledetails(self, filedetails, validatefilename, validatefiledetails
 	return filedetails
 end
 
-function validateselect(select)
+function mymodule.validateselect(select)
 	for i,option in ipairs(select.option) do
 		if type(option) == "string" and option == select.value then
 			return true
@@ -161,7 +161,7 @@ function validateselect(select)
 	return false
 end
 
-function validatemulti(multi)
+function mymodule.validatemulti(multi)
 	local reverseoption = {}
 	for i,option in ipairs(multi.option) do
 		if type(option) == "string" then
@@ -179,7 +179,7 @@ function validatemulti(multi)
 	return true
 end
 
-function write_file_with_audit (self, path, str)
+function mymodule.write_file_with_audit (self, path, str)
 	if self then
 		local pre = ""
 		local post = ""
@@ -240,7 +240,7 @@ end
 -- output will never be nil
 -- errtxt will be nil for success and non-nil for failure
 -- if include_err, then stderr will be prepended to stdout (if executable doesn't fail)
-run_executable = function(args, include_err, input)
+mymodule.run_executable = function(args, include_err, input)
 	local output = ""
 	local errtxt
        	local res, err = pcall(function()
@@ -291,3 +291,5 @@ run_executable = function(args, include_err, input)
 	end
 	return output, errtxt
 end
+
+return mymodule

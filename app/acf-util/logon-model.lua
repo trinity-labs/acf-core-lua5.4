@@ -1,6 +1,6 @@
 -- Logon / Logoff model functions
 
-module (..., package.seeall)
+local mymodule = {}
 
 session = require ("session")
 html = require ("acf.html")
@@ -9,7 +9,7 @@ roles = require ("roles")
 authenticator = require ("authenticator")
 
 -- Logoff the user by deleting session data
-logoff = function (sessiondir, sessiondata)
+mymodule.logoff = function (sessiondir, sessiondata)
 	-- Unlink / delete the current session
 	local result = session.unlink_session(sessiondir, sessiondata.id)
 	local success = (result ~= nil)
@@ -23,7 +23,7 @@ end
 
 -- Log on new user if possible and set up userinfo in session
 -- if we fail, we leave the session alone (don't log off)
-logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
+mymodule.logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 	-- Check to see if we can log on this user id / ip addr
 	local countevent = session.count_events(sessiondir, userid, session.hash_ip_addr(ip_addr), self.conf.lockouttime, self.conf.lockouteventlimit)
 	if countevent then
@@ -34,7 +34,7 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 		if authenticator.authenticate (self, userid, password) then
 			-- We have a successful logon, change sessiondata
 			-- for some reason, can't call this function or it skips rest of logon
-			-- logoff(sessiondir, sessiondata)
+			-- mymodule.logoff(sessiondir, sessiondata)
 			---[[ so, do this instead
 			session.unlink_session(sessiondir, sessiondata.id)
 			-- Clear the current session data
@@ -57,6 +57,8 @@ logon = function (self, userid, password, ip_addr, sessiondir, sessiondata)
 	return cfe({ type="boolean", value=false, label="Logon Success" })
 end
 
-list_users = function(self)
+mymodule.list_users = function(self)
 	return cfe({ type="list", value=authenticator.list_users(self), label="Users" })
 end
+
+return mymodule

@@ -5,7 +5,7 @@
    ]]--
 -- Required global libraries
 
-module(..., package.seeall)
+local mymodule = {}
 
 -- This is not in the global namespace, but future
 -- require statements shouldn't need to go to the disk lib
@@ -58,7 +58,7 @@ local function build_menus(self)
 end
 
 local check_permission = function(self, prefix, controller, action)
-	--logevent("Trying "..(prefix or "/")..(controller or "nil").."/"..(action or "nil"))
+	--self.logevent("Trying "..(prefix or "/")..(controller or "nil").."/"..(action or "nil"))
 	if nil == self.sessiondata.permissions then return false end
 	if prefix and controller then
 		if nil == self.sessiondata.permissions[prefix] or nil == self.sessiondata.permissions[prefix][controller] then return false end
@@ -68,7 +68,7 @@ local check_permission = function(self, prefix, controller, action)
 end
 
 local check_permission_string = function (self, str)
-	local prefix, controller, action = parse_redir_string(str)
+	local prefix, controller, action = self.parse_redir_string(str)
 	if prefix == "/" then prefix = self.conf.prefix end
 	if controller == "" then controller = self.conf.controller end
 	
@@ -131,7 +131,7 @@ local dispatch_component = function(self, str, clientdata, suppress_view)
 	self.clientdata = clientdata or {}
 	self.clientdata.sessionid = tempclientdata.sessionid
 
-	local prefix, controller, action = parse_redir_string(str)
+	local prefix, controller, action = self.parse_redir_string(str)
 	if prefix == "/" then prefix = self.conf.prefix end
 	if controller == "" then controller = self.conf.controller end
 	local viewtable = self.dispatch(self, prefix, controller, action)
@@ -154,7 +154,7 @@ local has_view = function(self)
 end
 
 -- Override the mvc create_helper_library function to add our functions
-create_helper_library = function ( self )
+mymodule.create_helper_library = function ( self )
 	-- Call the mvc version
 	local library = parent_create_helper_library(self)
 --[[	-- If we have a separate library, here's how we could do it
@@ -171,7 +171,7 @@ create_helper_library = function ( self )
 end
 
 -- Our local view resolver called by our dispatch - add the template and skin
-view_resolver = function(self)
+mymodule.view_resolver = function(self)
 	self.conf.viewtype = self.conf.viewtype or "html"
 	local viewfunc, viewlibrary, pageinfo = parent_view_resolver(self)
 	pageinfo.viewfunc = viewfunc
@@ -206,14 +206,14 @@ view_resolver = function(self)
 	return func, viewlibrary, pageinfo, self.sessiondata
 end
 
-mvc = {}
-mvc.on_load = function (self, parent)
+mymodule.mvc = {}
+mymodule.mvc.on_load = function (self, parent)
 	-- open the log file
 	if self.conf.logfile then
 		self.conf.loghandle = io.open (self.conf.logfile, "a+")
 	end
 
-	--logevent("acf_www-controller mvc.on_load")
+	--self.logevent("acf_www-controller mvc.on_load")
 
 	-- Make sure we have some kind of sane defaults for libdir, wwwdir, and sessiondir
 	self.conf.libdir = self.conf.libdir or ( string.match(self.conf.appdir, "[^,]+/") .. "/lib/" )
@@ -237,7 +237,7 @@ mvc.on_load = function (self, parent)
 	self.sessiondata = nil
 	self.sessiondata = {}
 	if nil ~= self.clientdata.sessionid then
-		--logevent("Found session id = " .. self.clientdata.sessionid)
+		--self.logevent("Found session id = " .. self.clientdata.sessionid)
 		-- Load existing session data
 		local timestamp
 		timestamp, self.sessiondata = 
@@ -247,12 +247,12 @@ mvc.on_load = function (self, parent)
 			-- invalid session id, report event and create new one
 			sessionlib.record_event(self.conf.sessiondir, nil,
 				sessionlib.hash_ip_addr(self.conf.clientip))
-			--logevent("Didn't find session")
+			--self.logevent("Didn't find session")
 		else
-			--logevent("Found session")
+			--self.logevent("Found session")
 			-- We read in a valid session, check if it's ok
 			if self.sessiondata.userinfo and self.sessiondata.userinfo.userid and sessionlib.count_events(self.conf.sessiondir, self.sessiondata.userinfo.userid, sessionlib.hash_ip_addr(self.conf.clientip), self.conf.lockouttime, self.conf.lockouteventlimit) then
-				--logevent("Bad session, erasing")
+				--self.logevent("Bad session, erasing")
 				-- Too many events on this id / ip, kill the session
 				sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)
 				self.sessiondata.id = nil
@@ -270,34 +270,34 @@ mvc.on_load = function (self, parent)
 		self.sessiondata.id = sessionlib.random_hash(512)
 		authenticator = require("authenticator")
 		self.sessiondata.userinfo = authenticator.get_userinfo(self, ENV.REMOTE_USER)
-		logevent("Automatic logon as ENV.REMOTE_USER: "..tostring(ENV.REMOTE_USER))
+		self.logevent("Automatic logon as ENV.REMOTE_USER: "..tostring(ENV.REMOTE_USER))
 	end
 
 	if nil == self.sessiondata.id then
 		self.sessiondata = {}
 		self.sessiondata.id = sessionlib.random_hash(512)
-		--logevent("New session = " .. self.sessiondata.id)
+		--self.logevent("New session = " .. self.sessiondata.id)
 	end
 	if nil == self.sessiondata.permissions or nil == self.sessiondata.menu then
-		--logevent("Build menus")
+		--self.logevent("Build menus")
 		build_menus(self)
 	end
 end
 
-mvc.on_unload = function (self)
+mymodule.mvc.on_unload = function (self)
 	sessionlib=require ("session")
 	if self.sessiondata.id then
 		sessionlib.save_session(self.conf.sessiondir, self.sessiondata)
         end
 	-- Close the logfile
-	--logevent("acf_www-controller mvc.on_unload")
+	--self.logevent("acf_www-controller mvc.on_unload")
 	if self.conf.loghandle then
 		self.conf.loghandle:close()
 	end
 end
 
 -- Overload the MVC's exception handler with our own to handle redirection
-exception_handler = function (self, message )
+mymodule.exception_handler = function (self, message )
 	local html = require ("acf.html")
 	local viewtable
 	if type(message) == "table" then
@@ -309,7 +309,7 @@ exception_handler = function (self, message )
 			self.conf.controller = "dispatcherror"
 			self.conf.action = ""
 		elseif message.type == "redir" or message.type == "redir_to_referrer" or message.type == "dispatch" then
-			--if self.sessiondata.id then logevent("Redirecting " .. self.sessiondata.id) end
+			--if self.sessiondata.id then self.logevent("Redirecting " .. self.sessiondata.id) end
 			io.write ("Status: 302 Moved\n")
 			if message.type == "redir" then
 				io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
@@ -341,7 +341,7 @@ exception_handler = function (self, message )
 			parent_exception_handler(self, message)
 		end
 	else
-		logevent("Exception: "..message)
+		self.logevent("Exception: "..message)
 		viewtable = {message = message}
 		self.conf.prefix = "/"
 		self.conf.controller = "exception"
@@ -351,7 +351,7 @@ exception_handler = function (self, message )
 	if viewtable then
 		if not self.conf.suppress_view then
 			local success, err = xpcall ( function () 
-				local viewfunc, p1, p2, p3 = view_resolver(self)
+				local viewfunc, p1, p2, p3 = self.view_resolver(self)
 				viewfunc (viewtable, p1, p2, p3)
 			end, 
 			self:soft_traceback()
@@ -368,14 +368,14 @@ end
 -- check permissions and redirect if not allowed to see
 -- pass more parameters to the view
 -- allow display of views without actions
-dispatch = function (self, userprefix, userctlr, useraction) 
+mymodule.dispatch = function (self, userprefix, userctlr, useraction) 
 	local controller = nil
 	local viewtable
 	local success, err = xpcall ( function () 
 
 	if userprefix == nil then
 		self.conf.prefix, self.conf.controller, self.conf.action =
-			parse_path_info(ENV["PATH_INFO"])
+			self.parse_path_info(ENV["PATH_INFO"])
 		self.conf.wwwprefix = string.gsub(ENV["SCRIPT_NAME"] or "", "/?cgi%-bin/acf.*", "")
 	else
 		self.conf.prefix = userprefix or "/"
@@ -404,11 +404,11 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	for name,value in pairs(self.conf) do origconf[name]=value end
 	if "" == self.conf.controller and self.sessiondata.userinfo and self.sessiondata.userinfo.home and self.sessiondata.userinfo.home ~= "" then
 		self.conf.prefix, self.conf.controller, self.conf.action =
-			parse_path_info(self.sessiondata.userinfo.home)
+			self.parse_path_info(self.sessiondata.userinfo.home)
 	end
 	if "" == self.conf.controller and self.conf.home and self.conf.home ~= "" then
 		self.conf.prefix, self.conf.controller, self.conf.action =
-			parse_path_info(self.conf.home)
+			self.parse_path_info(self.conf.home)
 	end
 	if "" == self.conf.controller then
 		self.conf.prefix = "/acf-util/"
@@ -418,7 +418,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 
 	-- If we have different prefix / controller / action, redirect
 	if self.conf.prefix ~= origconf.prefix or self.conf.controller ~= origconf.controller or self.conf.action ~= origconf.action then
-		redirect(self, self.conf.action) -- controller and prefix already in self.conf
+		self:redirect(self.conf.action) -- controller and prefix already in self.conf
 	end
 
 	if "" ~= self.conf.controller then
@@ -481,7 +481,7 @@ dispatch = function (self, userprefix, userctlr, useraction)
 	end
 
 	if not self.conf.suppress_view then
-		local viewfunc, p1, p2, p3 = view_resolver(self)
+		local viewfunc, p1, p2, p3 = self.view_resolver(self)
 		viewfunc (viewtable, p1, p2, p3)
 	end
 		
@@ -505,14 +505,14 @@ end
 -- Cause a redirect to specified (or default) action
 -- We use the self.conf table because it already has prefix,controller,etc
 -- The actual redirection is defined in exception_handler above
-redirect = function (self, str, result)
+mymodule.redirect = function (self, str, result)
 	if self.conf.viewtype ~= "html" then
 		return
 	end
 	if result then
 		self.sessiondata[self.conf.action.."result"] = result
 	end
-	local prefix, controller, action = parse_redir_string(str)
+	local prefix, controller, action = self.parse_redir_string(str)
 	if prefix ~= "/" then self.conf.prefix = prefix end
 	if controller ~= "" then self.conf.controller = controller end
 	
@@ -526,7 +526,7 @@ end
 
 -- If we've done something, cause a redirect to the referring page (assuming it's different)
 -- Also handles retrieving the result of a previously redirected action
-redirect_to_referrer = function(self, result)
+mymodule.redirect_to_referrer = function(self, result)
 	if self.conf.viewtype ~= "html" then
 		return result
 	end
@@ -559,7 +559,7 @@ end
 -- parse a "URI" like string into a prefix, controller and action
 -- this is the same as URI string, but opposite preference
 -- if only one is defined, it's assumed to be the action
-parse_redir_string = function( str )
+mymodule.parse_redir_string = function( str )
 	str = str or "" 
 	str = string.gsub(str, "/+$", "")
 	local action = string.match(str, "[^/]+$") or ""
@@ -575,16 +575,16 @@ parse_redir_string = function( str )
 	return prefix, controller, action
 end
 
-logevent = function ( message )
-	if conf.loghandle then
-		conf.loghandle:write (string.format("%s: %s\n", os.date(), message or ""))
+mymodule.logevent = function ( message )
+	if mymodule.conf.loghandle then
+		mymodule.conf.loghandle:write (string.format("%s: %s\n", os.date(), message or ""))
 	else
 		-- call to parent's handler
 		__index.logevent(message)
 	end
 end
 
-handle_clientdata = function(form, clientdata)
+mymodule.handle_clientdata = function(form, clientdata)
 	clientdata = clientdata or {}
 	form.errtxt = nil
 	for name,value in pairs(form.value) do
@@ -603,7 +603,7 @@ handle_clientdata = function(form, clientdata)
 			clientdata[name] = actualval
 		end
 		if value.type == "group" then
-			handle_clientdata(value, clientdata[name])
+			mymodule.handle_clientdata(value, clientdata[name])
 		elseif value.type == "boolean" then
 			--- HTML forms simply don't include checkboxes unless they're checked
 			value.value = (clientdata[name] ~= nil) and (clientdata[name] ~= "false")
@@ -636,7 +636,7 @@ handle_clientdata = function(form, clientdata)
 	end
 end
 
-handle_form = function(self, getFunction, setFunction, clientdata, option, label, descr)
+mymodule.handle_form = function(self, getFunction, setFunction, clientdata, option, label, descr)
 	local form = getFunction(self, clientdata)
 
 	if clientdata.submit then
@@ -669,3 +669,5 @@ handle_form = function(self, getFunction, setFunction, clientdata, option, label
 
 	return form
 end
+
+return mymodule

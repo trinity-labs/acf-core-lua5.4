@@ -4,7 +4,7 @@
      Copyright (C) 2007  Nathan Angelacos
      Licensed under the terms of GPL2
   ]]--
-module(..., package.seeall)
+local mymodule = {}
 
 posix = require("posix")
 subprocess = require("subprocess")
@@ -13,7 +13,7 @@ format = require("acf.format")
 -- For security, set the path
 posix.setenv("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin")
 
-mvc = {}
+mymodule.mvc = {}
 
 -- the constructor
 --[[ Builds a new MVC object.  If "module" is given, then tries to load
@@ -27,7 +27,7 @@ mvc = {}
 	appname - the name of the application
 	]]
 
-new = function (self, modname)
+mymodule.new = function (self, modname)
 	local model_loaded = true
 	local worker_loaded = true
 	local c = {}
@@ -107,7 +107,7 @@ new = function (self, modname)
 	return c, worker_loaded, model_loaded
 end
 
-destroy = function (self)
+mymodule.destroy = function (self)
 	if  type(rawget(self.worker.mvc, "on_unload")) == "function" then
 		self.worker.mvc.on_unload(self)
 		self.worker.mvc.on_unload = nil
@@ -129,7 +129,7 @@ destroy = function (self)
 end
 
 -- This is a sample front controller/dispatch.   
-dispatch = function (self, userprefix, userctlr, useraction, clientdata) 
+mymodule.dispatch = function (self, userprefix, userctlr, useraction, clientdata) 
 	local controller = nil
 	local success, err = xpcall ( function () 
 	self.conf.prefix = userprefix or "/"
@@ -204,7 +204,7 @@ dispatch = function (self, userprefix, userctlr, useraction, clientdata)
 			controller = nil
 		end
 		if nil == handler then
-			handler = self.worker or mvc
+			handler = self.worker or self.mvc
 			handler:exception_handler(err)
 		end
 	end
@@ -212,7 +212,7 @@ end
 
 -- Tries to see if name exists in the self.conf.appdir, and if so, it loads it.
 -- otherwise, returns nil, but no error
-soft_require = function (self, name )
+mymodule.soft_require = function (self, name )
 	local filename, file
 	for p in string.gmatch(self.conf.appdir, "[^,]+") do
 		filename  = p .. name .. ".lua"
@@ -239,7 +239,7 @@ soft_require = function (self, name )
 end
 
 -- look in various places for a config file, and store it in self.conf
-read_config = function( self, appname, home )
+mymodule.read_config = function( self, appname, home )
 	appname = appname or self.conf.appname
 	self.conf.appname = self.conf.appname or appname
 
@@ -286,7 +286,7 @@ end
 
 -- parse a "URI" like string into a prefix, controller and action
 -- return them (or blank strings)
-parse_path_info = function( str )
+mymodule.parse_path_info = function( str )
 	str = str or "" 
 	local words = {}
 	str = string.gsub(str, "/+$", "")
@@ -304,7 +304,7 @@ end
 
 -- look for a view
 -- ctlr-action-view, then  ctlr-view
-find_view = function ( appdir, prefix, controller, action, viewtype )
+mymodule.find_view = function ( appdir, prefix, controller, action, viewtype )
 	if not viewtype then return nil end
 	for p in string.gmatch(appdir, "[^,]+") do
 		local names = { p .. prefix .. controller .. "-" ..
@@ -324,7 +324,7 @@ find_view = function ( appdir, prefix, controller, action, viewtype )
 	return nil
 end
 
-create_helper_library = function ( self )
+mymodule.create_helper_library = function ( self )
 	local library = {}
 --[[	-- If we have a separate library, here's how we could do it
 	local library = require("library_name")
@@ -338,7 +338,7 @@ create_helper_library = function ( self )
 end
 
 -- The view of last resort
-auto_view = function(viewtable, viewlibrary, pageinfo, session)
+mymodule.auto_view = function(viewtable, viewlibrary, pageinfo, session)
 	if pageinfo.viewtype == "html" then
 		local htmlviewfunctions = require("htmlviewfunctions")
 		htmlviewfunctions.displayitem(viewtable, 1, pageinfo)
@@ -354,7 +354,7 @@ auto_view = function(viewtable, viewlibrary, pageinfo, session)
 end
 
 -- The view resolver of last resort.
-view_resolver = function(self)
+mymodule.view_resolver = function(self)
 	local viewname, viewlibrary
 
 	-- search for view
@@ -385,7 +385,7 @@ view_resolver = function(self)
 end
 
 -- Generates a debug.traceback if called with no arguments
-soft_traceback = function (self, message )
+mymodule.soft_traceback = function (self, message )
 	if message then
 		return message
 	else
@@ -394,17 +394,17 @@ soft_traceback = function (self, message )
 end
 
 -- The exception hander of last resort
-exception_handler = function (self, message )
+mymodule.exception_handler = function (self, message )
 	self.logevent ("The following unhandled application error occured:\n\n")
 
 	if (type(message) == "table" ) then
 		if (message.type == "dispatch") then
-			logevent ('controller: "' .. message.controller .. '" does not have a "' .. message.action .. '" action.')
+			self.logevent ('controller: "' .. message.controller .. '" does not have a "' .. message.action .. '" action.')
 		else
-			logevent ("An error of type: '" .. (tostring(message.type) or "nil") .. "' was raised." )
+			self.logevent ("An error of type: '" .. (tostring(message.type) or "nil") .. "' was raised." )
 		end
 	else
-		logevent (tostring(message))
+		self.logevent (tostring(message))
 	end
 
 	-- Pass the exception to the calling function
@@ -413,7 +413,7 @@ end
 
 -- create a Configuration Framework Entity (cfe)
 -- returns a table with at least "value", "type", and "label"
-cfe = function ( optiontable )
+mymodule.cfe = function ( optiontable )
 	optiontable = optiontable or {}
 	me = { 	value="",
 		type="text",
@@ -423,26 +423,26 @@ cfe = function ( optiontable )
 	end
 	return me
 end
-_G.cfe = cfe
+_G.cfe = mymodule.cfe
 
-logevent = function ( message )
+mymodule.logevent = function ( message )
 	subprocess.call({"logger", "ACF: " .. (message or "")})
 end
 
-handle_clientdata = function(form, clientdata)
+mymodule.handle_clientdata = function(form, clientdata)
 	clientdata = clientdata or {}
 	form.errtxt = nil
 	for name,value in pairs(form.value) do
 		value.errtxt = nil
 		if value.type == "group" then
-			handle_clientdata(value, clientdata[name])
+			mymodule.handle_clientdata(value, clientdata[name])
 		else
 			value.value = clientdata[name] or value.value
 		end
 	end
 end
 
-handle_form = function(self, getFunction, setFunction, clientdata, option, label, descr)
+mymodule.handle_form = function(self, getFunction, setFunction, clientdata, option, label, descr)
 	local form = getFunction(self, clientdata)
 
 	if clientdata.submit then
@@ -460,3 +460,5 @@ handle_form = function(self, getFunction, setFunction, clientdata, option, label
 
 	return form
 end
+
+return mymodule

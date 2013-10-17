@@ -1,4 +1,4 @@
-module (..., package.seeall)
+local mymodule = {}
 
 modelfunctions = require("modelfunctions")
 fs = require("acf.fs")
@@ -31,11 +31,11 @@ local function list_skins(self)
 end
 
 
-get = function (self)
+mymodule.get = function (self)
 	return cfe({ type="list", value=list_skins(self), label="Skins" })
 end
 
-get_update = function (self)
+mymodule.get_update = function (self)
 	local skin = cfe({ type="select", value="", label="Skin", option=list_skins(self) })
 	if self and self.conf and self.conf.skin then
 		skin.value = self.conf.skin
@@ -43,7 +43,7 @@ get_update = function (self)
 	return cfe({ type="group", value={skin=skin}, label="Update Skin" })
 end
 
-update = function (self, newskin)
+mymodule.update = function (self, newskin)
 	local success = modelfunctions.validateselect(newskin.value.skin)
 	if success then
 		set_skins(self, newskin.value.skin.value)
@@ -53,3 +53,5 @@ update = function (self, newskin)
 	end
 	return newskin
 end
+
+return mymodule

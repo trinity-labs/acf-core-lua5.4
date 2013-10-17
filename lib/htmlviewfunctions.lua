@@ -1,4 +1,4 @@
-module(..., package.seeall)
+local mymodule = {}
 
 html = require("acf.html")
 session = require("session")
@@ -22,12 +22,12 @@ local function getlabel(myitem, value)
 	return tostring(value)
 end
 
-function displayitem(myitem, header_level, page_info)
+function mymodule.displayitem(myitem, header_level, page_info)
 	if not myitem then return end
 	if myitem.type == "form" then
 		header_level = header_level or 1
 		io.write("<H"..tostring(header_level)..">"..html.html_escape(myitem.label).."</H"..tostring(header_level)..">")
-		displayform(myitem, nil, nil, page_info, header_level)
+		mymodule.displayform(myitem, nil, nil, page_info, header_level)
 	elseif myitem.type == "group" then
 		header_level = header_level or 1
 		io.write("<H"..tostring(header_level)..">"..html.html_escape(myitem.label).."</H"..tostring(header_level)..">")
@@ -49,7 +49,7 @@ function displayitem(myitem, header_level, page_info)
 		end
 		for x,name in ipairs(order) do
 			if myitem.value[name] then
-				displayitem(myitem.value[name], tonumber(header_level)+1)
+				mymodule.displayitem(myitem.value[name], tonumber(header_level)+1)
 			end
 		end
 	elseif myitem.type ~= "hidden" then
@@ -67,7 +67,7 @@ function displayitem(myitem, header_level, page_info)
 	end
 end
 
-function displayformitem(myitem, name, viewtype, header_level, group)
+function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 	if not myitem then return end
 	if name then myitem.name = name end
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
@@ -88,7 +88,7 @@ function displayformitem(myitem, name, viewtype, header_level, group)
 		io.write("<H"..tostring(header_level)..">"..html.html_escape(myitem.label).."</H"..tostring(header_level)..">")
 		if myitem.descr then io.write('<P CLASS="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<BR>") .. "</P>\n") end
 		if myitem.errtxt then io.write('<P CLASS="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<BR>") .. "</P>\n") end
-		displayformcontents(myitem, nil, nil, tonumber(header_level)+1, myitem.name)
+		mymodule.displayformcontents(myitem, nil, nil, tonumber(header_level)+1, myitem.name)
 	elseif myitem.type == "multi" then
 		-- FIXME multiple select doesn't work in haserl, so use series of checkboxes
 		--myitem.type = "select"
@@ -156,7 +156,7 @@ function displayformitem(myitem, name, viewtype, header_level, group)
 	end
 end
 
-function displayformstart(myform, page_info)
+function mymodule.displayformstart(myform, page_info)
 	if not myform then return end
 	if not myform.action and page_info then
 		myform.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
@@ -170,11 +170,11 @@ function displayformstart(myform, page_info)
 	end
 	io.write('method="POST">\n')
 	if myform.value.redir then
-		displayformitem(myform.value.redir, "redir")
+		mymodule.displayformitem(myform.value.redir, "redir")
 	end
 end
 
-function displayformcontents(myform, order, finishingorder, header_level, group)
+function mymodule.displayformcontents(myform, order, finishingorder, header_level, group)
 	if not myform then return end
 	if not order and not finishingorder then
 		tmporder = {}
@@ -197,7 +197,7 @@ function displayformcontents(myform, order, finishingorder, header_level, group)
 			reverseorder[name] = x
 			if myform.value[name] then
 				myform.value[name].name = name
-				displayformitem(myform.value[name], nil, nil, header_level, group)
+				mymodule.displayformitem(myform.value[name], nil, nil, header_level, group)
 			end
 		end
 	end
@@ -210,20 +210,20 @@ function displayformcontents(myform, order, finishingorder, header_level, group)
 	for name,item in pairs(myform.value) do
 		if nil == reverseorder[name] and nil == reversefinishingorder[name] then
 			item.name = name
-			displayformitem(item, nil, nil, header_level, group)
+			mymodule.displayformitem(item, nil, nil, header_level, group)
 		end
 	end
 	if finishingorder then
 		for x,name in ipairs(finishingorder) do
 			if myform.value[name] then
 				myform.value[name].name = name
-				displayformitem(myform.value[name], nil, nil, header_level, group)
+				mymodule.displayformitem(myform.value[name], nil, nil, header_level, group)
 			end
 		end
 	end
 end
 
-function displayformend(myform)
+function mymodule.displayformend(myform)
 	if not myform then return end
 	local option = myform.submit or myform.option
 	io.write('<DT></DT><DD>')
@@ -239,14 +239,14 @@ function displayformend(myform)
 	io.write('</DL>\n')
 end
 
-function displayform(myform, order, finishingorder, page_info, header_level)
+function mymodule.displayform(myform, order, finishingorder, page_info, header_level)
 	if not myform then return end
-	displayformstart(myform, page_info)
-	displayformcontents(myform, order, finishingorder, header_level)
-	displayformend(myform)
+	mymodule.displayformstart(myform, page_info)
+	mymodule.displayformcontents(myform, order, finishingorder, header_level)
+	mymodule.displayformend(myform)
 end
 
-function displaycommandresults(commands, session, preserveerrors)
+function mymodule.displaycommandresults(commands, session, preserveerrors)
 	local cmdresult = {}
 	for i,cmd in ipairs(commands) do
 		if session[cmd.."result"] then
@@ -269,7 +269,7 @@ end
 
 -- Divide up data into pages of size pagesize
 -- clientdata can be a page number or a table where clientdata.page is the page number
-function paginate(data, clientdata, pagesize)
+function mymodule.paginate(data, clientdata, pagesize)
 	local subset = data
 	local page_data = { numpages=1, page=1, pagesize=pagesize, num=#data }
 	if #data > pagesize then
@@ -294,7 +294,7 @@ function paginate(data, clientdata, pagesize)
 	return subset, page_data
 end
 
-function displaypagination(page_data, page_info)
+function mymodule.displaypagination(page_data, page_info)
 	local min, max
 	if page_data.page == 0 then
 		min = 1
@@ -363,10 +363,12 @@ end
 
 -- give a cfe and get back a string of what is inside
 -- great for troubleshooting and seeing what is really being passed to the view
-function cfe_unpack ( a )
+function mymodule.cfe_unpack ( a )
 	if type(a) == "table" then
 		value = session.serialize("cfe", a)
 		value = "<pre>" .. html.html_escape(value) .. "</pre>"
 		return value
 	end
 end
+
+return mymodule
