@@ -10,6 +10,7 @@ create a different file for each field.
 local mymodule = {}
 
 fs = require("acf.fs")
+format = require("acf.format")
 posix = require("posix")
 
 mymodule.list_fields = function(self, tabl)
@@ -18,8 +19,8 @@ mymodule.list_fields = function(self, tabl)
 	end
 
 	local fields = {}
-	for file in fs.find(".*"..tabl, self.conf.confdir) do
-		local field = string.match(file, "([^/]*)"..tabl.."$") or ""
+	for file in fs.find(".*"..format.escapemagiccharacters(tabl), self.conf.confdir) do
+		local field = string.match(file, "([^/]*)"..format.escapemagiccharacters(tabl).."$") or ""
 		if fs.is_file(file) and field ~= "" then
 			fields[#fields + 1] = field
 		end
@@ -75,7 +76,7 @@ mymodule.write_entry = function(self, tabl, field, id, entry)
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local output = {id .. ":" .. entry}
 	for k,v in pairs(passwdfilecontent) do
-		if not ( string.match(v, "^".. id .. "[:=]") ) and not string.match(v, "^%s*$") then
+		if not ( string.match(v, "^".. format.escapemagiccharacters(id) .. "[:=]") ) and not string.match(v, "^%s*$") then
 			table.insert(output, v)
 		end
 	end
@@ -92,8 +93,8 @@ mymodule.read_entry = function(self, tabl, field, id)
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local entry
 	for k,v in pairs(passwdfilecontent) do
-		if string.match(v, "^".. id .. "[:=]") then
-			return string.match(v, "^"..id.."[:=](.*)")
+		if string.match(v, "^".. format.escapemagiccharacters(id) .. "[:=]") then
+			return string.match(v, "^"..format.escapemagiccharacters(id).."[:=](.*)")
 		end
 	end
 	return nil
@@ -109,7 +110,7 @@ mymodule.delete_entry = function (self, tabl, field, id)
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local output = {}
 	for k,v in pairs(passwdfilecontent) do
-		if not ( string.match(v, "^".. id .. "[:=]") ) and not string.match(v, "^%s*$") then
+		if not ( string.match(v, "^".. format.escapemagiccharacters(id) .. "[:=]") ) and not string.match(v, "^%s*$") then
 			table.insert(output, v)
 		else
 			result = true
