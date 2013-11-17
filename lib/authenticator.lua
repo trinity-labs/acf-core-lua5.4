@@ -11,6 +11,8 @@ session = require("session")
 
 -- This is the sub-authenticator
 local auth = {}
+
+-- List all fields, combining all subauths
 auth.list_fields = function(self, tabl)
 	if not auth.subauths then
 		return nil
@@ -19,41 +21,48 @@ auth.list_fields = function(self, tabl)
 	local revfields = {}
 	for i,sub in ipairs(auth.subauths) do
 		local subf = sub.list_fields(self, tabl)
-		for j,f in ipairs(subf) do
+		for j,f in ipairs(subf or {}) do
 			if not revfields[f] then
 				fields[#fields+1] = f
-				revfields[#revfields+1] = #fields
+				revfields[f] = #fields
 			end
 		end
 	end
 	return fields
 end
 
+-- Read all entries from field, combining all subauths (first entry for id takes precedence)
 auth.read_field = function(self, tabl, field)
 	if not auth.subauths then
 		return nil
 	end
+	local entries = {}
+	local reventries = {}
 	for i,sub in ipairs(auth.subauths) do
 		local f = sub.read_field(self, tabl, field)
-		if f then
-			return f
+		for j,a in ipairs(f or {}) do
+			if not reventries[a.id] then
+				entries[#entries+1] = a
+				reventries[a.id] = i
+			end
 		end
 	end
-	return nil
+	return entries
 end
 
+-- Delete all entries in all subauths for specified field
 auth.delete_field = function(self, tabl, field)
 	if not auth.subauths then
 		return nil
 	end
 	for i,sub in ipairs(auth.subauths) do
-		if sub.delete_field(self, tabl, field) then
-			return true
-		end
+		sub.delete_field(self, tabl, field)
 	end
 	return false
 end
 
+-- Should we write to the first subauth that allows writes or to subauth where entry already exists?
+-- Chose to write to first subauth that allows writes because overrides all others
 auth.write_entry = function(self, tabl, field, id, entry)
 	if not auth.subauths then
 		return nil
@@ -66,6 +75,7 @@ auth.write_entry = function(self, tabl, field, id, entry)
 	return false
 end
 
+-- Return the details from the first match from one of the subauths
 auth.read_entry = function(self, tabl, field, id)
 	if not auth.subauths then
 		return nil
@@ -79,16 +89,15 @@ auth.read_entry = function(self, tabl, field, id)
 	return nil
 end
 
+-- Delete the entry from all subauths
 auth.delete_entry = function (self, tabl, field, id)
 	if not auth.subauths then
 		return nil
 	end
 	for i,sub in ipairs(auth.subauths) do
-		if sub.delete_entry(self, tabl, field, id) then
-			return true
-		end
+		sub.delete_entry(self, tabl, field, id)
 	end
-	return false
+	return true
 end
 
 -- Publicly define the pre-defined tables
@@ -190,6 +199,7 @@ mymodule.get_subauth = function(self)
 		if self and self.conf and self.conf.authenticator and self.conf.authenticator ~= "" then
 			for a in string.gmatch(self.conf.authenticator, "[^,]+") do
 				auth.subauths[#auth.subauths+1] = require(string.gsub(a, "%.lua$", ""))
+				auth.subauths[#auth.subauths].name = a
 			end
 		else
 			auth.subauths[1] = require("authenticator-plaintext")

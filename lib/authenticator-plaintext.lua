@@ -20,8 +20,9 @@ mymodule.list_fields = function(self, tabl)
 
 	local fields = {}
 	for file in fs.find(".*"..format.escapemagiccharacters(tabl), self.conf.confdir) do
-		local field = string.match(file, "([^/]*)"..format.escapemagiccharacters(tabl).."$") or ""
-		if fs.is_file(file) and field ~= "" then
+		local field = string.match(file, self.conf.confdir.."(.*)"..format.escapemagiccharacters(tabl).."$")
+		-- We only allow one level of directory traversal
+		if field and fs.is_file(file) and not string.find(field, "/.*/") then
 			fields[#fields + 1] = field
 		end
 	end
@@ -29,7 +30,7 @@ mymodule.list_fields = function(self, tabl)
 end
 
 mymodule.read_field = function(self, tabl, field)
-	if not self or not tabl or tabl == "" or not field then
+	if not self or not tabl or tabl == "" or not field or string.find(field, "^..*/.*/") then
 		return nil
 	end
 
@@ -55,7 +56,7 @@ mymodule.read_field = function(self, tabl, field)
 end
 
 mymodule.delete_field = function(self, tabl, field)
-	if not self or not tabl or tabl == "" or not field then
+	if not self or not tabl or tabl == "" or not field or string.find(field, "^..*/.*/") then
 		return false
 	end
 	local passwd_path = self.conf.confdir .. field .. tabl
@@ -64,7 +65,7 @@ mymodule.delete_field = function(self, tabl, field)
 end
 
 mymodule.write_entry = function(self, tabl, field, id, entry)
-	if not self or not tabl or tabl == "" or not field or not id or not entry then
+	if not self or not tabl or tabl == "" or not field or string.find(field, "^..*/.*/") or not id or not entry then
 		return false
 	end
 
@@ -85,7 +86,7 @@ mymodule.write_entry = function(self, tabl, field, id, entry)
 end
 
 mymodule.read_entry = function(self, tabl, field, id)
-	if not self or not tabl or tabl == "" or not field or not id then
+	if not self or not tabl or tabl == "" or not field or string.find(field, "^..*/.*/") or not id then
 		return nil
 	end
 	-- Set path to passwordfile
@@ -101,7 +102,7 @@ mymodule.read_entry = function(self, tabl, field, id)
 end
 
 mymodule.delete_entry = function (self, tabl, field, id)
-	if not self or not tabl or tabl == "" or not field or not id then
+	if not self or not tabl or tabl == "" or not field or string.find(field, "^..*/.*/") or not id then
 		return false
 	end
 	local result = false
