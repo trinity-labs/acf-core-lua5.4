@@ -580,7 +580,7 @@ mymodule.logevent = function ( message )
 		mymodule.conf.loghandle:write (string.format("%s: %s\n", os.date(), message or ""))
 	else
 		-- call to parent's handler
-		__index.logevent(message)
+		mymodule.__index.logevent(message)
 	end
 end
 
