@@ -59,7 +59,7 @@ end
 			<p><%= html.html_escape(hostname or "unknown hostname") %></p>
 			<div class="tailer"></div>
 		</div>
-		<span class="mute">
+		<div class="mute">
 			<p>
 			<% local ctlr = pageinfo.script .. "/acf-util/logon/"
 			
@@ -71,7 +71,7 @@ end
 			 | 
 			<a href="<%= html.html_escape(pageinfo.wwwprefix) %>/">home</a> | 
 			<a href="http://www.alpinelinux.org">about</a>
-			</p></span>
+			</p></div>
 		<div class="tailer"></div>
 	</div>	<!-- header -->
 
@@ -87,21 +87,24 @@ end
 			<% 
 			local class
 			local tabs
-			io.write ( "<ul>")
-			for x,cat in ipairs(session.menu.cats) do
-				io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", html.html_escape(cat.name)))	--start row
-				for y,group in ipairs(cat.groups) do
-					class=""
-					if not tabs and group.controllers[pageinfo.prefix .. pageinfo.controller] then
-						class="class='selected'"
-						tabs = group.tabs
+			if (#session.menu.cats > 0) then
+				io.write ( "<ul>")
+				for x,cat in ipairs(session.menu.cats) do
+					io.write (string.format("\n\t\t\t\t<li>%s\n\t\t\t\t\t<ul>\n", html.html_escape(cat.name)))	--start row
+					for y,group in ipairs(cat.groups) do
+						class=""
+						if not tabs and group.controllers[pageinfo.prefix .. pageinfo.controller] then
+							class="class='selected'"
+							tabs = group.tabs
+						end
+						io.write (string.format("\t\t\t\t\t\t<li %s><a %s href=\"%s%s%s/%s\">%s</a></li>\n", 
+							class,class,html.html_escape(pageinfo.script),html.html_escape(group.tabs[1].prefix), html.html_escape(group.tabs[1].controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
 					end
-					io.write (string.format("\t\t\t\t\t\t<li %s><a %s href=\"%s%s%s/%s\">%s</a></li>\n", 
-						class,class,html.html_escape(pageinfo.script),html.html_escape(group.tabs[1].prefix), html.html_escape(group.tabs[1].controller), html.html_escape(group.tabs[1].action), html.html_escape(group.name) ))
+					io.write ( "\t\t\t\t\t</ul>" )
+					io.write ( "\t\t\t\t</li>\n")
 				end
-				io.write ( "\t\t\t\t\t</ul>" )
-			  end
-			io.write ( "\n\t\t\t\t</li>\n\t\t\t</ul>\n")
+				io.write ( "\n\t\t\t</ul>\n")
+			end
 			%>
 
 			<div class="tailer">
@@ -126,19 +129,22 @@ end
 				<h3 class="hide">[Submenu]</h3>
 			</div>
 
-			<ul>
-			<% local class="" %>
-			<% for x,tab in pairs(tabs or {})  do
-				if tab.prefix == pageinfo.prefix and tab.controller == pageinfo.controller and tab.action == pageinfo.action then
-					class="class='selected'"
-				else
-					class=""
-				end
-				io.write (string.format('<li %s><a %s href="%s%s%s/%s">%s</a></li>\n',
+			<%
+			local class=""
+			if (tabs and #tabs > 0) then
+				io.write ( "<ul>")
+				for x,tab in pairs(tabs or {})  do
+					if tab.prefix == pageinfo.prefix and tab.controller == pageinfo.controller and tab.action == pageinfo.action then
+						class="class='selected'"
+					else
+						class=""
+					end
+					io.write (string.format('<li %s><a %s href="%s%s%s/%s">%s</a></li>\n',
 							class,class,html.html_escape(pageinfo.script),html.html_escape(tab.prefix),html.html_escape(tab.controller),html.html_escape(tab.action),html.html_escape(tab.name) ))
+				end
+				io.write ( "</ul>")
 			end
 			%>
-			</ul>
 
 			<div class="tailer">
 			</div>
