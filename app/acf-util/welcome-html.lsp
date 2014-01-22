@@ -1,7 +1,7 @@
 <% view = ... %>
 <% htmlviewfunctions = require("htmlviewfunctions") %>
 <h1>Alpine Configuration Framework</h1>
-<DL><p>Welcome.</p></DL>
+<p>Welcome.</p>
 
 <% --[[
 	io.write(htmlviewfunctions.cfe_unpack(view))

@@ -3,36 +3,30 @@
 <% html = require("acf.html") %>
 
 <% if form.type == "form" then %>
-<H1>Configuration</H1>
-<H2>Expert Configuration</H2>
+<h1>Configuration</h1>
+<h2>Expert Configuration</h2>
 <% else %>
-<H1>View File</H1>
+<h1>View File</h1>
 <% end %>
-<H3>File Details</H3>
-<DL>
+<h3>File Details</h3>
 <% 
 htmlviewfunctions.displayitem(form.value.filename)
 htmlviewfunctions.displayitem(form.value.filesize)
 htmlviewfunctions.displayitem(form.value.mtime)
 %>
-</DL>
 
-<H3>File Content</H3>
+<h3>File Content</h3>
 <% if form.type == "form" then %>
 <% form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>
 <% htmlviewfunctions.displayformstart(form) %>
 <input type="hidden" name="filename" value="<%= html.html_escape(form.value.filename.value) %>">
-<% else %>
-<DL>
 <% end %>
 <textarea name="filecontent">
 <%= html.html_escape(form.value.filecontent.value) %>
 </textarea>
-<% if form.value.filecontent.errtxt then %><P CLASS='error'><%= string.gsub(html.html_escape(form.value.filecontent.errtxt), "\n", "<BR>") %></P><% end %>
-<% if form.value.filecontent.descr then %><P CLASS='descr'><%= string.gsub(html.html_escape(form.value.filecontent.descr), "\n", "<BR>") %></P><% end %>
+<% if form.value.filecontent.errtxt then %><p class='error'><%= string.gsub(html.html_escape(form.value.filecontent.errtxt), "\n", "<br/>") %></p><% end %>
+<% if form.value.filecontent.descr then %><p class='descr'><%= string.gsub(html.html_escape(form.value.filecontent.descr), "\n", "<br/>") %></p><% end %>
 
 <% if form.type == "form" then %>
 <% htmlviewfunctions.displayformend(form) %>
-<% else %>
-</DL>
 <% end %>
