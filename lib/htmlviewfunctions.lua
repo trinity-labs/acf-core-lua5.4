@@ -63,7 +63,7 @@ function mymodule.displayitem(myitem, header_level, page_info)
 		io.write(string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>") .. "\n")
 		if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>") end
 		if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>") end
-		io.write("</div></div><!-- end .item -->")
+		io.write("</div></div><!-- end .item -->\n")
 	end
 end
 
@@ -152,7 +152,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>") end
 		if myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. "</p>\n") end
 		if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>") end
-		io.write("</div></div><!-- end .item -->")
+		io.write("</div></div><!-- end .item -->\n")
 	end
 end
 
@@ -233,7 +233,7 @@ function mymodule.displayformend(myform)
 	else
 		io.write('<input class="submit" type="submit" name="submit" value="' .. html.html_escape(myform.submit or myform.option) .. '">\n')
 	end
-	io.write("</div></div><!-- end .item -->")
+	io.write("</div></div><!-- end .item -->\n")
 	io.write('</form>')
 end
 
