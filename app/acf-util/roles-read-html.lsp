@@ -15,7 +15,7 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#permissions").tablesorter({headers: {1:{sorter: false}}, widgets: ['zebra']});
+		$("#permissions").tablesorter({widgets: ['zebra']});
 	});
 </script>
 
