@@ -311,11 +311,18 @@ function mymodule.displaypagination(page_data, page_info)
 		-- Pre-determine the links for each page
 		local link = page_info.script .. page_info.orig_action .. "?"
 		local clientdata = {}
-		for name,val in pairs(page_info.clientdata) do
-			if name ~= "sessionid" and name ~= "page" then
-				clientdata[#clientdata + 1] = name.."="..val
+		function serialize_clientdata(cltdata, prefix)
+			for name,val in pairs(cltdata) do
+				if name ~= "sessionid" and name ~= "page" then
+					if (type(val) == "table") then
+						serialize_clientdata(val, prefix..name..".")
+					else
+						clientdata[#clientdata + 1] = prefix..name.."="..val
+					end
+				end
 			end
 		end
+		serialize_clientdata(page_info.clientdata, "")
 		if #clientdata > 0 then
 			link = link .. table.concat(clientdata, "&") .. "&"
 		end
