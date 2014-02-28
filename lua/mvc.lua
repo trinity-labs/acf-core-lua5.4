@@ -375,6 +375,7 @@ mymodule.view_resolver = function(self)
 				action = self.conf.action,
 				prefix = self.conf.prefix,
 				script = self.conf.script,
+				wwwdir = self.conf.wwwdir,
 				wwwprefix = self.conf.wwwprefix or "",
 				staticdir = self.conf.staticdir or "",
 				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
