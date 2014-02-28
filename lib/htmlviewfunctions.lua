@@ -71,13 +71,14 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 	if not myitem then return end
 	if name then myitem.name = name end
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
+	myitem.id = myitem.name
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		io.write("<div class='item")
 		if myitem.errtxt then 
 			myitem.class = "error"
 			io.write(" error")
 		end
-		io.write("'><p class='left'>" .. html.html_escape(myitem.label) .. "</p>")
+		io.write("'><label class='left' for='"..myitem.name.."'>" .. html.html_escape(myitem.label) .. "</label>")
 		io.write("<div class='right'>")
 	end
 	if (viewtype == "viewonly") then
