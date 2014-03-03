@@ -4,14 +4,14 @@
 
 <% htmlviewfunctions.displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>
 
-<h1>User Accounts</h1>
-<h2>Create new account</h2>
-<form action="<%= page_info.script .. page_info.prefix .. page_info.controller %>/newuser" method="post">
-<input class="hidden" type="hidden"  name="redir"  value="<%= html.html_escape(page_info.orig_action) %>" >
-<div class='item'><p class='left'></p><div class='right'><input class="submit" type="submit" value="Create"></div></div><!-- end .item -->
-</form>
-<h2>Existing account</h2>
-<% for i,user in ipairs(form.value) do
+<%
+local header_level = htmlviewfunctions.displayheader(form, page_info)
+local newaccount = cfe({ type="link", value={}, label="Create New Account", option="Create", action=page_info.script..page_info.prefix..page_info.controller.."/newuser" })
+newaccount.value.redir = cfe({ type="hidden", value=page_info.orig_action })
+htmlviewfunctions.displayitem(newaccount, htmlviewfunctions.incrementheader(header_level), page_info)
+
+htmlviewfunctions.displayheader(cfe({label="Existing Accounts"}), page_info, htmlviewfunctions.incrementheader(header_level))
+for i,user in ipairs(form.value) do
 	local name = html.html_escape(user.value.userid.value) %>
 	<div class='item'><p class='left'><img src='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/apps/system-users.png' height='16' width='16'> <%= name %></p>
 	<div class='right'>

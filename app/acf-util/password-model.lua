@@ -148,7 +148,7 @@ function mymodule.read_user(self, user)
 	result.skin = cfe({ type="select", value=userinfo.skin or "", label="Skin", option=avail_skins or {""}, seq=7 })
 	result.home = cfe({ type="select", value=userinfo.home or "", label="Home", option=avail_homes or {""}, seq=6 })
 
-	return cfe({ type="group", value=result, label="User Config" })
+	return cfe({ type="group", value=result, label="User Account" })
 end
 
 function mymodule.get_users(self)
@@ -161,7 +161,7 @@ function mymodule.get_users(self)
 		users[#users+1] = mymodule.read_user(self, user)
 	end
 
-	return cfe({ type="group", value=users, label="User Configs" })
+	return cfe({ type="group", value=users, label="User Accounts" })
 end
 
 function mymodule.get_delete_user(self, clientdata)
