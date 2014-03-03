@@ -22,14 +22,14 @@
 
 <% htmlviewfunctions.displaycommandresults({"newrole", "editrole", "deleterole"}, session) %>
 
-<h1>Roles</h1>
-<h2>Create new role</h2>
-<form action="<%= html.html_escape(page_info.script .. page_info.prefix .. page_info.controller) %>/newrole" method="POST">
-<input class="hidden" type="hidden"  name="redir"  value="<%= html.html_escape(page_info.orig_action) %>" >
-<div class='item'><p class='left'></p><div class='right'><input class="submit" type="submit" value="Create"></div></div><!-- end .item -->
-</form>
+<%
+local header_level = htmlviewfunctions.displayheader(view, page_info)
+local newrole = cfe({ type="link", value={}, label="Create New Role", option="Create", action=page_info.script..page_info.prefix..page_info.controller.."/newrole" })
+newrole.value.redir = cfe({ type="hidden", value=page_info.orig_action })
+htmlviewfunctions.displayitem(newrole, htmlviewfunctions.incrementheader(header_level), page_info)
 
-<h2>Existing roles</h2>
+htmlviewfunctions.displayheader(cfe({label="Existing Roles"}), page_info, htmlviewfunctions.incrementheader(header_level))
+%>
 <table id="list" class="tablesorter"><thead>
 	<tr><th>Role</th><th>Action</th></tr>
 </thead><tbody>

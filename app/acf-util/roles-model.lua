@@ -28,7 +28,7 @@ mymodule.view_roles = function(self)
 	local defined_roles_cfe=cfe({ type="list", value=defined_roles, label="Locally-defined roles" })
 	local default_roles_cfe=cfe({ type="list", value=default_roles, label="System-defined roles" })
 
-	return cfe({ type="group", value={defined_roles=defined_roles_cfe, default_roles=default_roles_cfe} })
+	return cfe({ type="group", value={defined_roles=defined_roles_cfe, default_roles=default_roles_cfe}, label="Roles" })
 end
 
 mymodule.getpermissions = function(self, clientdata)
