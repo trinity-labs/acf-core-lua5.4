@@ -22,17 +22,28 @@ local function getlabel(myitem, value)
 	return tostring(value)
 end
 
+function mymodule.displayheader(myitem, page_info, header_level)
+	header_level = header_level or page_info.header_level or 1
+	if 0 ~= header_level then
+		io.write("<h"..tostring(header_level)..">"..html.html_escape(myitem.label).."</h"..tostring(header_level)..">")
+	end
+	return header_level
+end
+
+function mymodule.displayinfo(myitem)
+	if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>\n") end
+	if myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. "</p>\n") end
+	if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>\n") end
+end
+
 function mymodule.displayitem(myitem, header_level, page_info)
 	if not myitem then return end
-	if myitem.type == "form" then
-		header_level = header_level or 1
-		io.write("<h"..tostring(header_level)..">"..html.html_escape(myitem.label).."</h"..tostring(header_level)..">")
+	if myitem.type == "form" or myitem.type == "link" then
+		header_level = mymodule.displayheader(myitem, page_info, header_level)
 		mymodule.displayform(myitem, nil, nil, page_info, header_level)
 	elseif myitem.type == "group" then
-		header_level = header_level or 1
-		io.write("<h"..tostring(header_level)..">"..html.html_escape(myitem.label).."</h"..tostring(header_level)..">")
-		if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>") end
-		if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>") end
+		header_level = mymodule.displayheader(myitem, page_info, header_level)
+		mymodule.displayinfo(myitem)
 		local seqorder = {}
 		local order = {}
 		for name,item in pairs(myitem.value) do
@@ -49,7 +60,11 @@ function mymodule.displayitem(myitem, header_level, page_info)
 		end
 		for x,name in ipairs(order) do
 			if myitem.value[name] then
-				mymodule.displayitem(myitem.value[name], tonumber(header_level)+1)
+				if 0 == header_level then
+					mymodule.displayitem(myitem.value[name], header_level)
+				else
+					mymodule.displayitem(myitem.value[name], tonumber(header_level)+1)
+				end
 			end
 		end
 	elseif myitem.type ~= "hidden" then
@@ -61,8 +76,7 @@ function mymodule.displayitem(myitem, header_level, page_info)
 		io.write("'><p class='left'>" .. html.html_escape(myitem.label) .. "</p>")
 		io.write("<div class='right'>")
 		io.write(string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>") .. "\n")
-		if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>") end
-		if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>") end
+		mymodule.displayinfo(myitem)
 		io.write("</div></div><!-- end .item -->\n")
 	end
 end
@@ -85,11 +99,13 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		myitem.disabled = "true"
 	end
 	if myitem.type == "group" then
-		header_level = header_level or 2
-		io.write("<h"..tostring(header_level)..">"..html.html_escape(myitem.label).."</h"..tostring(header_level)..">")
-		if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>") end
-		if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>") end
-		mymodule.displayformcontents(myitem, nil, nil, tonumber(header_level)+1, myitem.name)
+		header_level = mymodule.displayheader(myitem, page_info, header_level)
+		mymodule.displayinfo(myitem)
+		if 0 == header_level then
+			mymodule.displayformcontents(myitem, nil, nil, header_level, myitem.name)
+		else
+			mymodule.displayformcontents(myitem, nil, nil, tonumber(header_level)+1, myitem.name)
+		end
 	elseif myitem.type == "multi" then
 		myitem.type = "select"
 		myitem.multiple = "true"
@@ -157,9 +173,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
-		if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>") end
-		if myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. "</p>\n") end
-		if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>") end
+		mymodule.displayinfo(myitem)
 		io.write("</div></div><!-- end .item -->\n")
 	end
 end
@@ -169,8 +183,7 @@ function mymodule.displayformstart(myform, page_info)
 	if not myform.action and page_info then
 		myform.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
 	end
-	if myform.descr then io.write('<p class="descr">' .. string.gsub(html.html_escape(myform.descr), "\n", "<br/>") .. "</p>\n") end
-	if myform.errtxt then io.write('<p class="error">' .. string.gsub(html.html_escape(myform.errtxt), "\n", "<br/>") .. "</p>\n") end
+	mymodule.displayinfo(myform)
 	io.write('<form action="' .. html.html_escape(myform.action) .. '" ')
 	if myform.enctype and myform.enctype ~= "" then
 		io.write('enctype="'..html.html_escape(myform.enctype)..'" ')
@@ -230,26 +243,34 @@ function mymodule.displayformcontents(myform, order, finishingorder, header_leve
 	end
 end
 
-function mymodule.displayformend(myform)
+function mymodule.displayformend(myform, header_level)
 	if not myform then return end
 	local option = myform.submit or myform.option
-	io.write("<div class='item'><p class='left'></p><div class='right'>")
+	io.write("<div class='item'><p class='left'>")
+	if 0 == header_level then
+		io.write(html.html_escape(myform.label))
+	end
+	io.write("</p><div class='right'>")
 	if type(option) == "table" then
 		for i,v in ipairs(option) do
 			io.write('<input class="submit" type="submit" name="submit" value="' .. html.html_escape(v) .. '">\n')
 		end
 	else
-		io.write('<input class="submit" type="submit" name="submit" value="' .. html.html_escape(myform.submit or myform.option) .. '">\n')
+		io.write('<input class="submit" type="submit" ')
+		if "form" == myform.type then
+			io.write('name="submit" ')
+		end
+		io.write('value="' .. html.html_escape(myform.submit or myform.option) .. '">\n')
 	end
 	io.write("</div></div><!-- end .item -->\n")
-	io.write('</form>')
+	io.write('</form>\n')
 end
 
 function mymodule.displayform(myform, order, finishingorder, page_info, header_level)
 	if not myform then return end
 	mymodule.displayformstart(myform, page_info)
 	mymodule.displayformcontents(myform, order, finishingorder, header_level)
-	mymodule.displayformend(myform)
+	mymodule.displayformend(myform, header_level)
 end
 
 function mymodule.displaycommandresults(commands, session, preserveerrors)
@@ -266,8 +287,7 @@ function mymodule.displaycommandresults(commands, session, preserveerrors)
 		io.write('<div class="command-results"><h1>Command Result</h1>')
 		for i,result in ipairs(cmdresult) do
 			if type(result.value) == "string" and result.value ~= "" then io.write('<p>' .. string.gsub(html.html_escape(result.value), "\n", "<br/>") .. "</p>") end
-			if result.descr then io.write('<p class="descr">' .. string.gsub(html.html_escape(result.descr), "\n", "<br/>") .. "</p>") end
-			if result.errtxt then io.write('<p class="error">' .. string.gsub(html.html_escape(result.errtxt), "\n", "<br/>") .. "</p>") end
+			mymodule.displayinfo(result)
 		end
 		io.write('</div><!-- end .command-results -->')
 	end
