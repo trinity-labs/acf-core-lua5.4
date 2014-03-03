@@ -123,10 +123,10 @@ function mymodule.read_user(self, user)
 	if not avail_skins then
 		avail_skins = {""}
 		local contrl = self:new("acf-util/skins")
-		skins = contrl:read()
+		skins = contrl:update()
 		contrl:destroy()
-		for i,s in ipairs(skins.value) do
-			avail_skins[#avail_skins + 1] = s.value
+		for i,s in ipairs(skins.value.skin.option) do
+			avail_skins[#avail_skins + 1] = s.value or s
 		end
 	end
 

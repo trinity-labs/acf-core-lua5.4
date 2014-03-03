@@ -1,4 +1,4 @@
 GUEST=logon/logon,logon/logoff,logon/status,welcome/read
 USER=password/editme,roles/read
 EXPERT=
-ADMIN=logon/logon,logon/logoff,logon/status,password/editme,password/status,password/edituser,password/newuser,password/deleteuser,roles/read,roles/getpermslist,roles/viewuserroles,roles/viewroleperms,roles/viewroles,roles/editrole,roles/deleterole,roles/newrole,welcome/read,password/status,password/edituser,password/newuser,password/deleteuser,roles/getpermslist,roles/viewuserroles,roles/viewroleperms,roles/viewroles,roles/editrole,roles/deleterole,roles/newrole,skins/read,skins/update
+ADMIN=logon/logon,logon/logoff,logon/status,password/editme,password/status,password/edituser,password/newuser,password/deleteuser,roles/read,roles/getpermslist,roles/viewuserroles,roles/viewroleperms,roles/viewroles,roles/editrole,roles/deleterole,roles/newrole,welcome/read,password/status,password/edituser,password/newuser,password/deleteuser,roles/getpermslist,roles/viewuserroles,roles/viewroleperms,roles/viewroles,roles/editrole,roles/deleterole,roles/newrole,skins/update

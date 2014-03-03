@@ -20,19 +20,11 @@ local function list_skins(self)
 		for i,file in ipairs(posix.dir(self.conf.wwwdir ..skin) or {}) do
 			-- Ignore files that begins with a '.' and 'cgi-bin' and only list folders
 			if not ((string.match(file, "^%.")) or (string.match(file, "^cgi[-]bin")) or (string.match(file, "^static")) or (posix.stat(self.conf.wwwdir .. skin .. file).type ~= "directory")) then
-				local entry = cfe({ value=skin..file, label=file })
-				local current = self.conf.skin
-				entry.inuse = (skin..file == current)
-				table.insert(skinarray, entry)
+				table.insert(skinarray, skin..file)
 			end
 		end
 	end
 	return skinarray
-end
-
-
-mymodule.get = function (self)
-	return cfe({ type="list", value=list_skins(self), label="Skins" })
 end
 
 mymodule.get_update = function (self)
