@@ -1,4 +1,4 @@
-<% local view, viewlibrary, page_info, session= ... %>
+<% local view, viewlibrary, page_info, session = ... %>
 <% htmlviewfunctions = require("htmlviewfunctions") %>
 <% html = require("acf.html") %>
 

@@ -1,6 +1,7 @@
-<% view = ... %>
+<% local view, viewlibrary, page_info, session = ... %>
 <% htmlviewfunctions = require("htmlviewfunctions") %>
-<h1>Alpine Configuration Framework</h1>
+
+<% htmlviewfunctions.displayheader(cfe({label="Alpine Configuration Framework"}), page_info) %>
 <p>Welcome.</p>
 
 <% --[[

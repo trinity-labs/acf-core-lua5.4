@@ -2,30 +2,36 @@
 <% htmlviewfunctions = require("htmlviewfunctions") %>
 <% html = require("acf.html") %>
 
-<% if form.type == "form" then %>
-<h1>Configuration</h1>
-<h2>Expert Configuration</h2>
-<% else %>
-<h1>View File</h1>
-<% end %>
-<h3>File Details</h3>
+<%
+local header_level
+if form.type == "form" then
+	header_level = htmlviewfunctions.displayheader(cfe({label="Configuration"}), page_info)
+	header_level = htmlviewfunctions.displayheader(cfe({label="Expert Configuration"}), page_info, htmlviewfunctions.incrementheader(header_level))
+else
+	header_level = htmlviewfunctions.displayheader(cfe({label="View File"}), page_info)
+end
+header_level = htmlviewfunctions.displayheader(cfe({label="File Details"}), page_info, htmlviewfunctions.incrementheader(header_level))
+%>
+
 <% 
 htmlviewfunctions.displayitem(form.value.filename)
 htmlviewfunctions.displayitem(form.value.filesize)
 htmlviewfunctions.displayitem(form.value.mtime)
 %>
 
-<h3>File Content</h3>
-<% if form.type == "form" then %>
-<% form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action %>
-<% htmlviewfunctions.displayformstart(form) %>
-<input type="hidden" name="filename" value="<%= html.html_escape(form.value.filename.value) %>">
-<% end %>
+<%
+htmlviewfunctions.displayheader(cfe({label="File Content"}), page_info, header_level)
+if form.type == "form" then
+	form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
+	htmlviewfunctions.displayformstart(form)
+	form.value.filename.type = "hidden"
+	htmlviewfunctions.displayformitem(form.value.filename)
+end
+%>
 <textarea name="filecontent">
 <%= html.html_escape(form.value.filecontent.value) %>
 </textarea>
-<% if form.value.filecontent.errtxt then %><p class='error'><%= string.gsub(html.html_escape(form.value.filecontent.errtxt), "\n", "<br/>") %></p><% end %>
-<% if form.value.filecontent.descr then %><p class='descr'><%= string.gsub(html.html_escape(form.value.filecontent.descr), "\n", "<br/>") %></p><% end %>
+<% htmlviewfunctions.displayinfo(form.value.filecontent) %>
 
 <% if form.type == "form" then %>
 <% htmlviewfunctions.displayformend(form) %>

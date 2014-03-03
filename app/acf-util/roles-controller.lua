@@ -8,7 +8,7 @@ mymodule.read = function(self)
 	userid = cfe({ value=self.sessiondata.userinfo.userid, label="User Id" })
 	roles = cfe({ type="list", value=self.sessiondata.userinfo.roles, label="Roles" })
 	permissions = cfe({ type="table", value = self.sessiondata.permissions, label="Permissions" })
-	return cfe({ type="group", value={userid=userid, roles=roles, permissions=permissions} })
+	return cfe({ type="group", value={userid=userid, roles=roles, permissions=permissions}, label="Roles/Permission list for "..self.sessiondata.userinfo.userid })
 end
 
 -- Return roles/permissions for specified user
@@ -29,12 +29,12 @@ mymodule.viewroleperms = function(self)
 	end
 	role = cfe({ value=self.clientdata.role, label="Role" })
 	permissions = self.model.get_role_perms(self, role.value)
-	return cfe({ type="group", value={role=role, permissions=permissions} })
+	return cfe({ type="group", value={role=role, permissions=permissions}, label="Permission list for "..role.value })
 end
 
 -- Return list of all permissions
 mymodule.getpermslist = function(self)
-	return cfe({ type="group", value={permissions=self.model.get_perms_list(self)} })
+	return cfe({ type="group", value={permissions=self.model.get_perms_list(self)}, label="Complete permission list" })
 end
 
 mymodule.viewroles = function(self)

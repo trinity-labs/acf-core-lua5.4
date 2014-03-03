@@ -1,4 +1,5 @@
 <% local view, viewlibrary, page_info, session = ... %>
+<% htmlviewfunctions = require("htmlviewfunctions") %>
 <% html = require("acf.html") %>
 
 <script type="text/javascript">
@@ -19,27 +20,24 @@
 	});
 </script>
 
-<% if view.value.userid then %>
-	<h1>Roles/Permission list for <%= html.html_escape(view.value.userid.value) %>:</h1>
-<% elseif view.value.role then %>
-	<h1>Permission list for <%= html.html_escape(view.value.role.value) %>:</h1>
-<% else %>
-	<h1>Complete permission list:</h1>
-<% end %>
+<%
+local header_level = htmlviewfunctions.displayheader(view, page_info)
+%>
 
-<% if view.value.roles then %>
-	<h2><%= html.html_escape(view.value.userid.value) %> is valid in these roles</h2>
-	<% for a,b in pairs(view.value.roles.value) do
+<% if view.value.roles then
+	htmlviewfunctions.displayheader(cfe({label=view.value.userid.value.." is valid in these roles"}), page_info, htmlviewfunctions.incrementheader(header_level))
+	for a,b in pairs(view.value.roles.value) do
 		print("<p>",html.html_escape(b),"</p>")
-	end %>
-<% end %>
+	end
+end %>
 
-<% if view.value.permissions then %>
-	<% if view.value.userid then %>
-		<h2><%= html.html_escape(view.value.userid.value) %>'s full permissions are</h2>
-	<% elseif view.value.role then %>
-		<h2><%= html.html_escape(view.value.role.value) %>'s full permissions are</h2>
-	<% end %>
+<% if view.value.permissions then
+	if view.value.userid then
+		htmlviewfunctions.displayheader(cfe({label=view.value.userid.value.."'s full permissions are"}), page_info, htmlviewfunctions.incrementheader(header_level))
+	elseif view.value.role then
+		htmlviewfunctions.displayheader(cfe({label=view.value.role.value.."'s full permissions are"}), page_info, htmlviewfunctions.incrementheader(header_level))
+	end
+%>
 	<table id="permissions" class="tablesorter"><thead>
 		<tr><th>Controller</th><th>Action(s)</th></tr>
 	</thead><tbody>

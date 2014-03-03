@@ -1,4 +1,5 @@
 <% view, viewlibrary, page_info = ... %>
+<% htmlviewfunctions = require("htmlviewfunctions") %>
 <% html = require("acf.html") %>
 
 <style type="text/css">
@@ -28,6 +29,6 @@
 	});
 </script>
 
-<h1>Alpine Configuration Framework</h1>
+<% htmlviewfunctions.displayheader(cfe({label="Alpine Configuration Framework"}), page_info) %>
 <p class="errordetail">Application error occured</p>
 <p class="hiddendetail"><%= html.html_escape(view.message) %></p>
