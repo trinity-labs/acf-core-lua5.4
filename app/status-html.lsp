@@ -6,31 +6,24 @@ html = require("acf.html")
 <% htmlviewfunctions.displaycommandresults({"install","edit"}, session) %>
 <% htmlviewfunctions.displaycommandresults({"startstop"}, session) %>
 
-<h1>System Info</h1>
 <%
+htmlviewfunctions.displayheader(data, page_info)
 htmlviewfunctions.displayitem(data.value.status)
 
 htmlviewfunctions.displayitem(data.value.version)
 if data.value.version and data.value.version.errtxt and viewlibrary.check_permission("apk-tools/apk/install") then
-%>
-	<div class='item'><p class='left'>Install package</p>
-	<div class='right'><form action="<%= html.html_escape(page_info.script .. "/apk-tools/apk/install") %>" method="post">
-	<input type='hidden' name='package' value='<%= html.html_escape(data.value.version.name) %>'>
-	<input class='submit' type='submit' name='submit' value='Install'></form>
-	</div></div><!-- end .item -->
-<%
+	local install = cfe({ type="form", value={}, label="Install package", option="Install", action=page_info.script.."/apk-tools/apk/install" })
+	install.value.package = cfe({ type="hidden", value=data.value.version.name })
+	htmlviewfunctions.displayitem(install, 0, page_info)	-- header_level 0 means display inline without header
 end
 
 htmlviewfunctions.displayitem(data.value.autostart)
 if not (data.value.version and data.value.version.errtxt) and data.value.autostart and data.value.autostart.errtxt and viewlibrary.check_permission("alpine-baselayout/rc/edit") then
-%>
-	<div class='item'><p class='left'>Enable autostart</p>
-	<div class='right'><form action="<%= html.html_escape(page_info.script .. "/alpine-baselayout/rc/edit") %>" method="POST">
-	<input type='hidden' name='servicename' value='<%= html.html_escape(data.value.autostart.name) %>'>
-	<input type='hidden' name='redir' value='<%= html.html_escape(page_info.orig_action) %>'>
-	<input class='submit' type='submit' value='Enable'></form>
-	</div></div><!-- end .item -->
-<% end %>
+	local autostart = cfe({ type="link", value={}, label="Enable autostart", option="Enable", action=page_info.script.."/alpine-baselayout/rc/edit" })
+	autostart.value.servicename = cfe({ type="hidden", value=data.value.autostart.name })
+	autostart.value.redir = cfe({ type="hidden", value=page_info.orig_action })
+	htmlviewfunctions.displayitem(autostart, 0, page_info)	-- header_level 0 means display inline without header
+end %>
 
 <% if viewlibrary and viewlibrary.dispatch_component and viewlibrary.check_permission("startstop") then
 	viewlibrary.dispatch_component("startstop")
