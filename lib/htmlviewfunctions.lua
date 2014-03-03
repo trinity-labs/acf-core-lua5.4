@@ -91,9 +91,15 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>") end
 		mymodule.displayformcontents(myitem, nil, nil, tonumber(header_level)+1, myitem.name)
 	elseif myitem.type == "multi" then
+		myitem.type = "select"
+		myitem.multiple = "true"
+		local tempname = myitem.name
+		myitem.name = tempname.."[]"
+		io.write((html.form[myitem.type](myitem) or "") .. "\n")
+		myitem.name = tempname
+		myitem.type = "multi"
+--[[
 		-- FIXME multiple select doesn't work in haserl, so use series of checkboxes
-		--myitem.type = "select"
-		--myitem.multiple = "true"
 		myitem.class = nil
 		local tempname = myitem.name
 		local tempval = myitem.value or {}
@@ -135,6 +141,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		end
 		myitem.name = tempname
 		myitem.value = tempval
+--]]
 	elseif myitem.type == "boolean" then
 		local tempval = myitem.value
 		if (myitem.value == true) then myitem.checked = "" end
