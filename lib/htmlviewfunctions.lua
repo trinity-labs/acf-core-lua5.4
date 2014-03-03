@@ -30,6 +30,14 @@ function mymodule.displayheader(myitem, page_info, header_level)
 	return header_level
 end
 
+function mymodule.incrementheader(header_level)
+	if 0 == header_level then
+		return header_level
+	else
+		return tonumber(header_level)+1
+	end
+end
+
 function mymodule.displayinfo(myitem)
 	if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>\n") end
 	if myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. "</p>\n") end
@@ -60,11 +68,7 @@ function mymodule.displayitem(myitem, header_level, page_info)
 		end
 		for x,name in ipairs(order) do
 			if myitem.value[name] then
-				if 0 == header_level then
-					mymodule.displayitem(myitem.value[name], header_level)
-				else
-					mymodule.displayitem(myitem.value[name], tonumber(header_level)+1)
-				end
+				mymodule.displayitem(myitem.value[name], mymodule.incrementheader(header_level))
 			end
 		end
 	elseif myitem.type ~= "hidden" then
@@ -101,11 +105,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 	if myitem.type == "group" then
 		header_level = mymodule.displayheader(myitem, page_info, header_level)
 		mymodule.displayinfo(myitem)
-		if 0 == header_level then
-			mymodule.displayformcontents(myitem, nil, nil, header_level, myitem.name)
-		else
-			mymodule.displayformcontents(myitem, nil, nil, tonumber(header_level)+1, myitem.name)
-		end
+		mymodule.displayformcontents(myitem, nil, nil, mymodule.incrementheader(header_level), myitem.name)
 	elseif myitem.type == "multi" then
 		myitem.type = "select"
 		myitem.multiple = "true"
