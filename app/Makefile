@@ -18,7 +18,6 @@ APP_DIST= \
 	acf-util/roles.menu \
 	acf-util/skins-controller.lua \
 	acf-util/skins-model.lua \
-	acf-util/skins-read-html.lsp \
 	acf-util/skins.menu \
 	acf-util/welcome-controller.lua\
 	acf-util/welcome-html.lsp\
