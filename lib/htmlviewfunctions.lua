@@ -23,6 +23,7 @@ local function getlabel(myitem, value)
 end
 
 function mymodule.displayheader(myitem, page_info, header_level)
+	page_info = page_info or {}
 	header_level = header_level or page_info.header_level or 1
 	if 0 < header_level then
 		io.write("<h"..tostring(header_level)..">"..html.html_escape(myitem.label).."</h"..tostring(header_level)..">")
@@ -46,6 +47,7 @@ end
 
 function mymodule.displayitem(myitem, header_level, page_info)
 	if not myitem then return end
+	page_info = page_info or {}
 	if myitem.type == "form" or myitem.type == "link" then
 		header_level = mymodule.displayheader(myitem, page_info, header_level)
 		mymodule.displayform(myitem, nil, nil, page_info, header_level)
@@ -109,7 +111,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		myitem.disabled = "true"
 	end
 	if myitem.type == "group" then
-		header_level = mymodule.displayheader(myitem, page_info, header_level)
+		header_level = mymodule.displayheader(myitem, nil, header_level)
 		mymodule.displayinfo(myitem)
 		mymodule.displayformcontents(myitem, nil, nil, mymodule.incrementheader(header_level), myitem.name)
 	elseif myitem.type == "multi" then
