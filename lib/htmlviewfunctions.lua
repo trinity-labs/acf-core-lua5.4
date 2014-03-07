@@ -95,6 +95,7 @@ end
 function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 	if not myitem then return end
 	if name then myitem.name = name end
+	header_level = header_level or 1
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" and 0 <= header_level then
 		io.write("<div class='item")
@@ -255,6 +256,7 @@ end
 
 function mymodule.displayformend(myform, header_level)
 	if not myform then return end
+	header_level = header_level or 1
 	local option = myform.submit or myform.option
 	if 0 <= header_level then
 		io.write("<div class='item'><p class='left'>")
