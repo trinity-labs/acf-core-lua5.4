@@ -45,6 +45,43 @@ function mymodule.displayinfo(myitem)
 	if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>\n") end
 end
 
+function mymodule.displayitemstart(myitem, page_info, header_level)
+	myitem = myitem or {}
+	page_info = page_info or {}
+	header_level = header_level or page_info.header_level or 1
+	if 0 <= header_level then
+		io.write("<div class='item")
+		if myitem.errtxt then 
+			io.write(" error")
+		end
+		io.write("'><label class='left")
+		if myitem.id then
+			io.write("' for='"..myitem.id)
+		end
+		io.write("'>")
+	end
+	return header_level
+end
+
+function mymodule.displayitemmiddle(myitem, page_info, header_level)
+	page_info = page_info or {}
+	header_level = header_level or page_info.header_level or 1
+	if 0 <= header_level then
+		io.write("</label>")
+		io.write("<div class='right'>")
+	end
+end
+
+function mymodule.displayitemend(myitem, page_info, header_level)
+	myitem = myitem or {}
+	page_info = page_info or {}
+	header_level = header_level or page_info.header_level or 1
+	mymodule.displayinfo(myitem)
+	if 0 <= header_level then
+		io.write("</div></div><!-- end .item -->\n")
+	end
+end
+
 function mymodule.displayitem(myitem, header_level, page_info)
 	if not myitem then return end
 	page_info = page_info or {}
@@ -74,39 +111,34 @@ function mymodule.displayitem(myitem, header_level, page_info)
 			end
 		end
 	elseif myitem.type ~= "hidden" then
-		header_level = header_level or page_info.header_level or 1
-		if 0 <= header_level then
-			io.write("<div class='item")
-			if myitem.errtxt then 
-				myitem.class = "error"
-				io.write(" error")
-			end
-			io.write("'><p class='left'>" .. html.html_escape(myitem.label) .. "</p>")
-			io.write("<div class='right'>")
+		if myitem.errtxt then 
+			myitem.class = "error"
 		end
-		io.write(string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>") .. "\n")
-		mymodule.displayinfo(myitem)
+		header_level = mymodule.displayitemstart(myitem, page_info, header_level)
 		if 0 <= header_level then
-			io.write("</div></div><!-- end .item -->\n")
+			io.write(html.html_escape(myitem.label))
 		end
+		mymodule.displayitemmiddle(myitem, page_info, header_level)
+		io.write("<p>"..string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>") .. "</p>\n")
+		mymodule.displayitemend(myitem, page_info, header_level)
 	end
 end
 
 function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 	if not myitem then return end
 	if name then myitem.name = name end
-	header_level = header_level or 1
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
-	if myitem.type ~= "hidden" and myitem.type ~= "group" and 0 <= header_level then
-		io.write("<div class='item")
-		if myitem.errtxt then 
-			myitem.class = "error"
-			io.write(" error")
-		end
+	if myitem.errtxt then 
+		myitem.class = "error"
+	end
+	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		-- Set the id so the label 'for' can point to it
-		myitem.id = myitem.name
-		io.write("'><label class='left' for='"..myitem.name.."'>" .. html.html_escape(myitem.label) .. "</label>")
-		io.write("<div class='right'>")
+		myitem.id = myitem.id or myitem.name
+		header_level = mymodule.displayitemstart(myitem, nil, header_level)
+		if 0 <= header_level then
+			io.write(html.html_escape(myitem.label))
+		end
+		mymodule.displayitemmiddle(myitem, nil, header_level)
 	end
 	if (viewtype == "viewonly") then
 		myitem.disabled = "true"
@@ -182,10 +214,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		io.write((html.form[myitem.type](myitem) or "") .. "\n")
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
-		mymodule.displayinfo(myitem)
-		if 0 <= header_level then
-			io.write("</div></div><!-- end .item -->\n")
-		end
+		mymodule.displayitemend(myitem, nil, header_level)
 	end
 end
 
@@ -199,7 +228,7 @@ function mymodule.displayformstart(myform, page_info)
 	if myform.enctype and myform.enctype ~= "" then
 		io.write('enctype="'..html.html_escape(myform.enctype)..'" ')
 	end
-	io.write('method="POST">\n')
+	io.write('method="post">\n')
 	if myform.value.redir then
 		mymodule.displayformitem(myform.value.redir, "redir")
 	end
@@ -256,15 +285,12 @@ end
 
 function mymodule.displayformend(myform, header_level)
 	if not myform then return end
-	header_level = header_level or 1
 	local option = myform.submit or myform.option
-	if 0 <= header_level then
-		io.write("<div class='item'><p class='left'>")
-		if 0 == header_level then
-			io.write(html.html_escape(myform.label))
-		end
-		io.write("</p><div class='right'>")
+	header_level = mymodule.displayitemstart(nil, nil, header_level)
+	if 0 == header_level then
+		io.write(html.html_escape(myform.label))
 	end
+	mymodule.displayitemmiddle(nil, nil, header_level)
 	if type(option) == "table" then
 		for i,v in ipairs(option) do
 			io.write('<input class="submit" type="submit" ')
@@ -280,9 +306,7 @@ function mymodule.displayformend(myform, header_level)
 		end
 		io.write('value="' .. html.html_escape(myform.submit or myform.option) .. '">\n')
 	end
-	if 0 <= header_level then
-		io.write("</div></div><!-- end .item -->\n")
-	end
+	mymodule.displayitemend(nil, nil, header_level)
 	io.write('</form>\n')
 end
 
