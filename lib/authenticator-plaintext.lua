@@ -127,7 +127,9 @@ mymodule.delete_entry = function (self, tabl, field, id)
 	if field == "" then
 		local fields = mymodule.list_fields(self, tabl)
 		for i,fld in ipairs(fields) do
-			mymodule.delete_entry(self, tabl, fld, id)
+			if "" ~= fld then
+				mymodule.delete_entry(self, tabl, fld, id)
+			end
 		end
 	end
 
