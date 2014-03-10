@@ -10,7 +10,7 @@ mymodule.get_user_roles = function(self, userid)
 	local userinfo = authenticator.get_userinfo(self, userid) or {}
 	rls = cfe({ type="list", value=userinfo.roles or {}, label="Roles" })
 	permissions = cfe({ type="table", value=roles.get_roles_perm(self, rls.value), label="Permissions" })
-	return cfe({ type="group", value={roles=rls, permissions=permissions} })
+	return cfe({ type="group", value={roles=rls, permissions=permissions}, label="Roles/Permission list for "..userid })
 end
 
 -- Return permissions for specified role

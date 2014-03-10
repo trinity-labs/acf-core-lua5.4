@@ -25,8 +25,7 @@ end
 <%
 htmlviewfunctions.displayheader(cfe({label="File Content"}), page_info, header_level)
 if form.type == "form" then
-	form.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
-	htmlviewfunctions.displayformstart(form)
+	htmlviewfunctions.displayformstart(form, page_info)
 	form.value.filename.type = "hidden"
 	htmlviewfunctions.displayformitem(form.value.filename)
 end

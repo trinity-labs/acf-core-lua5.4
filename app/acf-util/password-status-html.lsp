@@ -6,15 +6,16 @@
 
 <%
 local header_level = htmlviewfunctions.displayheader(form, page_info)
-local newaccount = cfe({ type="link", value={}, label="Create New Account", option="Create", action=page_info.script..page_info.prefix..page_info.controller.."/newuser" })
-newaccount.value.redir = cfe({ type="hidden", value=page_info.orig_action })
-htmlviewfunctions.displayitem(newaccount, htmlviewfunctions.incrementheader(header_level), page_info)
+header_level = htmlviewfunctions.incrementheader(header_level)
+local redir = cfe({ type="hidden", value=page_info.orig_action })
+htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Account", option="Create", action="newuser" }), header_level, page_info)
 
-htmlviewfunctions.displayheader(cfe({label="Existing Accounts"}), page_info, htmlviewfunctions.incrementheader(header_level))
+htmlviewfunctions.displayheader(cfe({label="Existing Accounts"}), page_info, header_level)
 for i,user in ipairs(form.value) do
-	local name = html.html_escape(user.value.userid.value) %>
-	<div class='item'><p class='left'><img src='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/apps/system-users.png' height='16' width='16'> <%= name %></p>
-	<div class='right'>
+	local name = html.html_escape(user.value.userid.value)
+	htmlviewfunctions.displayitemstart() %>
+	<img src='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/apps/system-users.png' height='16' width='16'> <%= name %>
+	<% htmlviewfunctions.displayitemmiddle() %>
 	<table><tbody>
 		<tr>
 			<td style='border:none;'><b><%= html.html_escape(user.value.userid.label) %></b></td>
@@ -28,11 +29,12 @@ for i,user in ipairs(form.value) do
 		</tr><tr>
 			<td style='border:none;'><b>Option</b></td>
 			<td style='border:none;'>
-			[<a href='edituser?userid=<%= name %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this account</a>]
-			[<a href='deleteuser?userid=<%= name %>&submit=true'>Delete this account</a>]
-			[<a href='<%= html.html_escape(page_info.script) %>/acf-util/roles/viewuserroles?userid=<%= name %>'>View roles for this account</a>]
+			<% local userid = cfe({type="hidden", value=user.value.userid.value}) %>
+			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid, redir=redir}, label="", option="Edit", action="edituser"}), -1, page_info) %>
+			<% htmlviewfunctions.displayitem(cfe({type="form", value={userid=userid}, label="", option="Delete", action="deleteuser" }), -1, page_info) %>
+			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid}, label="", option="View Roles", action=page_info.script.."/acf-util/roles/viewuserroles"}), -1, page_info) %>
 			</td>
 		</tr>
 	</tbody></table>
-	</div></div><!-- end .item -->
+	<% htmlviewfunctions.displayitemend() %>
 <% end %>

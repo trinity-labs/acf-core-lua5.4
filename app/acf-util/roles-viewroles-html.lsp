@@ -24,11 +24,11 @@
 
 <%
 local header_level = htmlviewfunctions.displayheader(view, page_info)
-local newrole = cfe({ type="link", value={}, label="Create New Role", option="Create", action=page_info.script..page_info.prefix..page_info.controller.."/newrole" })
-newrole.value.redir = cfe({ type="hidden", value=page_info.orig_action })
-htmlviewfunctions.displayitem(newrole, htmlviewfunctions.incrementheader(header_level), page_info)
+header_level = htmlviewfunctions.incrementheader(header_level)
+local redir = cfe({ type="hidden", value=page_info.orig_action })
+htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Role", option="Create", action="newrole" }), header_level, page_info)
 
-htmlviewfunctions.displayheader(cfe({label="Existing Roles"}), page_info, htmlviewfunctions.incrementheader(header_level))
+htmlviewfunctions.displayheader(cfe({label="Existing Roles"}), page_info, header_level)
 %>
 <table id="list" class="tablesorter"><thead>
 	<tr><th>Role</th><th>Action</th></tr>
@@ -37,9 +37,12 @@ htmlviewfunctions.displayheader(cfe({label="Existing Roles"}), page_info, htmlvi
 	<% for x,role in pairs(view.value.defined_roles.value) do %>
 		<tr><td><img src='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/apps/system-users.png' height='16' width='16'> <%= html.html_escape(role) %></td>
 		<td>
-		[<a href='viewroleperms?role=<%= html.html_escape(role) %>'>View this role</a>]
-		[<a href='editrole?role=<%= html.html_escape(role) %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this role</a>]
-		[<a href='deleterole?role=<%= html.html_escape(role) %>&submit=true'>Delete this role</a>]
+		<%
+		local r = cfe({type="hidden", value=role})
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r}, label="", option="View", action="viewroleperms" }), -1, page_info)
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r, redir=redir}, label="", option="Edit", action="editrole" }), -1, page_info)
+		htmlviewfunctions.displayitem(cfe({ type="form", value={role=r}, label="", option="Delete", action="deleterole" }), -1, page_info)
+		%>
 		</td></tr>
 	<% end %>
 <% end %>
@@ -47,8 +50,11 @@ htmlviewfunctions.displayheader(cfe({label="Existing Roles"}), page_info, htmlvi
 	<% for x,role in pairs(view.value.default_roles.value) do %>
 		<tr><td><img src='<%= html.html_escape(page_info.wwwprefix..page_info.staticdir) %>/tango/16x16/categories/applications-system.png' height='16' width='16'> <%= html.html_escape(role) %></td>
 		<td>
-		[<a href='viewroleperms?role=<%= html.html_escape(role) %>'>View this role</a>]
-		[<a href='editrole?role=<%= html.html_escape(role) %>&redir=<%= html.html_escape(page_info.orig_action) %>'>Edit this role</a>]
+		<%
+		local r = cfe({type="hidden", value=role})
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r}, label="", option="View", action="viewroleperms" }), -1, page_info)
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r, redir=redir}, label="", option="Edit", action="editrole" }), -1, page_info)
+		%>
 		</td></tr>
 	<% end %>
 <% end %>
