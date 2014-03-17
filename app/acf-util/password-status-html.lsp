@@ -5,12 +5,12 @@
 <% htmlviewfunctions.displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>
 
 <%
-local header_level = htmlviewfunctions.displayheader(form, page_info)
-header_level = htmlviewfunctions.incrementheader(header_level)
+local header_level = htmlviewfunctions.displaysectionstart(form, page_info)
+local header_level2 = htmlviewfunctions.incrementheader(header_level)
 local redir = cfe({ type="hidden", value=page_info.orig_action })
-htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Account", option="Create", action="newuser" }), header_level, page_info)
+htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Account", option="Create", action="newuser" }), header_level2, page_info)
 
-htmlviewfunctions.displayheader(cfe({label="Existing Accounts"}), page_info, header_level)
+htmlviewfunctions.displaysectionstart(cfe({label="Existing Accounts"}), page_info, header_level2)
 for i,user in ipairs(form.value) do
 	local name = html.html_escape(user.value.userid.value)
 	htmlviewfunctions.displayitemstart() %>
@@ -36,5 +36,9 @@ for i,user in ipairs(form.value) do
 			</td>
 		</tr>
 	</tbody></table>
-	<% htmlviewfunctions.displayitemend() %>
-<% end %>
+<%
+	htmlviewfunctions.displayitemend()
+end
+htmlviewfunctions.displaysectionend(header_level2)
+htmlviewfunctions.displaysectionend(header_level)
+%>

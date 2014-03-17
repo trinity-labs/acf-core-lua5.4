@@ -29,6 +29,7 @@
 	});
 </script>
 
-<% htmlviewfunctions.displayheader(cfe({label="Alpine Configuration Framework"}), page_info) %>
+<% local header_level = htmlviewfunctions.displaysectionstart(cfe({label="Alpine Configuration Framework"}), page_info) %>
 <p class="errordetail">Application error occured</p>
 <p class="hiddendetail"><%= html.html_escape(view.message) %></p>
+<% htmlviewfunctions.displaysectionend(header_level) %>

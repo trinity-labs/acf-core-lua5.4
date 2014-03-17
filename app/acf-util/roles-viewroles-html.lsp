@@ -23,12 +23,12 @@
 <% htmlviewfunctions.displaycommandresults({"newrole", "editrole", "deleterole"}, session) %>
 
 <%
-local header_level = htmlviewfunctions.displayheader(view, page_info)
-header_level = htmlviewfunctions.incrementheader(header_level)
+local header_level = htmlviewfunctions.displaysectionstart(view, page_info)
+local header_level2 = htmlviewfunctions.incrementheader(header_level)
 local redir = cfe({ type="hidden", value=page_info.orig_action })
-htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Role", option="Create", action="newrole" }), header_level, page_info)
+htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Role", option="Create", action="newrole" }), header_level2, page_info)
 
-htmlviewfunctions.displayheader(cfe({label="Existing Roles"}), page_info, header_level)
+htmlviewfunctions.displaysectionstart(cfe({label="Existing Roles"}), page_info, header_level2)
 %>
 <table id="list" class="tablesorter"><thead>
 	<tr><th>Role</th><th>Action</th></tr>
@@ -59,3 +59,7 @@ htmlviewfunctions.displayheader(cfe({label="Existing Roles"}), page_info, header
 	<% end %>
 <% end %>
 </tbody></table>
+<%
+htmlviewfunctions.displaysectionend(header_level2)
+htmlviewfunctions.displaysectionend(header_level)
+%>

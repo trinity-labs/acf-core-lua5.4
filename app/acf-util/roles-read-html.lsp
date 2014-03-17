@@ -21,21 +21,23 @@
 </script>
 
 <%
-local header_level = htmlviewfunctions.displayheader(view, page_info)
+local header_level = htmlviewfunctions.displaysectionstart(view, page_info)
+local header_level2 = htmlviewfunctions.incrementheader(header_level)
 %>
 
 <% if view.value.roles then
-	htmlviewfunctions.displayheader(cfe({label=view.value.userid.value.." is valid in these roles"}), page_info, htmlviewfunctions.incrementheader(header_level))
+	htmlviewfunctions.displaysectionstart(cfe({label=view.value.userid.value.." is valid in these roles"}), page_info, header_level2)
 	for a,b in pairs(view.value.roles.value) do
 		print("<p>",html.html_escape(b),"</p>")
 	end
+	htmlviewfunctions.displaysectionend(header_level2)
 end %>
 
 <% if view.value.permissions then
 	if view.value.userid then
-		htmlviewfunctions.displayheader(cfe({label=view.value.userid.value.."'s full permissions are"}), page_info, htmlviewfunctions.incrementheader(header_level))
+		htmlviewfunctions.displaysectionstart(cfe({label=view.value.userid.value.."'s full permissions are"}), page_info, header_level2)
 	elseif view.value.role then
-		htmlviewfunctions.displayheader(cfe({label=view.value.role.value.."'s full permissions are"}), page_info, htmlviewfunctions.incrementheader(header_level))
+		htmlviewfunctions.displaysectionstart(cfe({label=view.value.role.value.."'s full permissions are"}), page_info, header_level2)
 	end
 %>
 	<table id="permissions" class="tablesorter"><thead>
@@ -70,4 +72,10 @@ end %>
 		end
 		%>
 	</tbody></table>
-<% end %>
+<%	
+	if view.value.userid or view.value.role then
+		htmlviewfunctions.displaysectionend(header_level2)
+	end
+end
+htmlviewfunctions.displaysectionend(header_level)
+%>

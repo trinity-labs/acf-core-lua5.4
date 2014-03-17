@@ -7,7 +7,7 @@ html = require("acf.html")
 <% htmlviewfunctions.displaycommandresults({"startstop"}, session) %>
 
 <%
-htmlviewfunctions.displayheader(data, page_info)
+local header_level = htmlviewfunctions.displaysectionstart(data, page_info)
 htmlviewfunctions.displayitem(data.value.status)
 
 htmlviewfunctions.displayitem(data.value.version)
@@ -23,7 +23,9 @@ if not (data.value.version and data.value.version.errtxt) and data.value.autosta
 	autostart.value.servicename = cfe({ type="hidden", value=data.value.autostart.name })
 	autostart.value.redir = cfe({ type="hidden", value=page_info.orig_action })
 	htmlviewfunctions.displayitem(autostart, 0, page_info)	-- header_level 0 means display inline without header
-end %>
+end
+htmlviewfunctions.displaysectionend(header_level)
+%>
 
 <% if viewlibrary and viewlibrary.dispatch_component and viewlibrary.check_permission("startstop") then
 	viewlibrary.dispatch_component("startstop")
