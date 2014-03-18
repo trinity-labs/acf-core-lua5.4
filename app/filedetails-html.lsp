@@ -25,7 +25,7 @@ htmlviewfunctions.displaysectionstart(cfe({label="File Content"}), page_info, he
 if form.type == "form" then
 	htmlviewfunctions.displayformstart(form, page_info)
 	form.value.filename.type = "hidden"
-	htmlviewfunctions.displayformitem(form.value.filename)
+	htmlviewfunctions.displayformitem(form.value.filename, "filename")
 end
 %>
 <textarea name="filecontent">
