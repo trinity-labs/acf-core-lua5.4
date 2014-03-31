@@ -94,7 +94,7 @@ function mymodule.displayitem(myitem, page_info, header_level)
 	page_info = page_info or {}
 	if myitem.type == "form" or myitem.type == "link" then
 		header_level = mymodule.displaysectionstart(myitem, page_info, header_level)
-		mymodule.displayform(myitem, page_info, header_level)
+		mymodule.displayform(myitem, page_info, mymodule.incrementheader(header_level))
 		mymodule.displaysectionend(header_level)
 	elseif myitem.type == "group" then
 		header_level = mymodule.displaysectionstart(myitem, page_info, header_level)
