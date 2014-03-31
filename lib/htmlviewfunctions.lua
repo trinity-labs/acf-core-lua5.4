@@ -94,7 +94,7 @@ function mymodule.displayitem(myitem, page_info, header_level)
 	page_info = page_info or {}
 	if myitem.type == "form" or myitem.type == "link" then
 		header_level = mymodule.displaysectionstart(myitem, page_info, header_level)
-		mymodule.displayform(myitem, nil, nil, page_info, header_level)
+		mymodule.displayform(myitem, page_info, header_level)
 		mymodule.displaysectionend(header_level)
 	elseif myitem.type == "group" then
 		header_level = mymodule.displaysectionstart(myitem, page_info, header_level)
@@ -155,7 +155,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 	if myitem.type == "group" then
 		header_level = mymodule.displaysectionstart(myitem, nil, header_level)
 		mymodule.displayinfo(myitem)
-		mymodule.displayformcontents(myitem, nil, nil, mymodule.incrementheader(header_level), myitem.name)
+		mymodule.displayformcontents(myitem, mymodule.incrementheader(header_level), myitem.name)
 		mymodule.displaysectionend(header_level)
 	elseif myitem.type == "multi" then
 		myitem.type = "select"
@@ -244,25 +244,23 @@ function mymodule.displayformstart(myform, page_info)
 	end
 end
 
-function mymodule.displayformcontents(myform, order, finishingorder, header_level, group)
+function mymodule.displayformcontents(myform, header_level, group)
 	if not myform then return end
-	if not order and not finishingorder then
-		tmporder = {}
-		for name,item in pairs(myform.value) do
-			if tonumber(item.seq) then
-				tmporder[#tmporder+1] = {seq=tonumber(item.seq), name=name}
-			end
+	local order = {}
+	local tmporder = {}
+	for name,item in pairs(myform.value) do
+		if tonumber(item.seq) then
+			tmporder[#tmporder+1] = {seq=tonumber(item.seq), name=name}
 		end
-		if #tmporder>0 then
-			table.sort(tmporder, function(a,b) if a.seq ~= b.seq then return a.seq < b.seq else return a.name < b.name end end)
-			order = {}
-			for i,val in ipairs(tmporder) do
-				order[#order+1] = val.name
-			end
+	end
+	if #tmporder>0 then
+		table.sort(tmporder, function(a,b) if a.seq ~= b.seq then return a.seq < b.seq else return a.name < b.name end end)
+		for i,val in ipairs(tmporder) do
+			order[#order+1] = val.name
 		end
 	end
 	local reverseorder= {["redir"]=0}
-	if order then
+	if #order>0 then
 		for x,name in ipairs(order) do
 			reverseorder[name] = x
 			if myform.value[name] then
@@ -271,24 +269,10 @@ function mymodule.displayformcontents(myform, order, finishingorder, header_leve
 			end
 		end
 	end
-	local reversefinishingorder = {}
-	if finishingorder then
-		for x,name in ipairs(finishingorder) do
-			reversefinishingorder[name] = x
-		end
-	end
 	for name,item in pairs(myform.value) do
-		if nil == reverseorder[name] and nil == reversefinishingorder[name] then
+		if nil == reverseorder[name] then
 			item.name = name
 			mymodule.displayformitem(item, nil, nil, header_level, group)
-		end
-	end
-	if finishingorder then
-		for x,name in ipairs(finishingorder) do
-			if myform.value[name] then
-				myform.value[name].name = name
-				mymodule.displayformitem(myform.value[name], nil, nil, header_level, group)
-			end
 		end
 	end
 end
@@ -320,10 +304,10 @@ function mymodule.displayformend(myform, header_level)
 	io.write('</form>\n')
 end
 
-function mymodule.displayform(myform, order, finishingorder, page_info, header_level)
+function mymodule.displayform(myform, page_info, header_level)
 	if not myform then return end
 	mymodule.displayformstart(myform, page_info)
-	mymodule.displayformcontents(myform, order, finishingorder, header_level)
+	mymodule.displayformcontents(myform, header_level)
 	mymodule.displayformend(myform, header_level)
 end
 
