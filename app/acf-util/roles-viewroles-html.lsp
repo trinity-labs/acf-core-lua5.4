@@ -26,7 +26,7 @@
 local header_level = htmlviewfunctions.displaysectionstart(view, page_info)
 local header_level2 = htmlviewfunctions.incrementheader(header_level)
 local redir = cfe({ type="hidden", value=page_info.orig_action })
-htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Role", option="Create", action="newrole" }), header_level2, page_info)
+htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Role", option="Create", action="newrole" }), page_info, header_level2)
 
 htmlviewfunctions.displaysectionstart(cfe({label="Existing Roles"}), page_info, header_level2)
 %>
@@ -39,9 +39,9 @@ htmlviewfunctions.displaysectionstart(cfe({label="Existing Roles"}), page_info, 
 		<td>
 		<%
 		local r = cfe({type="hidden", value=role})
-		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r}, label="", option="View", action="viewroleperms" }), -1, page_info)
-		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r, redir=redir}, label="", option="Edit", action="editrole" }), -1, page_info)
-		htmlviewfunctions.displayitem(cfe({ type="form", value={role=r}, label="", option="Delete", action="deleterole" }), -1, page_info)
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r}, label="", option="View", action="viewroleperms" }), page_info, -1)
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r, redir=redir}, label="", option="Edit", action="editrole" }), page_info, -1)
+		htmlviewfunctions.displayitem(cfe({ type="form", value={role=r}, label="", option="Delete", action="deleterole" }), page_info, -1)
 		%>
 		</td></tr>
 	<% end %>
@@ -52,8 +52,8 @@ htmlviewfunctions.displaysectionstart(cfe({label="Existing Roles"}), page_info, 
 		<td>
 		<%
 		local r = cfe({type="hidden", value=role})
-		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r}, label="", option="View", action="viewroleperms" }), -1, page_info)
-		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r, redir=redir}, label="", option="Edit", action="editrole" }), -1, page_info)
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r}, label="", option="View", action="viewroleperms" }), page_info, -1)
+		htmlviewfunctions.displayitem(cfe({ type="link", value={role=r, redir=redir}, label="", option="Edit", action="editrole" }), page_info, -1)
 		%>
 		</td></tr>
 	<% end %>

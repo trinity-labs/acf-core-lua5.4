@@ -14,7 +14,7 @@ htmlviewfunctions.displayitem(data.value.version)
 if data.value.version and data.value.version.errtxt and viewlibrary.check_permission("apk-tools/apk/install") then
 	local install = cfe({ type="form", value={}, label="Install package", option="Install", action=page_info.script.."/apk-tools/apk/install" })
 	install.value.package = cfe({ type="hidden", value=data.value.version.name })
-	htmlviewfunctions.displayitem(install, 0, page_info)	-- header_level 0 means display inline without header
+	htmlviewfunctions.displayitem(install, page_info, 0)	-- header_level 0 means display inline without header
 end
 
 htmlviewfunctions.displayitem(data.value.autostart)
@@ -22,7 +22,7 @@ if not (data.value.version and data.value.version.errtxt) and data.value.autosta
 	local autostart = cfe({ type="link", value={}, label="Enable autostart", option="Enable", action=page_info.script.."/alpine-baselayout/rc/edit" })
 	autostart.value.servicename = cfe({ type="hidden", value=data.value.autostart.name })
 	autostart.value.redir = cfe({ type="hidden", value=page_info.orig_action })
-	htmlviewfunctions.displayitem(autostart, 0, page_info)	-- header_level 0 means display inline without header
+	htmlviewfunctions.displayitem(autostart, page_info, 0)	-- header_level 0 means display inline without header
 end
 htmlviewfunctions.displaysectionend(header_level)
 %>

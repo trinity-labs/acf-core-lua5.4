@@ -89,7 +89,7 @@ function mymodule.displayitemend(myitem, page_info, header_level)
 	end
 end
 
-function mymodule.displayitem(myitem, header_level, page_info)
+function mymodule.displayitem(myitem, page_info, header_level)
 	if not myitem then return end
 	page_info = page_info or {}
 	if myitem.type == "form" or myitem.type == "link" then
@@ -115,7 +115,7 @@ function mymodule.displayitem(myitem, header_level, page_info)
 		end
 		for x,name in ipairs(order) do
 			if myitem.value[name] then
-				mymodule.displayitem(myitem.value[name], mymodule.incrementheader(header_level))
+				mymodule.displayitem(myitem.value[name], page_info, mymodule.incrementheader(header_level))
 			end
 		end
 		mymodule.displaysectionend(header_level)

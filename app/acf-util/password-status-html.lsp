@@ -8,7 +8,7 @@
 local header_level = htmlviewfunctions.displaysectionstart(form, page_info)
 local header_level2 = htmlviewfunctions.incrementheader(header_level)
 local redir = cfe({ type="hidden", value=page_info.orig_action })
-htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Account", option="Create", action="newuser" }), header_level2, page_info)
+htmlviewfunctions.displayitem(cfe({ type="link", value={redir=redir}, label="Create New Account", option="Create", action="newuser" }), page_info, header_level2)
 
 htmlviewfunctions.displaysectionstart(cfe({label="Existing Accounts"}), page_info, header_level2)
 for i,user in ipairs(form.value) do
@@ -30,9 +30,9 @@ for i,user in ipairs(form.value) do
 			<td style='border:none;'><b>Option</b></td>
 			<td style='border:none;'>
 			<% local userid = cfe({type="hidden", value=user.value.userid.value}) %>
-			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid, redir=redir}, label="", option="Edit", action="edituser"}), -1, page_info) %>
-			<% htmlviewfunctions.displayitem(cfe({type="form", value={userid=userid}, label="", option="Delete", action="deleteuser" }), -1, page_info) %>
-			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid}, label="", option="View Roles", action=page_info.script.."/acf-util/roles/viewuserroles"}), -1, page_info) %>
+			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid, redir=redir}, label="", option="Edit", action="edituser"}), page_info, -1) %>
+			<% htmlviewfunctions.displayitem(cfe({type="form", value={userid=userid}, label="", option="Delete", action="deleteuser" }), page_info, -1) %>
+			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid}, label="", option="View Roles", action=page_info.script.."/acf-util/roles/viewuserroles"}), page_info, -1) %>
 			</td>
 		</tr>
 	</tbody></table>

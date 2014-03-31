@@ -341,7 +341,7 @@ end
 mymodule.auto_view = function(viewtable, viewlibrary, pageinfo, session)
 	if pageinfo.viewtype == "html" then
 		local htmlviewfunctions = require("htmlviewfunctions")
-		htmlviewfunctions.displayitem(viewtable, 1, pageinfo)
+		htmlviewfunctions.displayitem(viewtable, pageinfo)
 	elseif pageinfo.viewtype == "json" then
 		local json = require("json")
 		print(json.encode(viewtable))
