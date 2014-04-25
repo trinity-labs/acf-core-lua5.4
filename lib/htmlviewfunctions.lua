@@ -26,15 +26,15 @@ function mymodule.displaysectionstart(myitem, page_info, header_level)
 	page_info = page_info or {}
 	header_level = header_level or page_info.header_level or 1
 	if 0 < header_level then
-		print("<div class='section"..tostring(header_level).."'>")
-		print("<h"..tostring(header_level)..">"..html.html_escape(myitem.label).."</h"..tostring(header_level)..">")
+		print('<div class="section'..tostring(header_level)..'">')
+		print('<h'..tostring(header_level)..'>'..html.html_escape(myitem.label)..'</h'..tostring(header_level)..'>')
 	end
 	return header_level
 end
 
 function mymodule.displaysectionend(header_level)
 	if 0 < header_level then
-		print("</div> <!-- .section"..tostring(header_level).." -->")
+		print('</div> <!-- .section'..tostring(header_level)..' -->')
 	end
 end
 
@@ -47,9 +47,9 @@ function mymodule.incrementheader(header_level)
 end
 
 function mymodule.displayinfo(myitem)
-	if myitem.descr then io.write("<p class='descr'>" .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. "</p>\n") end
-	if myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. "</p>\n") end
-	if myitem.errtxt then io.write("<p class='error'>" .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. "</p>\n") end
+	if myitem.descr then io.write('<p class="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. '</p>') end
+	if myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. '</p>') end
+	if myitem.errtxt then io.write('<p class="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. '</p>') end
 end
 
 function mymodule.displayitemstart(myitem, page_info, header_level)
@@ -57,15 +57,15 @@ function mymodule.displayitemstart(myitem, page_info, header_level)
 	page_info = page_info or {}
 	header_level = header_level or page_info.header_level or 1
 	if 0 <= header_level then
-		io.write("<div class='item")
+		io.write('<div class="item')
 		if myitem.errtxt then 
-			io.write(" error")
+			io.write(' error')
 		end
-		io.write("'><label class='left")
+		io.write('"><label class="left')
 		if myitem.id then
-			io.write("' for='"..myitem.id)
+			io.write('" for="'..myitem.id)
 		end
-		io.write("'>")
+		io.write('">')
 	end
 	return header_level
 end
@@ -74,8 +74,8 @@ function mymodule.displayitemmiddle(myitem, page_info, header_level)
 	page_info = page_info or {}
 	header_level = header_level or page_info.header_level or 1
 	if 0 <= header_level then
-		io.write("</label>")
-		io.write("<div class='right'>")
+		io.write('</label>')
+		io.write('<div class="right">')
 	end
 end
 
@@ -85,7 +85,7 @@ function mymodule.displayitemend(myitem, page_info, header_level)
 	header_level = header_level or page_info.header_level or 1
 	mymodule.displayinfo(myitem)
 	if 0 <= header_level then
-		io.write("</div></div><!-- end .item -->\n")
+		io.write('</div></div><!-- end .item -->')
 	end
 end
 
@@ -162,7 +162,7 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		myitem.multiple = "true"
 		local tempname = myitem.name
 		myitem.name = tempname.."[]"
-		io.write((html.form[myitem.type](myitem) or "") .. "\n")
+		io.write((html.form[myitem.type](myitem) or ""))
 		myitem.name = tempname
 		myitem.type = "multi"
 --[[
@@ -213,15 +213,15 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		local tempval = myitem.value
 		if (myitem.value == true) then myitem.checked = "" end
 		myitem.value = "true"
-		io.write(html.form.checkbox(myitem) .. "\n")
+		io.write(html.form.checkbox(myitem))
 		myitem.value = tempval
 	elseif myitem.type == "list" then
 		local tempval = myitem.value
 		myitem.value = table.concat(myitem.value, "\n")
-		io.write(html.form.longtext(myitem) .. "\n")
+		io.write(html.form.longtext(myitem))
 		myitem.value = tempval
 	else
-		io.write((html.form[myitem.type](myitem) or "") .. "\n")
+		io.write((html.form[myitem.type](myitem) or ""))
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		mymodule.displayitemend(myitem, nil, header_level)
@@ -402,7 +402,7 @@ function mymodule.displaypagination(page_data, page_info)
 		io.write('<div align="right">Pages:')
 		local p = page_data.page
 		if p > 1 then
-			io.write("<a href="..link..(p-1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-previous.png' HEIGHT='16' WIDTH='16'></a>\n")
+			io.write('<a href='..link..(p-1)..'><img SRC="'..html.html_escape(page_info.staticdir)..'/tango/16x16/actions/go-previous.png" HEIGHT="16" WIDTH="16"></a>\n')
 		end
 		if p ~= 1 then
 			pagelink(1)
@@ -422,7 +422,7 @@ function mymodule.displaypagination(page_data, page_info)
 		if p<page_data.numpages then
 			pagelink(page_data.numpages)
 			if p~= 0 then
-				io.write("<a href="..link..(p+1).."><img SRC='"..html.html_escape(page_info.staticdir).."/tango/16x16/actions/go-next.png' HEIGHT='16' WIDTH='16'></a>\n")
+				io.write('<a href='..link..(p+1)..'><img SRC="'..html.html_escape(page_info.staticdir)..'/tango/16x16/actions/go-next.png" HEIGHT="16" WIDTH="16"></a>\n')
 			end
 		end
 		if p~=0 then
