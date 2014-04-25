@@ -607,7 +607,16 @@ mymodule.handle_clientdata = function(form, clientdata)
 		elseif value.type == "boolean" then
 			--- HTML forms simply don't include checkboxes unless they're checked
 			value.value = (clientdata[name] ~= nil) and (clientdata[name] ~= "false")
---[[		elseif value.type == "multi" then
+		elseif value.type == "multi" then
+			-- Multi-selects return \r separated lists or nothing at all if none selected
+			value.value = {}
+			if clientdata[name] and clientdata[name] ~= "" then
+				-- for www we use \r separated list
+				for l in string.gmatch(clientdata[name].."\n", "%s*([^\n]*%S)%s*\n") do
+					table.insert(value.value, l)
+				end
+			end
+--[[
 			-- FIXME this is because multi selects don't work in haserl
 			-- Multi-selects are implemented as checkboxes, so if none exists, it means nothing is selected
 			local oldtable = clientdata[name] or {}
@@ -622,7 +631,7 @@ mymodule.handle_clientdata = function(form, clientdata)
 --]]
 		elseif clientdata[name] then
 			-- The other types will be returned in clientdata even if set to blank, so if no result, leave the default
-			if value.type == "list" or value.type == "multi" then
+			if value.type == "list" then
 				value.value = {}
 				if clientdata[name] ~= "" then
 					-- for www we use \r separated list
