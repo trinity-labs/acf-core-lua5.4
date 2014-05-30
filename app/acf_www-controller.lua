@@ -382,6 +382,7 @@ mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 		self.conf.controller = userctlr or ""
 		self.conf.action = useraction or ""
 	end
+	--self.logevent("WWW.dispatch "..self.conf.prefix..self.conf.controller.."/"..self.conf.action)
 
 	-- This is for get / post data saved for after logon
 	if self.sessiondata.logonredirect and self.conf.prefix == self.sessiondata.logonredirect.prefix
@@ -534,7 +535,7 @@ mymodule.redirect_to_referrer = function(self, result)
 		-- If we have a result, then we did something, so we might have to redirect
 		if not ENV.HTTP_REFERER then
 			-- If no referrer, we have a potential problem.
-			if not find_view(self.conf.appdir, self.conf.prefix, self.conf.controller, self.conf.action, self.conf.viewtype or "html") then
+			if not self.find_view(self.conf.appdir, self.conf.prefix, self.conf.controller, self.conf.action, self.conf.viewtype or "html") then
 				-- Action does not have view, so redirect to default action for this controller.
 				self:redirect()
 			end
