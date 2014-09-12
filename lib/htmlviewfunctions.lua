@@ -220,6 +220,8 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 		myitem.value = table.concat(myitem.value, "\n")
 		io.write(html.form.longtext(myitem))
 		myitem.value = tempval
+	elseif myitem.type == "select" and myitem.readonly then
+		io.write((html.form.text(myitem) or ""))
 	else
 		io.write((html.form[myitem.type](myitem) or ""))
 	end
