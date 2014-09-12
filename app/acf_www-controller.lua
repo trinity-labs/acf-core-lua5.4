@@ -371,6 +371,7 @@ end
 mymodule.dispatch = function (self, userprefix, userctlr, useraction) 
 	local controller = nil
 	local viewtable
+	local starttime = os.time()
 	local success, err = xpcall ( function () 
 
 	if userprefix == nil then
@@ -500,6 +501,8 @@ mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 		end
 	end
 
+	--self.logevent(self.conf.prefix..self.conf.controller.."/"..self.conf.action.." took"..os.difftime(os.time(), starttime))
+
 	return viewtable
 end
 
@@ -602,6 +605,10 @@ mymodule.handle_clientdata = function(form, clientdata)
 				if not actualval then break end
 			end
 			clientdata[name] = actualval
+		end
+		if tonumber(name) and not clientdata[name] then
+			-- If the name is a number, haserl will convert the string to a number index
+			clientdata[name] = clientdata[tonumber(name)]
 		end
 		if value.type == "group" then
 			mymodule.handle_clientdata(value, clientdata[name])
