@@ -668,12 +668,12 @@ mymodule.handle_form = function(self, getFunction, setFunction, clientdata, opti
 		if clientdata.redir then
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 		end
-		form = self:redirect_to_referrer(form)
 		if clientdata.redir and not form.errtxt then
 			form.value = form.descr -- make it a command result
 			form.descr = nil
 			self:redirect(clientdata.redir, form)
 		end
+		form = self:redirect_to_referrer(form)
 	else
 		if clientdata.redir then
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
