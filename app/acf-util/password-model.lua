@@ -123,7 +123,7 @@ function mymodule.read_user(self, user)
 	if not avail_skins then
 		avail_skins = {""}
 		local contrl = self:new("acf-util/skins")
-		skins = contrl:update()
+		skins = contrl.model.get_update(contrl)
 		contrl:destroy()
 		for i,s in ipairs(skins.value.skin.option) do
 			avail_skins[#avail_skins + 1] = s.value or s
