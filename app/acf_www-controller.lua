@@ -153,6 +153,38 @@ local has_view = function(self)
 	return false
 end
 
+-- If we've done something, cause a redirect to the referring page (assuming it's different)
+-- Also handles retrieving the result of a previously redirected action
+local redirect_to_referrer = function(self, result)
+	if self.conf.viewtype ~= "html" then
+		return result
+	end
+	if result and not self.conf.component then
+		-- If we have a result, then we did something, so we might have to redirect
+		if not ENV.HTTP_REFERER then
+			-- If no referrer, we have a potential problem.
+			if not self.find_view(self.conf.appdir, self.conf.prefix, self.conf.controller, self.conf.action, self.conf.viewtype or "html") then
+				-- Action does not have view, so redirect to default action for this controller.
+				self:redirect()
+			end
+		else
+			local p = ENV.HTTP_REFERER:gsub("%?.*", ""):gsub("%%(%x%x)",
+				function(h) return string.char(tonumber(h, 16)) end )
+			local prefix, controller, action = self.parse_path_info(p)
+			if prefix ~= self.conf.prefix or controller ~= self.conf.controller or action ~= self.conf.action then
+				self.sessiondata[self.conf.action.."result"] = result
+				error({type="redir_to_referrer"})
+			end
+		end
+	elseif self.sessiondata[self.conf.action.."result"] then
+		-- If we don't have a result, but there's a result in the session data,
+		-- then we're a component redirected as above.  Return the last result.
+		result = self.sessiondata[self.conf.action.."result"]
+		self.sessiondata[self.conf.action.."result"] = nil
+	end
+	return result
+end
+
 -- Override the mvc create_helper_library function to add our functions
 mymodule.create_helper_library = function ( self )
 	-- Call the mvc version
@@ -528,38 +560,6 @@ mymodule.redirect = function (self, str, result)
 	error(self.conf)
 end
 
--- If we've done something, cause a redirect to the referring page (assuming it's different)
--- Also handles retrieving the result of a previously redirected action
-mymodule.redirect_to_referrer = function(self, result)
-	if self.conf.viewtype ~= "html" then
-		return result
-	end
-	if result and not self.conf.component then
-		-- If we have a result, then we did something, so we might have to redirect
-		if not ENV.HTTP_REFERER then
-			-- If no referrer, we have a potential problem.
-			if not self.find_view(self.conf.appdir, self.conf.prefix, self.conf.controller, self.conf.action, self.conf.viewtype or "html") then
-				-- Action does not have view, so redirect to default action for this controller.
-				self:redirect()
-			end
-		else
-			local p = ENV.HTTP_REFERER:gsub("%?.*", ""):gsub("%%(%x%x)",
-				function(h) return string.char(tonumber(h, 16)) end )
-			local prefix, controller, action = self.parse_path_info(p)
-			if prefix ~= self.conf.prefix or controller ~= self.conf.controller or action ~= self.conf.action then
-				self.sessiondata[self.conf.action.."result"] = result
-				error({type="redir_to_referrer"})
-			end
-		end
-	elseif self.sessiondata[self.conf.action.."result"] then
-		-- If we don't have a result, but there's a result in the session data,
-		-- then we're a component redirected as above.  Return the last result.
-		result = self.sessiondata[self.conf.action.."result"]
-		self.sessiondata[self.conf.action.."result"] = nil
-	end
-	return result
-end
-
 -- parse a "URI" like string into a prefix, controller and action
 -- this is the same as URI string, but opposite preference
 -- if only one is defined, it's assumed to be the action
@@ -673,12 +673,12 @@ mymodule.handle_form = function(self, getFunction, setFunction, clientdata, opti
 			form.descr = nil
 			self:redirect(clientdata.redir, form)
 		end
-		form = self:redirect_to_referrer(form)
+		form = redirect_to_referrer(self, form)
 	else
 		if clientdata.redir then
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 		end
-		form = self:redirect_to_referrer() or form
+		form = redirect_to_referrer(self) or form
 	end
 
 	form.type = "form"
