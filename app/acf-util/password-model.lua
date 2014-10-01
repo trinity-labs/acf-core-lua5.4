@@ -70,18 +70,19 @@ local function get_blank_user(self)
 		end
 	end
 
-	-- Call into ?? controller to get the list of home actions
+	-- Call into roles library to get the list of home actions
 	if not avail_homes then
 		avail_homes = {""}
 		local tmp1, tmp2 = roles.get_all_permissions(self)
 	        table.sort(tmp2)
 		for i,h in ipairs(tmp2) do
-			avail_homes[#avail_homes+1] = h
+			if h ~= "/acf-util/logon/logoff" and h ~= "/acf-util/logon/logon" then
+				avail_homes[#avail_homes+1] = h
+			end
 		end
 	end
 
-	-- Passwords are set to empty string
-	result.value.userid = cfe({ value=user, label="User id", seq=1 })
+	result.value.userid = cfe({ value="", label="User id", seq=1 })
 	result.value.username = cfe({ value="", label="Real name", seq=2 })
 	result.value.password = cfe({ type="password", value="", label="Password", seq=4 })
 	result.value.password_confirm = cfe({ type="password", value="", label="Password (confirm)", seq=5 })
