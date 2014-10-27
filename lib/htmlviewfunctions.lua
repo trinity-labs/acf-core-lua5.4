@@ -133,7 +133,7 @@ function mymodule.displayitem(myitem, page_info, header_level)
 	end
 end
 
-function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
+function mymodule.displayformitem(myitem, name, header_level, group)
 	if not myitem then return end
 	if name then myitem.name = name end
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
@@ -148,9 +148,6 @@ function mymodule.displayformitem(myitem, name, viewtype, header_level, group)
 			io.write(html.html_escape(myitem.label))
 		end
 		mymodule.displayitemmiddle(myitem, nil, header_level)
-	end
-	if (viewtype == "viewonly") then
-		myitem.disabled = "true"
 	end
 	if myitem.type == "group" then
 		header_level = mymodule.displaysectionstart(myitem, nil, header_level)
@@ -267,14 +264,14 @@ function mymodule.displayformcontents(myform, header_level, group)
 			reverseorder[name] = x
 			if myform.value[name] then
 				myform.value[name].name = name
-				mymodule.displayformitem(myform.value[name], nil, nil, header_level, group)
+				mymodule.displayformitem(myform.value[name], nil, header_level, group)
 			end
 		end
 	end
 	for name,item in pairs(myform.value) do
 		if nil == reverseorder[name] then
 			item.name = name
-			mymodule.displayformitem(item, nil, nil, header_level, group)
+			mymodule.displayformitem(item, nil, header_level, group)
 		end
 	end
 end
