@@ -89,9 +89,11 @@ function mymodule.displayitemend(myitem, page_info, header_level)
 	end
 end
 
-function mymodule.displayitem(myitem, page_info, header_level)
+function mymodule.displayitem(myitem, page_info, header_level, name, group)
 	if not myitem then return end
 	page_info = page_info or {}
+	myitem.name = name or myitem.name or ""
+	if group and group ~= "" then myitem.name = group.."."..myitem.name end
 	if myitem.type == "form" or myitem.type == "link" then
 		header_level = mymodule.displaysectionstart(myitem, page_info, header_level)
 		mymodule.displayform(myitem, page_info, mymodule.incrementheader(header_level))
@@ -115,10 +117,12 @@ function mymodule.displayitem(myitem, page_info, header_level)
 		end
 		for x,name in ipairs(order) do
 			if myitem.value[name] then
-				mymodule.displayitem(myitem.value[name], page_info, mymodule.incrementheader(header_level))
+				mymodule.displayitem(myitem.value[name], page_info, mymodule.incrementheader(header_level), name, myitem.name)
 			end
 		end
 		mymodule.displaysectionend(header_level)
+	elseif myitem.key and not myitem.readonly then
+		mymodule.displayformitem(myitem, name, header_level, group)
 	elseif myitem.type ~= "hidden" then
 		if myitem.errtxt then 
 			myitem.class = "error"
@@ -135,7 +139,7 @@ end
 
 function mymodule.displayformitem(myitem, name, header_level, group)
 	if not myitem then return end
-	if name then myitem.name = name end
+	myitem.name = name or myitem.name or ""
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
 	if myitem.errtxt then 
 		myitem.class = "error"
