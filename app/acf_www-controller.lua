@@ -612,6 +612,8 @@ mymodule.handle_clientdata = function(form, clientdata)
 		end
 		if value.type == "group" then
 			mymodule.handle_clientdata(value, clientdata[name])
+		elseif value.readonly then
+			-- Don't update readonly values
 		elseif value.type == "boolean" then
 			--- HTML forms simply don't include checkboxes unless they're checked
 			value.value = (clientdata[name] ~= nil) and (clientdata[name] ~= "false")

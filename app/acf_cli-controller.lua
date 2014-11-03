@@ -36,6 +36,8 @@ mymodule.handle_clientdata = function(form, clientdata, group)
 		if group then name = group.."."..name end
 		if value.type == "group" then
 			mymodule.handle_clientdata(value, clientdata, name)
+		elseif value.readonly then
+			-- Don't update readonly values
 		-- Don't update from the default unless a value exists
 		elseif value.type == "boolean" and clientdata[name] then
 			value.value = (clientdata[name] == "true")

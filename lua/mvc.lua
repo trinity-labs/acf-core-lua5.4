@@ -437,7 +437,7 @@ mymodule.handle_clientdata = function(form, clientdata)
 		value.errtxt = nil
 		if value.type == "group" then
 			mymodule.handle_clientdata(value, clientdata[name])
-		else
+		elseif not value.readonly then
 			value.value = clientdata[name] or value.value
 		end
 	end
