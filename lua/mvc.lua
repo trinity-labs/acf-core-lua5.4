@@ -273,13 +273,19 @@ mymodule.read_config = function( self, appname, home )
 		self.conf.app_hooks = {}
 		setmetatable (self.conf.app_hooks, {__index = _G})
 
-		-- loadfile loads into the global environment
-		-- so we set env 0, not env 1
-		setfenv (0, self.conf.app_hooks)
-		local f = loadfile(self.conf.confdir .. "/" .. appname.. "-hooks.lua")
-		if (f) then f() end
-		setfenv (0, _G)
-		-- setmetatable (self.conf.app_hooks, {})
+		local IS_52_LOAD = pcall(load, '')
+		if IS_52_LOAD then
+			local f = loadfile(self.conf.confdir .. "/" .. appname.. "-hooks.lua", "bt", self.conf.app_hooks)
+			if (f) then f() end
+		else
+			-- loadfile loads into the global environment
+			-- so we set env 0, not env 1
+			setfenv (0, self.conf.app_hooks)
+			local f = loadfile(self.conf.confdir .. "/" .. appname.. "-hooks.lua")
+			if (f) then f() end
+			setfenv (0, _G)
+			-- setmetatable (self.conf.app_hooks, {})
+		end
 	end
 
 end
