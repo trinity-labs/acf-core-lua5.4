@@ -46,7 +46,7 @@ end
 		<script type="text/javascript" src="<%= html.html_escape(pageinfo.wwwprefix..pageinfo.skin.."/"..posix.basename(pageinfo.skin)..".js") %>"></script>
 		<script type="text/javascript">
 			$(function(){
-				$(":input:not(:submit):enabled:not([readonly]):first").focus();
+				$(":input:not(input[type=button],input[type=submit],button):enabled:not([readonly]):visible:first").focus();
 			});
 		</script>
 <% end -- pageinfo.skinned %>
