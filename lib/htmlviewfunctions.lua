@@ -26,7 +26,7 @@ function mymodule.displaysectionstart(myitem, page_info, header_level)
 	page_info = page_info or {}
 	header_level = header_level or page_info.header_level or 1
 	if 0 < header_level then
-		print('<div class="section'..tostring(header_level)..'">')
+		print('<div class="section'..tostring(header_level)..'" id="section_'..html.html_escape(myitem.name)..'">')
 		print('<h'..tostring(header_level)..'>'..html.html_escape(myitem.label)..'</h'..tostring(header_level)..'>')
 	end
 	return header_level
