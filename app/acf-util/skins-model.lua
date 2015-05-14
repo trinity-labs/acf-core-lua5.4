@@ -3,6 +3,7 @@ local mymodule = {}
 modelfunctions = require("modelfunctions")
 fs = require("acf.fs")
 format = require("acf.format")
+posix = require("posix")
 
 local function set_skins(self, skin)
 	local content = "\n"..(fs.read_file(self.conf.conffile) or "")

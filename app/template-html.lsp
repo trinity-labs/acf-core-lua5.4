@@ -1,5 +1,7 @@
 <% local viewtable, viewlibrary, pageinfo, session = ... 
-   html=require("acf.html") %>
+   html=require("acf.html")
+   posix=require("posix")
+%>
 Status: 200 OK
 Content-Type: text/html
 <%
