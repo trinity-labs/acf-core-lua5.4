@@ -12,6 +12,8 @@ format = require("acf.format")
 
 -- For security, set the path
 posix.setenv("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin")
+-- Adjust the package.path to remove .
+package.path = string.gsub(package.path, ";?%./%?%.lua", "")
 
 mymodule.mvc = {}
 
