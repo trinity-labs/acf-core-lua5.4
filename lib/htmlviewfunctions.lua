@@ -213,6 +213,7 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 	elseif myitem.type == "boolean" then
 		local tempval = myitem.value
 		if (myitem.value == true) then myitem.checked = "" end
+		if (myitem.readonly == true) then myitem.disabled = true end
 		myitem.value = "true"
 		io.write(html.form.checkbox(myitem))
 		myitem.value = tempval
@@ -222,7 +223,17 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 		io.write(html.form.longtext(myitem))
 		myitem.value = tempval
 	elseif myitem.type == "select" and myitem.readonly then
+		local tempval = myitem.value
+		if myitem.option and myitem.option[1] and type(myitem.option[1]) == "table" then
+			for i,o in ipairs(myitem.option) do
+				if tempval == o.value then
+					myitem.value = o.label
+					break
+				end
+			end
+		end
 		io.write((html.form.text(myitem) or ""))
+		myitem.value = tempval
 	else
 		io.write((html.form[myitem.type](myitem) or ""))
 	end
