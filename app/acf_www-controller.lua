@@ -302,6 +302,9 @@ mymodule.mvc.on_load = function (self, parent)
 		self.sessiondata.id = sessionlib.random_hash(512)
 		authenticator = require("authenticator")
 		self.sessiondata.userinfo = authenticator.get_userinfo(self, ENV.REMOTE_USER)
+		if not self.sessiondata.userinfo then
+			self.sessiondata.userinfo = {userid=ENV.REMOTE_USER, roles={"DEFAULT"}}
+		end
 		self.logevent("Automatic logon as ENV.REMOTE_USER: "..tostring(ENV.REMOTE_USER))
 	end
 
