@@ -674,11 +674,19 @@ mymodule.handle_form = function(self, getFunction, setFunction, clientdata, opti
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 		end
 		if clientdata.redir and not form.errtxt then
-			form.value = form.descr -- make it a command result
-			form.descr = nil
-			self:redirect(clientdata.redir, form)
+			-- If redirecting to a different action, change the value to a command result
+			local prefix, controller, action = self.parse_redir_string(clientdata.redir)
+			if prefix == "/" then prefix = self.conf.prefix end
+			if controller == "" then controller = self.conf.controller end
+			if self.conf.prefix ~= prefix or self.conf.controller ~= controller or self.conf.action ~= action then
+				form.value = form.descr -- make it a command result
+				form.descr = nil
+				self:redirect(clientdata.redir, form)
+			end
+			-- Otherwise, continue and ignore the referrer
+		else
+			form = redirect_to_referrer(self, form)
 		end
-		form = redirect_to_referrer(self, form)
 	else
 		if clientdata.redir then
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
