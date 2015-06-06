@@ -179,7 +179,7 @@ local redirect_to_referrer = function(self, result)
 	elseif self.sessiondata[self.conf.action.."result"] then
 		-- If we don't have a result, but there's a result in the session data,
 		-- then we're a component redirected as above.  Return the last result.
-		result = self.sessiondata[self.conf.action.."result"]
+		result = cfe(self.sessiondata[self.conf.action.."result"])
 		self.sessiondata[self.conf.action.."result"] = nil
 	end
 	return result

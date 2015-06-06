@@ -329,7 +329,7 @@ function mymodule.displaycommandresults(commands, session, preserveerrors)
 	local cmdresult = {}
 	for i,cmd in ipairs(commands) do
 		if session[cmd.."result"] then
-			cmdresult[#cmdresult + 1] = session[cmd.."result"]
+			cmdresult[#cmdresult + 1] = cfe(session[cmd.."result"])
 			if not preserveerrors or not session[cmd.."result"].errtxt then
 				session[cmd.."result"] = nil
 			end
@@ -339,7 +339,7 @@ function mymodule.displaycommandresults(commands, session, preserveerrors)
 		io.write('<div class="command-results"><h1>Command Result</h1>')
 		for i,result in ipairs(cmdresult) do
 			if type(result.value) == "string" and result.value ~= "" then io.write('<p>' .. string.gsub(html.html_escape(result.value), "\n", "<br/>") .. "</p>") end
-			mymodule.displayinfo(result)
+			if result.errtxt then io.write('<p class="error">' .. string.gsub(html.html_escape(result:print_errtxt()), "\n", "<br/>") .. '</p>') end
 		end
 		io.write('</div><!-- end .command-results -->')
 	end
