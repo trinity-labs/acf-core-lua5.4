@@ -420,6 +420,34 @@ mymodule.exception_handler = function (self, message )
 	error(message)
 end
 
+-- Create a metatable to be used for all cfe objects
+local cfe_mt = {}
+cfe_mt.__index = cfe_mt
+cfe_mt.print_errtxt = function(self)
+	local errtxt = {}
+	local function get_errtxt(self, name)
+		if self.errtxt then
+			if name then
+				errtxt[#errtxt+1] = name..": "..self.errtxt
+			else
+				errtxt[#errtxt+1] = self.errtxt
+			end
+		end
+		if "group" == self.type or "form" == self.type then
+			if not name then
+				name = ""
+			else
+				name = name.."."
+			end
+			for n,v in pairs(self.value) do
+				get_errtxt(v, name..n)
+			end
+		end
+	end
+	get_errtxt(self)
+	return table.concat(errtxt, "\n")
+end
+
 -- create a Configuration Framework Entity (cfe)
 -- returns a table with at least "value", "type", and "label"
 mymodule.cfe = function ( optiontable )
@@ -430,6 +458,7 @@ mymodule.cfe = function ( optiontable )
 	for key,value in pairs(optiontable) do
 		me[key] = value
 	end
+	setmetatable(me, cfe_mt)
 	return me
 end
 _G.cfe = mymodule.cfe
