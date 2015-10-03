@@ -339,6 +339,7 @@ function mymodule.displaycommandresults(commands, session, preserveerrors)
 		io.write('<div class="command-results"><h1>Command Result</h1>')
 		for i,result in ipairs(cmdresult) do
 			if type(result.value) == "string" and result.value ~= "" then io.write('<p>' .. string.gsub(html.html_escape(result.value), "\n", "<br/>") .. "</p>") end
+			if result.descr then io.write('<p class="descr">' .. string.gsub(html.html_escape(result.descr), "\n", "<br/>") .. '</p>') end
 			if result.errtxt then io.write('<p class="error">' .. string.gsub(html.html_escape(result:print_errtxt()), "\n", "<br/>") .. '</p>') end
 		end
 		io.write('</div><!-- end .command-results -->')
