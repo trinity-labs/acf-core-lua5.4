@@ -625,8 +625,12 @@ mymodule.handle_clientdata = function(form, clientdata)
 			value.value = {}
 			if clientdata[name] and clientdata[name] ~= "" then
 				-- for www we use \r separated list
-				for l in string.gmatch(clientdata[name].."\n", "%s*([^\n]*%S)%s*\n") do
-					table.insert(value.value, l)
+				if type(clientdata[name]) == "string" then
+					for l in string.gmatch(clientdata[name].."\n", "%s*([^\n]*%S)%s*\n") do
+						table.insert(value.value, l)
+					end
+				else
+					value.value = clientdata[name]
 				end
 			end
 --[[
