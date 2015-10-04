@@ -398,7 +398,7 @@ function mymodule.displaypagination(page_data, page_info)
 					if (type(val) == "table") then
 						serialize_clientdata(val, prefix..name..".")
 					else
-						clientdata[#clientdata + 1] = prefix..name.."="..val
+						clientdata[#clientdata + 1] = prefix..name.."="..html.url_encode(val)
 					end
 				end
 			end
