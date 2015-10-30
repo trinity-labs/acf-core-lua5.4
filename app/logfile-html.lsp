@@ -1,4 +1,7 @@
 <% local data, viewlibrary, page_info, session = ... %>
+<% htmlviewfunctions = require("htmlviewfunctions") %>
+
+<% htmlviewfunctions.displayinfo(data) %>
 
 <% if viewlibrary and viewlibrary.dispatch_component then
 	local clientdata = {}
