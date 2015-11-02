@@ -26,6 +26,8 @@
 			clientdata.facility = nil
 			clientdata.filename = "/var/log/messages"
 		end
-		viewlibrary.dispatch_component("alpine-baselayout/logfiles/view", clientdata)
+		if clientdata.filename and clientdata.filename ~= "" then
+			viewlibrary.dispatch_component("alpine-baselayout/logfiles/view", clientdata)
+		end
 	end
 end %>
