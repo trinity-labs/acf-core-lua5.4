@@ -234,8 +234,10 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 		end
 		io.write((html.form.text(myitem) or ""))
 		myitem.value = tempval
-	else
+	elseif html.form[myitem.type] then
 		io.write((html.form[myitem.type](myitem) or ""))
+	else
+		io.write((string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>")))
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		mymodule.displayitemend(myitem, nil, header_level)
