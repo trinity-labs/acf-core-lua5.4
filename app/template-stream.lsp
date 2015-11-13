@@ -1,7 +1,7 @@
 <% local view, viewlibrary, page_info, session = ... %>
 <%
 local viewtable = view
-if view.type == "group" then
+if view.type == "group" or view.type == "form" then
 	viewtable = nil
 	for name,value in pairs(view.value) do
 		if value.type == "raw" then
