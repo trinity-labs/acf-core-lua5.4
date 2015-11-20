@@ -10,7 +10,7 @@ if view.type == "group" or view.type == "form" then
 		end
 	end
 	if not viewtable then
-		return
+		viewtable = cfe({label="error", value=view.errtxt or "Invalid stream output"})
 	end
 end
 %>
