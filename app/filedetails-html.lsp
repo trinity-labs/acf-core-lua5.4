@@ -10,6 +10,7 @@ if form.type == "form" then
 else
 	header_level = htmlviewfunctions.displaysectionstart(cfe({label="View File"}), page_info)
 end
+htmlviewfunctions.displayinfo(form)
 header_level2 = htmlviewfunctions.displaysectionstart(cfe({label="File Details"}), page_info, htmlviewfunctions.incrementheader(header_level))
 
 htmlviewfunctions.displayitem(form.value.filename)
@@ -21,27 +22,29 @@ end
 
 htmlviewfunctions.displaysectionend(header_level2)
 
-htmlviewfunctions.displaysectionstart(cfe({label="File Content"}), page_info, header_level2)
-if form.type == "form" then
-	htmlviewfunctions.displayformstart(form, page_info)
-	form.value.filename.type = "hidden"
-	for name,value in pairs(form.value) do
-		if value.type == "hidden" then
-			htmlviewfunctions.displayformitem(value, name)
+if form.value.filecontent then
+	htmlviewfunctions.displaysectionstart(cfe({label="File Content"}), page_info, header_level2)
+	if form.type == "form" then
+		htmlviewfunctions.displayformstart(form, page_info)
+		form.value.filename.type = "hidden"
+		for name,value in pairs(form.value) do
+			if value.type == "hidden" then
+				htmlviewfunctions.displayformitem(value, name)
+			end
 		end
 	end
-end
 %>
 <textarea name="filecontent">
 <%= html.html_escape(form.value.filecontent.value) %>
 </textarea>
 <%
-htmlviewfunctions.displayinfo(form.value.filecontent)
+	htmlviewfunctions.displayinfo(form.value.filecontent)
 
-if form.type == "form" then
-	htmlviewfunctions.displayformend(form)
+	if form.type == "form" then
+		htmlviewfunctions.displayformend(form)
+	end
+	htmlviewfunctions.displaysectionend(header_level2)
 end
-htmlviewfunctions.displaysectionend(header_level2)
 
 htmlviewfunctions.displaysectionend(header_level)
 if form.type == "form" then
