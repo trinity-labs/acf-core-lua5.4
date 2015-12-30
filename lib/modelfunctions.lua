@@ -82,9 +82,9 @@ end
 function mymodule.getfiledetails(file, validatefilename, validatefiledetails)
 	local filename = cfe({ value=file or "", label="File name" })
 	local filecontent = cfe({ type="longtext", label="File content" })
-	local filesize = cfe({ value="0", label="File size" })
+	local size = cfe({ value="0", label="File size" })
 	local mtime = cfe({ value="---", label="File date" })
-	local filedetails = cfe({ type="group", value={filename=filename, filecontent=filecontent, filesize=filesize, mtime=mtime}, label="Config file details" })
+	local filedetails = cfe({ type="group", value={filename=filename, filecontent=filecontent, size=size, mtime=mtime}, label="Config file details" })
 	local success = true
 	if type(validatefilename) == "function" then
 		success = validatefilename(filedetails.value.filename.value)
@@ -103,10 +103,10 @@ function mymodule.getfiledetails(file, validatefilename, validatefiledetails)
 	end
 	if success then
 		if fs.is_file(file) then
-			local filedetails = fs.stat(file)
+			local filedetails = posix.stat(file)
 			filecontent.value = fs.read_file(file) or ""
-			filesize.value = filedetails.size
-			mtime.value = filedetails.mtime
+			size.value = format.formatfilesize(filedetails.size)
+			mtime.value = format.formattime(filedetails.mtime)
 		else
 			filename.errtxt = "File not found"
 		end

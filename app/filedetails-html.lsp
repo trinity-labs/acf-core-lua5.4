@@ -14,7 +14,7 @@ htmlviewfunctions.displayinfo(form)
 header_level2 = htmlviewfunctions.displaysectionstart(cfe({label="File Details"}), page_info, htmlviewfunctions.incrementheader(header_level))
 
 htmlviewfunctions.displayitem(form.value.filename)
-htmlviewfunctions.displayitem(form.value.filesize)
+htmlviewfunctions.displayitem(form.value.size)
 htmlviewfunctions.displayitem(form.value.mtime)
 if form.value.grep and form.value.grep.value and form.value.grep.value ~= "" then
 	htmlviewfunctions.displayitem(form.value.grep)
