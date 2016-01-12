@@ -9,18 +9,18 @@ roles = require("roles")
 mymodule.get_user_roles = function(self, userid)
 	local userinfo = authenticator.get_userinfo(self, userid) or {}
 	rls = cfe({ type="list", value=userinfo.roles or {}, label="Roles" })
-	permissions = cfe({ type="table", value=roles.get_roles_perm(self, rls.value), label="Permissions" })
+	permissions = cfe({ type="structure", value=roles.get_roles_perm(self, rls.value), label="Permissions" })
 	return cfe({ type="group", value={roles=rls, permissions=permissions}, label="Roles/Permission list for "..userid })
 end
 
 -- Return permissions for specified role
 mymodule.get_role_perms = function(self, role)
-	return cfe({ type="table", value=roles.get_role_perm(self, role), label="Permissions" })
+	return cfe({ type="structure", value=roles.get_role_perm(self, role), label="Permissions" })
 end
 	
 -- Return list of all permissions
 mymodule.get_perms_list = function(self)
-	return cfe({ type="table", value=roles.get_all_permissions(self), label="All Permissions" })
+	return cfe({ type="structure", value=roles.get_all_permissions(self), label="All Permissions" })
 end
 
 mymodule.view_roles = function(self)
@@ -65,7 +65,7 @@ mymodule.getpermissions = function(self, clientdata)
 	
 	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions", seq=2 })
 
-	return cfe({ type="table", value={role=role_cfe, permissions=permissions_cfe} })
+	return cfe({ type="structure", value={role=role_cfe, permissions=permissions_cfe} })
 end
 
 mymodule.setnewpermissions = function(self, permissions, action)

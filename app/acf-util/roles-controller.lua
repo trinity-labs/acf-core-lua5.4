@@ -7,7 +7,7 @@ mymodule.default_action = "read"
 mymodule.read = function(self)
 	userid = cfe({ value=self.sessiondata.userinfo.userid, label="User Id" })
 	roles = cfe({ type="list", value=self.sessiondata.userinfo.roles, label="Roles" })
-	permissions = cfe({ type="table", value = self.sessiondata.permissions, label="Permissions" })
+	permissions = cfe({ type="structure", value = self.sessiondata.permissions, label="Permissions" })
 	return cfe({ type="group", value={userid=userid, roles=roles, permissions=permissions}, label="Roles/Permission list for "..self.sessiondata.userinfo.userid })
 end
 
