@@ -35,17 +35,17 @@ mymodule.random_hash = function (size)
 end
 
 -- FIXME: only hashes ipv4
-mymodule.hash_ip_addr = function (string)
+mymodule.hash_ip_addr = function (ip)
 	local str = ""
-	for i in string.gmatch(string, "%d+") do
+	for i in string.gmatch(ip or "", "%d+") do
 		str = str .. string.format("%02x", i )
 	end
 	return str
 end
 
-mymodule.ip_addr_from_hash = function (string)
+mymodule.ip_addr_from_hash = function (hash)
 	local str = ""
-	for i in string.gmatch(string, "..") do
+	for i in string.gmatch(hash or "", "..") do
 		str = str .. string.format("%d", "0x" .. i) .. "."
 	end
 	return string.sub(str, 1, string.len(str)-1)
@@ -182,41 +182,45 @@ end
 -- the format is lockevent.id.datetime.processid
 mymodule.record_event = function( sessionpath, id_u, id_ip )
 	local x = io.open (string.format ("%s/lockevent.%s.%s.%s.%s",
-		 sessionpath or "/", id_u or "", id_ip or "", os.time(), 
+		 sessionpath or "/", id_u or "", mymodule.hash_ip_addr(id_ip), os.time(), 
 		 (posix.getpid("pid")) or "" ), "w")
 	io.close(x)
 end
 
--- Check how many invalid logon events
--- have happened for this id in the last n minutes
--- this will only effect the lockevent files
-mymodule.count_events =	function (sessionpath, id_user, ipaddr, minutes, limit)
-	--we need to have the counts added up? deny off any and or all
+-- List invalid logon events
+-- Can specify username and/or ip address to filter
+mymodule.list_events =	function (sessionpath, id_user, ipaddr, minutes)
+	local list = {}
 	local now = os.time()
 	local minutes_ago = now - ((minutes or minutes_count_events) * 60)
 	local t = {}
 	--give me all lockevents then we will sort through them
 	local searchfor = sessionpath .. "/lockevent.*"
 	local t = posix.glob(searchfor)
-		
-	if t == nil or id_user == nil or ipaddr == nil then 
-		return false
-	else
-		local count = 0
-		for a,b in pairs(t) do
-			if posix.stat(b,"mtime") > minutes_ago then
-				local user, ip = string.match(b, "/lockevent%.([^.]*)%.([^.]*)%.")
-				if id_user == user or ipaddr == ip then
-					count = count + 1
-				end
+
+	local ipaddrhash = mymodule.hash_ip_addr(ipaddr)
+	for a,b in pairs(t) do
+		if posix.stat(b,"mtime") > minutes_ago then
+			local user, ip, time, pid = string.match(b, "/lockevent%.([^.]*)%.([^.]*)%.([^.]*)%.([^.]*)$")
+			if user and (not id_user or id_user == user) and (not ipaddr or ipaddrhash == ip) then
+				list[#list+1] = {userid=user, ip=mymodule.ip_addr_from_hash(ip), time=time, pid=pid}
 			end
 		end
-		if count>(tonumber(limit) or limit_count_events) then
-			return true
-		else
-			return false
-		end
 	end
+	return list
+end
+
+-- Check how many invalid logon events
+-- have happened for this id in the last n minutes
+mymodule.count_events =	function (sessionpath, id_user, ipaddr, minutes, limit)
+	local locked = false
+	local list = mymodule.list_events(sessionpath, id_user, ipaddr, minutes)
+	if #list>(tonumber(limit) or limit_count_events) then
+		locked = true
+	else
+		locked = false
+	end
+	return locked
 end
 
 -- Clear events that are older than n minutes
@@ -246,6 +250,20 @@ mymodule.expired_events = function (sessionpath, minutes)
  		end
 	end
  	return 0
+end
+
+mymodule.delete_events = function (sessionpath, id_user, ipaddr)
+	--give me all lockevents then we will sort through them
+	local searchfor = sessionpath .. "/lockevent.*"
+	local t = posix.glob(searchfor)
+
+	local ipaddrhash = mymodule.hash_ip_addr(ipaddr)
+	for a,b in pairs(t) do
+		local user, ip = string.match(b, "/lockevent%.([^.]*)%.([^.]*)%.")
+		if user and (not id_user or id_user == user) and (not ipaddr or ipaddrhash == ip) then
+			os.remove(b)
+		end
+	end
 end
 
 return mymodule

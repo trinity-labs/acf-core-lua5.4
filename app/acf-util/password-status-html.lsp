@@ -2,7 +2,7 @@
 <% htmlviewfunctions = require("htmlviewfunctions") %>
 <% html = require("acf.html") %>
 
-<% htmlviewfunctions.displaycommandresults({"newuser", "edituser", "deleteuser"}, session) %>
+<% htmlviewfunctions.displaycommandresults({"newuser", "edituser", "deleteuser", "unlockuser"}, session) %>
 
 <%
 local header_level = htmlviewfunctions.displaysectionstart(form, page_info)
@@ -27,12 +27,16 @@ for i,user in ipairs(form.value) do
 			<td style='border:none;'><b><%= html.html_escape(user.value.roles.label) %></b></td>
 			<td style='border:none;'><%= html.html_escape(table.concat(user.value.roles.value, ", ")) %></td>
 		</tr><tr>
+			<td style='border:none;'><b><%= html.html_escape(user.value.locked.label) %></b></td>
+			<td style='border:none;'><%= html.html_escape(tostring(user.value.locked.value)) %></td>
+		</tr><tr>
 			<td style='border:none;'><b>Option</b></td>
 			<td style='border:none;'>
 			<% local userid = cfe({type="hidden", value=user.value.userid.value}) %>
 			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid, redir=redir}, label="", option="Edit", action="edituser"}), page_info, -1) %>
 			<% htmlviewfunctions.displayitem(cfe({type="form", value={userid=userid}, label="", option="Delete", action="deleteuser" }), page_info, -1) %>
 			<% htmlviewfunctions.displayitem(cfe({type="link", value={userid=userid}, label="", option="View Roles", action=page_info.script.."/acf-util/roles/viewuserroles"}), page_info, -1) %>
+			<% if (user.value.locked.value) then htmlviewfunctions.displayitem(cfe({type="form", value={userid=userid}, label="", option="Unlock", action="unlockuser"}), page_info, -1) end %>
 			</td>
 		</tr>
 	</tbody></table>

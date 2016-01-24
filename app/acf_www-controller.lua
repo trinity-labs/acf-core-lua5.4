@@ -277,13 +277,12 @@ mymodule.mvc.on_load = function (self, parent)
 				self.clientdata.sessionid)
 		if timestamp == nil then 
 			-- invalid session id, report event and create new one
-			sessionlib.record_event(self.conf.sessiondir, nil,
-				sessionlib.hash_ip_addr(self.conf.clientip))
+			sessionlib.record_event(self.conf.sessiondir, nil, self.conf.clientip)
 			--self.logevent("Didn't find session")
 		else
 			--self.logevent("Found session")
 			-- We read in a valid session, check if it's ok
-			if self.sessiondata.userinfo and self.sessiondata.userinfo.userid and sessionlib.count_events(self.conf.sessiondir, self.sessiondata.userinfo.userid, sessionlib.hash_ip_addr(self.conf.clientip), self.conf.lockouttime, self.conf.lockouteventlimit) then
+			if self.sessiondata.userinfo and self.sessiondata.userinfo.userid and sessionlib.count_events(self.conf.sessiondir, self.sessiondata.userinfo.userid, self.conf.clientip, self.conf.lockouttime, self.conf.lockouteventlimit) then
 				--self.logevent("Bad session, erasing")
 				-- Too many events on this id / ip, kill the session
 				sessionlib.unlink_session(self.conf.sessiondir, self.clientdata.sessionid)

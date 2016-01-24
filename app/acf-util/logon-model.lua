@@ -45,9 +45,9 @@ end
 mymodule.logon = function (self, logon)
 	logon.errtxt = "Logon Attempt Failed"
 	-- Check to see if we can log on this user id / ip addr
-	local countevent = session.count_events(self.conf.sessiondir, logon.value.userid.value, session.hash_ip_addr(self.conf.clientip), self.conf.lockouttime, self.conf.lockouteventlimit)
+	local countevent = session.count_events(self.conf.sessiondir, logon.value.userid.value, self.conf.clientip, self.conf.lockouttime, self.conf.lockouteventlimit)
 	if countevent then
-		session.record_event(self.conf.sessiondir, logon.value.userid.value, session.hash_ip_addr(self.conf.clientip))
+		session.record_event(self.conf.sessiondir, logon.value.userid.value, self.conf.clientip)
 	end
 
 	if false == countevent then
@@ -71,7 +71,7 @@ mymodule.logon = function (self, logon)
 			logon.errtxt = nil
 		else
 			-- We have a bad logon, log the event
-			session.record_event(self.conf.sessiondir, logon.value.userid.value, session.hash_ip_addr(self.conf.clientip))
+			session.record_event(self.conf.sessiondir, logon.value.userid.value, self.conf.clientip)
 		end
 	end
 	return logon

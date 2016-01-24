@@ -5,6 +5,7 @@ APP_DIST= \
 	acf-util/logon-controller.lua \
 	acf-util/logon-model.lua \
 	acf-util/password-controller.lua \
+	acf-util/password-listlockevents-html.lsp \
 	acf-util/password-model.lua \
 	acf-util/password-status-html.lsp \
 	acf-util/password.menu \

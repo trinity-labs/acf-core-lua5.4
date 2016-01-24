@@ -2,6 +2,7 @@ local mymodule = {}
 
 authenticator = require("authenticator")
 roles = require("roles")
+session = require("session")
 
 avail_roles, avail_skins, avail_homes = nil
 
@@ -89,6 +90,7 @@ local function get_blank_user(self)
 	result.value.roles = cfe({ type="multi", value={}, label="Roles", option=avail_roles or {}, seq=3 })
 	result.value.skin = cfe({ type="select", value="", label="Skin", option=avail_skins or {""}, seq=7 })
 	result.value.home = cfe({ type="select", value="", label="Home", option=avail_homes or {""}, seq=6 })
+	result.value.locked = cfe({ type="boolean", value=false, label="Locked", readonly=true, seq=8 })
 
 	return result
 end
@@ -96,7 +98,7 @@ end
 local function get_user(self, userid)
 	local result = get_blank_user(self)
 	result.value.userid.key = true
-	result.value.userid.value = userid
+	result.value.userid.value = userid or ""
 
 	if result.value.userid.value ~= "" then
 		result.value.userid.readonly = true
@@ -109,6 +111,7 @@ local function get_user(self, userid)
 				if result.value[n] and n ~= "password" then result.value[n].value = v end
 			end
 		end
+		result.value.locked.value = session.count_events(self.conf.sessiondir, result.value.userid.value)
 	end
 
 	return result
@@ -204,7 +207,6 @@ function mymodule.get_users(self)
 	for x,user in pairs(userlist) do
 		users[#users+1] = get_user(self, user)
 	end
-
 	return cfe({ type="group", value=users, label="User Accounts" })
 end
 
@@ -219,6 +221,32 @@ function mymodule.delete_user(self, deleteuser)
 		deleteuser.errtxt = nil
 	end
 	return deleteuser
+end
+
+function mymodule.list_lock_events(self, clientdata)
+	return cfe({type="structure", value=session.list_events(self.conf.sessiondir), label="Lock events"})
+end
+
+function mymodule.get_unlock_user(self, clientdata)
+	local retval = cfe({type="group", value={}, label="Unlock user"})
+	retval.value.userid = cfe({ label="User id" })
+	return retval
+end
+
+function mymodule.unlock_user(self, unlock)
+	session.delete_events(self.conf.sessiondir, unlock.value.userid.value)
+	return unlock
+end
+
+function mymodule.get_unlock_ip(self, clientdata)
+	local retval = cfe({type="group", value={}, label="Unlock IP address"})
+	retval.value.ip = cfe({ label="IP address" })
+	return retval
+end
+
+function mymodule.unlock_ip(self, unlock)
+	session.delete_events(self.conf.sessiondir, nil, unlock.value.ip.value)
+	return unlock
 end
 
 return mymodule

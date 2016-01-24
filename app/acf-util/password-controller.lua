@@ -25,4 +25,16 @@ function mymodule.deleteuser(self)
 	return self.handle_form(self, self.model.get_delete_user, self.model.delete_user, self.clientdata, "Delete", "Delete User", "Deleted user")
 end
 
+function mymodule.listlockevents(self)
+	return self.model.list_lock_events(self, self.clientdata)
+end
+
+function mymodule.unlockuser(self)
+	return self.handle_form(self, self.model.get_unlock_user, self.model.unlock_user, self.clientdata, "Unlock", "Unlock User", "Unlocked user")
+end
+
+function mymodule.unlockip(self)
+	return self.handle_form(self, self.model.get_unlock_ip, self.model.unlock_ip, self.clientdata, "Unlock", "Unlock IP Address", "Unlocked IP address")
+end
+
 return mymodule
