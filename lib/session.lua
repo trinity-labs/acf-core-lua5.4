@@ -199,7 +199,7 @@ mymodule.list_events =	function (sessionpath, id_user, ipaddr, minutes)
 	local t = posix.glob(searchfor)
 
 	local ipaddrhash = mymodule.hash_ip_addr(ipaddr)
-	for a,b in pairs(t) do
+	for a,b in pairs(t or {}) do
 		if posix.stat(b,"mtime") > minutes_ago then
 			local user, ip, time, pid = string.match(b, "/lockevent%.([^.]*)%.([^.]*)%.([^.]*)%.([^.]*)$")
 			if user and (not id_user or id_user == user) and (not ipaddr or ipaddrhash == ip) then
@@ -258,7 +258,7 @@ mymodule.delete_events = function (sessionpath, id_user, ipaddr)
 	local t = posix.glob(searchfor)
 
 	local ipaddrhash = mymodule.hash_ip_addr(ipaddr)
-	for a,b in pairs(t) do
+	for a,b in pairs(t or {}) do
 		local user, ip = string.match(b, "/lockevent%.([^.]*)%.([^.]*)%.")
 		if user and (not id_user or id_user == user) and (not ipaddr or ipaddrhash == ip) then
 			os.remove(b)
