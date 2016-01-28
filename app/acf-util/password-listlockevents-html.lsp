@@ -14,10 +14,16 @@ html = require("acf.html")
 		document.write('<script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/jquery.tablesorter.js"><\/script>');
 	}
 </script>
-	
+
+<script type="text/javascript">
+	if (typeof $.tablesorter.regex.ipv4Validate == 'undefined') {
+		document.write('<script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/parsers/parser-network.js"><\/script>');
+	}
+</script>
+
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#list").tablesorter({ headers: {2:{sorter: 'ipAddress'}},  widgets: ['zebra']});
+		$("#list").tablesorter({widgets: ['zebra']});
 	});
 </script>
 
