@@ -48,7 +48,7 @@ end
 
 function mymodule.displayinfo(myitem)
 	if myitem.descr then io.write('<p class="descr">' .. string.gsub(html.html_escape(myitem.descr), "\n", "<br/>") .. '</p>') end
-	if myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. '</p>') end
+	if myitem.default == false or myitem.default then io.write('<p class="descr">Default:' .. string.gsub(html.html_escape(getlabel(myitem, myitem.default)), "\n", "<br/>") .. '</p>') end
 	if myitem.errtxt then io.write('<p class="error">' .. string.gsub(html.html_escape(myitem.errtxt), "\n", "<br/>") .. '</p>') end
 end
 
