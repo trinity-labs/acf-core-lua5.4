@@ -1,4 +1,4 @@
-#!/usr/bin/haserl --shell=lua --upload-limit=256
+#!/usr/bin/haserl-lua5.2 --shell=lua --upload-limit=256
 <% 
 mvc = require("acf.mvc")
 
