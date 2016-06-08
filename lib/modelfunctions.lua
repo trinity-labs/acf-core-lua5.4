@@ -10,11 +10,12 @@ subprocess = require("subprocess")
 function mymodule.getenabled(servicename)
 	local result = cfe({ label = "Program status", name=servicename })
 	result.value, result.errtxt = processinfo.daemoncontrol(servicename, "status")
-	if string.find(result.value, ": not found") then
+	if result.errtxt then
 		result.value = ""
 		result.errtxt = "Program not installed"
 	else
-		result.value = string.gsub(result.value, "* status: ", "")
+		-- We only want the part that comes after status:
+		result.value = string.gsub(result.value, "^.*%* status: ", "")
 		result.value = string.gsub(result.value, "^%l", string.upper)
 	end
 	return result
@@ -25,6 +26,7 @@ function mymodule.get_startstop(servicename)
         local actions, descr = processinfo.daemon_actions(servicename)
 	local errtxt
 	if not actions then
+		actions = {}
 		errtxt = descr
 	else
 		for i,v in ipairs(actions) do
