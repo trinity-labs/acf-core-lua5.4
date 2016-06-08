@@ -354,7 +354,7 @@ mymodule.auto_view = function(viewtable, viewlibrary, pageinfo, session)
 		local json = require("json")
 		print(json.encode(viewtable))
 	elseif pageinfo.viewtype == "stream" then
-		io.write(viewtable.value)
+		io.write(tostring(viewtable.value))
 	elseif pageinfo.viewtype == "serialized" then
 		local s = require("session")
 		print(s.serialize("result", viewtable))
@@ -382,8 +382,8 @@ mymodule.view_resolver = function(self)
 				controller = self.conf.controller,
 				action = self.conf.action,
 				prefix = self.conf.prefix,
-				script = self.conf.script,
-				wwwdir = self.conf.wwwdir,
+				script = self.conf.script or "",
+				wwwdir = self.conf.wwwdir or "",
 				wwwprefix = self.conf.wwwprefix or "",
 				staticdir = self.conf.staticdir or "",
 				orig_action = self.conf.orig_action or self.conf.prefix .. self.conf.controller .. "/" .. self.conf.action,
