@@ -5,7 +5,7 @@ Also we use Lua Posix for the rest of the functionality.
 *** These are currently being worked on.  ***
 
 apk.lua - Helps with package version/install/remove
-authenticator-plaintext.lua - sub-authenticator for plaintext files 
+authenticator-plaintext.lua - sub-authenticator for plaintext files
 authenticator.lua - Used for authentication and roles, generic and uses sub-authenticator
 date.lua - Date and Time functions
 format.lua - Library to help reformat strings and tables.
@@ -16,5 +16,5 @@ modelfunctions.lua - Common model functions
 processinfo.lua - Start/stop, find running, find version - process helpers
 roles.lua - Used to determine roles and permissions
 session.lua - Helps with Session mangement in ACF
-validator.lua - Validate web input for ACF. 
+validator.lua - Validate web input for ACF.
 htmlviewfunctions.lua - Common functions for HTML views

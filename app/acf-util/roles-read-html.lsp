@@ -72,7 +72,7 @@ end %>
 		end
 		%>
 	</tbody></table>
-<%	
+<%
 	if view.value.userid or view.value.role then
 		htmlviewfunctions.displaysectionend(header_level2)
 	end

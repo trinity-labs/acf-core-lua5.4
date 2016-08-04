@@ -1,12 +1,12 @@
-<% local viewtable, viewlibrary, pageinfo, session = ... 
+<% local viewtable, viewlibrary, pageinfo, session = ...
    html=require("acf.html")
    posix=require("posix")
 %>
 Status: 200 OK
 Content-Type: text/html
 <%
-if (session.id) then 
-	io.write( html.cookie.set("sessionid", session.id) ) 
+if (session.id) then
+	io.write( html.cookie.set("sessionid", session.id) )
 else
 	io.write (html.cookie.unset("sessionid"))
 end
@@ -64,21 +64,21 @@ end
 				<p class="links">
 				<%
 					local ctlr = pageinfo.script .. "/acf-util/logon/"
-			
+
 					if session.userinfo and session.userinfo.userid then
 						print("<a href=\""..html.html_escape(ctlr).."logoff\">Log off as '" .. html.html_escape(session.userinfo.userid) .. "'</a> |")
 					else
 						print("<a href=\""..html.html_escape(ctlr).."logon\">Log on</a> |" )
 					end
 				%>
-					<a href="<%= html.html_escape(pageinfo.wwwprefix) %>/">home</a> | 
+					<a href="<%= html.html_escape(pageinfo.wwwprefix) %>/">home</a> |
 					<a href="http://www.alpinelinux.org">about</a>
 				</p>
 			</div>	<!-- header -->
 
 			<div id="main">
 				<div id="nav">
-				<% 
+				<%
 					local class
 					local tabs
 					if (#session.menu.cats > 0) then
@@ -136,6 +136,6 @@ end
 
 		</div> <!-- page -->
 <% end --pageinfo.skinned %>
-	
+
 	</body>
 </html>

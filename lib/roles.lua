@@ -81,7 +81,7 @@ mymodule.get_controllers_func = function(self,controller_info)
 		_G[controller_info.name] = loaded
 		temp1 = {}
 		for a,b in pairs(temp) do
-			local c = string.match(a,"^mvc") or string.match(a,"^_") 
+			local c = string.match(a,"^mvc") or string.match(a,"^_")
 			if c == nil and type(temp[a])=="function" then
 				temp1[#temp1 +1] = a
 			end
@@ -96,7 +96,7 @@ mymodule.get_controllers_view = function(self,controller_info)
 	for file in fs.find(controller_info.sname.."%-[^%.]+%-html%.lsp", controller_info.path) do
 		temp[#temp + 1] = string.match(file, controller_info.sname.."%-([^%./]+)%-html%.lsp")
 	end
-	return temp	
+	return temp
 end
 
 mymodule.get_all_permissions = function(self)
@@ -166,7 +166,7 @@ mymodule.list_default_roles = function(self)
 		table.sort(default_roles, function(a,b)
 				if string.byte(a, 1) == 47 and string.byte(b,1) ~= 47 then return false
 				elseif string.byte(a, 1) ~= 47 and string.byte(b,1) == 47 then return true
-				else return a<b 
+				else return a<b
 				end
 			end)
 	end
@@ -205,7 +205,7 @@ mymodule.list_all_roles = function(self)
 		defined_roles[#defined_roles + 1] = role
 	end
 	return defined_roles
-end	
+end
 
 -- Go through the roles files and determine the permissions for the specified list of roles
 local determine_perms = function(self,roles)
@@ -328,7 +328,7 @@ mymodule.set_role_perm = function(self, role, permissions, permissions_array)
 			end
 		end
 	end
-	
+
 	local auth = authenticator.get_subauth(self)
 	return auth.write_entry(self, authenticator.roletable, "", role, table.concat(permissions_array or {},","))
 end

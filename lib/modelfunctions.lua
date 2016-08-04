@@ -68,7 +68,7 @@ function mymodule.getstatus(servicename, packagename, label)
 
 	if servicename then
 		status.status = mymodule.getenabled(servicename)
-	
+
 		local autostart_value, autostart_errtxt = processinfo.process_autostart(servicename)
 		status.autostart = cfe({
 			label="Autostart status",
@@ -96,7 +96,7 @@ function mymodule.getfiledetails(file, validatefilename, validatefiledetails)
 	elseif type(validatefilename) == "table" then
 		success = false
 		filedetails.value.filename.errtxt = "Invalid File"
-		for i,f in ipairs(validatefilename) do	
+		for i,f in ipairs(validatefilename) do
 			if f == filedetails.value.filename.value then
 				success = true
 				filedetails.value.filename.errtxt = nil
@@ -130,7 +130,7 @@ function mymodule.setfiledetails(self, filedetails, validatefilename, validatefi
 	elseif type(validatefilename) == "table" then
 		success = false
 		filedetails.value.filename.errtxt = "Invalid File"
-		for i,f in ipairs(validatefilename) do	
+		for i,f in ipairs(validatefilename) do
 			if f == filedetails.value.filename.value then
 				success = true
 				filedetails.value.filename.errtxt = nil
@@ -186,10 +186,10 @@ function mymodule.write_file_with_audit (self, path, str)
 		local pre = ""
 		local post = ""
 
-		local tmpfile = (self.conf.sessiondir or "/tmp/") .. 
+		local tmpfile = (self.conf.sessiondir or "/tmp/") ..
 			(self.sessiondata.userinfo.userid or "unknown") .. "-" ..
 			 os.time() .. ".tmp"
-	
+
 		if type(self.conf) == "table" then
 			-- we make temporary globals for expand_bash_syntax_vars
 			local a,b,c = TEMPFILE,CONFFILE,_G.self
@@ -205,7 +205,7 @@ function mymodule.write_file_with_audit (self, path, str)
 			if m.audit_postcommit then post = m.audit_postcommit end
 			m=nil
 
-			if (type(pre) == "string") then 
+			if (type(pre) == "string") then
 				pre = format.expand_bash_syntax_vars(pre)
 			end
 			if type (post) == "string" then

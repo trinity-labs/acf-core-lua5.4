@@ -24,7 +24,7 @@ posix = require("posix")
 mvc = require("acf.mvc")
 
 FRAMEWORK=mvc:new()
-FRAMEWORK:read_config("acf") 
+FRAMEWORK:read_config("acf")
 APP=FRAMEWORK:new("acf_cli")
 
 -- command line will have URI-type string defining prefix/controller/action

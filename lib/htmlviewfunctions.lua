@@ -58,7 +58,7 @@ function mymodule.displayitemstart(myitem, page_info, header_level)
 	header_level = header_level or page_info.header_level or 1
 	if 0 <= header_level then
 		io.write('<div class="item')
-		if myitem.errtxt then 
+		if myitem.errtxt then
 			io.write(' error')
 		end
 		io.write('"><label class="left')
@@ -124,7 +124,7 @@ function mymodule.displayitem(myitem, page_info, header_level, name, group)
 	elseif myitem.key and not myitem.readonly then
 		mymodule.displayformitem(myitem, name, header_level, group)
 	elseif myitem.type ~= "hidden" then
-		if myitem.errtxt then 
+		if myitem.errtxt then
 			myitem.class = "error"
 		end
 		header_level = mymodule.displayitemstart(myitem, page_info, header_level)
@@ -141,7 +141,7 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 	if not myitem then return end
 	myitem.name = name or myitem.name or ""
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
-	if myitem.errtxt then 
+	if myitem.errtxt then
 		myitem.class = "error"
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then

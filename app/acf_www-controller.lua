@@ -1,4 +1,4 @@
---[[ Code for the Alpine Configuration WEB framework 
+--[[ Code for the Alpine Configuration WEB framework
       see http://wiki.alpinelinux.org
       Copyright (C) 2007  Nathan Angelacos
       Licensed under the terms of GPL2
@@ -27,7 +27,7 @@ local function build_menus(self)
 	end
 	local permissions = roll.get_roles_perm(self,roles)
 	self.sessiondata.permissions = permissions
-	
+
 	--Build the menu
 	local cats = m.get_menuitems(self)
 	-- now, loop through menu and remove actions without permission
@@ -71,7 +71,7 @@ local check_permission_string = function (self, str)
 	local prefix, controller, action = self.parse_redir_string(str)
 	if prefix == "/" then prefix = self.conf.prefix end
 	if controller == "" then controller = self.conf.controller end
-	
+
 	if "" == action then
 		action = rawget(self.worker, "default_action") or ""
 	end
@@ -89,12 +89,12 @@ find_template = function ( appdir, prefix, controller, action, viewtype )
 			if template then break end
 		end
 		return template
-	end			
+	end
 
 	local targets = {
-			appdir .. prefix .. "template-" .. controller .. "-" .. 
+			appdir .. prefix .. "template-" .. controller .. "-" ..
 				action .. "-" .. viewtype .. ".lsp",
-			appdir .. prefix .. "template-" .. controller .. "-" .. 
+			appdir .. prefix .. "template-" .. controller .. "-" ..
 				viewtype .. ".lsp",
 			appdir .. prefix .. "template-" .. action .. "-" ..
 				viewtype .. ".lsp",
@@ -112,7 +112,7 @@ find_template = function ( appdir, prefix, controller, action, viewtype )
 	if prefix == "/" then -- already at the top level - fail
 		return nil
 	end
-	prefix = posix.dirname (prefix) 
+	prefix = posix.dirname (prefix)
 	return find_template ( appdir, prefix, controller, action, viewtype )
 end
 
@@ -258,7 +258,7 @@ mymodule.mvc.on_load = function (self, parent)
 	parent_exception_handler = parent.exception_handler
 	parent_create_helper_library = parent.create_helper_library
 	parent_view_resolver = parent.view_resolver
-	
+
 	sessionlib=require ("session")
 
 	-- before we look at sessions, remove old sessions and events
@@ -272,10 +272,10 @@ mymodule.mvc.on_load = function (self, parent)
 		--self.logevent("Found session id = " .. self.clientdata.sessionid)
 		-- Load existing session data
 		local timestamp
-		timestamp, self.sessiondata = 
+		timestamp, self.sessiondata =
 			sessionlib.load_session(self.conf.sessiondir,
 				self.clientdata.sessionid)
-		if timestamp == nil then 
+		if timestamp == nil then
 			-- invalid session id, report event and create new one
 			sessionlib.record_event(self.conf.sessiondir, nil, self.conf.clientip)
 			--self.logevent("Didn't find session")
@@ -348,7 +348,7 @@ mymodule.exception_handler = function (self, message )
 			if message.type == "redir" then
 				io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
 				  	message.prefix .. message.controller ..
-					"/" .. message.action .. 
+					"/" .. message.action ..
 					(message.extra or "" ) .. "\n")
 			elseif message.type == "dispatch" then
 				-- We got a dispatch error because the user session timed out
@@ -384,10 +384,10 @@ mymodule.exception_handler = function (self, message )
 
 	if viewtable then
 		if not self.conf.suppress_view then
-			local success, err = xpcall ( function () 
+			local success, err = xpcall ( function ()
 				local viewfunc, p1, p2, p3 = self.view_resolver(self)
 				viewfunc (viewtable, p1, p2, p3)
-			end, 
+			end,
 			self:soft_traceback()
 			)
 
@@ -402,11 +402,11 @@ end
 -- check permissions and redirect if not allowed to see
 -- pass more parameters to the view
 -- allow display of views without actions
-mymodule.dispatch = function (self, userprefix, userctlr, useraction) 
+mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 	local controller = nil
 	local viewtable
 	local starttime = os.time()
-	local success, err = xpcall ( function () 
+	local success, err = xpcall ( function ()
 
 	if userprefix == nil then
 		self.conf.prefix, self.conf.controller, self.conf.action =
@@ -470,7 +470,7 @@ mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 			if self.conf.action == "" then self.conf.action = default_action end
 			if "" ~= self.conf.action then
 				local perm = check_permission(controller, self.conf.prefix, self.conf.controller, self.conf.action)
-				-- Because of the inheritance, normally the 
+				-- Because of the inheritance, normally the
 				-- controller.worker.action will flow up, so that all children have
 				-- actions of all parents.  We use rawget to make sure that only
 				-- controller defined actions are used on dispatch
@@ -497,7 +497,7 @@ mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 	end
 
 	if controller then
-		-- run the (first found) pre_exec code, starting at the controller 
+		-- run the (first found) pre_exec code, starting at the controller
 		-- and moving up the parents
 		if  type(controller.worker.mvc.pre_exec) == "function" then
 			controller.worker.mvc.pre_exec ( controller )
@@ -520,13 +520,13 @@ mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 		local viewfunc, p1, p2, p3 = self.view_resolver(self)
 		viewfunc (viewtable, p1, p2, p3)
 	end
-		
-	end, 
+
+	end,
 	self:soft_traceback(message)
 	)
 
 	if not success then
-		if controller then 
+		if controller then
 			controller:exception_handler(err)
 			controller:destroy()
 			controller = nil
@@ -553,7 +553,7 @@ mymodule.redirect = function (self, str, result)
 	local prefix, controller, action = self.parse_redir_string(str)
 	if prefix ~= "/" then self.conf.prefix = prefix end
 	if controller ~= "" then self.conf.controller = controller end
-	
+
 	if "" == action then
 		action = rawget(self.worker, "default_action") or ""
 	end
@@ -566,7 +566,7 @@ end
 -- this is the same as URI string, but opposite preference
 -- if only one is defined, it's assumed to be the action
 mymodule.parse_redir_string = function( str )
-	str = str or "" 
+	str = str or ""
 	str = string.gsub(str, "/+$", "")
 	local action = string.match(str, "[^/]+$") or ""
 	str = string.gsub(str, "/*[^/]*$", "")
@@ -672,7 +672,7 @@ mymodule.handle_form = function(self, getFunction, setFunction, clientdata, opti
 		if not form.errtxt and descr then
 			form.descr = descr
 		end
-		
+
 		if clientdata.redir then
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 		end

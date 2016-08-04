@@ -1,4 +1,4 @@
-<% local view, viewlibrary, page_info, session = ... 
+<% local view, viewlibrary, page_info, session = ...
 htmlviewfunctions = require("htmlviewfunctions")
 html = require("acf.html")
 %>
@@ -8,7 +8,7 @@ html = require("acf.html")
 		document.write('<script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/jquery-latest.js"><\/script>');
 	}
 </script>
-	
+
 <script type="text/javascript">
 	if (typeof $.tablesorter == 'undefined') {
 		document.write('<script type="text/javascript" src="<%= html.html_escape(page_info.wwwprefix) %>/js/jquery.tablesorter.js"><\/script>');
@@ -36,7 +36,7 @@ html = require("acf.html")
 		<th>User ID</th>
 		<th>IP Address</th>
 		<th>Time</th>
-	</tr>		
+	</tr>
 </thead><tbody>
 <% for i,lock in ipairs( view.value ) do %>
 	<tr>
@@ -48,7 +48,7 @@ html = require("acf.html")
 </tbody></table>
 <% htmlviewfunctions.displaysectionend(header_level) %>
 
-<% if viewlibrary and viewlibrary.dispatch_component then 
+<% if viewlibrary and viewlibrary.dispatch_component then
 	viewlibrary.dispatch_component("unlockuser")
 	viewlibrary.dispatch_component("unlockip")
 end %>

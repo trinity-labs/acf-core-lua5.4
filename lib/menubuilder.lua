@@ -9,7 +9,7 @@ posix = require("posix")
 format = require("acf.format")
 fs = require("acf.fs")
 
--- returns a table of the "*.menu" tables 
+-- returns a table of the "*.menu" tables
 -- startdir should be the app dir.
 local get_candidates = function (startdir)
 	return fs.find_files_as_array(".*%.menu", startdir, true)
@@ -80,9 +80,9 @@ mymodule.get_menuitems = function (self)
 						for i = 1,1 do	-- loop so break works
 							-- Add the category
 							if nil == reversecats[result.cat] then
-								table.insert ( cats, 
-									{ name=result.cat, 
-									groups = {}, 
+								table.insert ( cats,
+									{ name=result.cat,
+									groups = {},
 									reversegroups = {} } )
 								reversecats[result.cat] = #cats
 							end
@@ -165,7 +165,7 @@ mymodule.get_menuitems = function (self)
 						end
 					end
 				end
-					
+
 				-- create new groups for each prefix/controller
 				for con in pairs(group.controllers) do
 					table.insert ( cat.groups,

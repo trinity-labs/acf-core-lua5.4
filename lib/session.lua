@@ -1,10 +1,10 @@
 -- Session handling routines - written for acf
 -- Copyright (C) 2007 N. Angelacos - GPL2 License
 
---[[ Note that in this library, we use empty (0 byte) files 
+--[[ Note that in this library, we use empty (0 byte) files
 -- everwhere we can, as they only take up dir entries, not inodes
--- as the tmpfs blocksize is 4K, and under denial of service 
--- attacks hundreds or thousands of events can come in each 
+-- as the tmpfs blocksize is 4K, and under denial of service
+-- attacks hundreds or thousands of events can come in each
 -- second, we could end up in a disk full condition if we did
 -- not take this precaution.
 -- ]]--
@@ -27,7 +27,7 @@ mymodule.random_hash = function (size)
 	local str = ""
 	if file == nil then return nil end
 	while (size > 0 ) do
-		local offset = (string.byte(file:read(1)) % 64) + 1 
+		local offset = (string.byte(file:read(1)) % 64) + 1
 		str = str .. string.sub (b64, offset, offset)
 		size = size - 6
 	end
@@ -51,7 +51,7 @@ mymodule.ip_addr_from_hash = function (hash)
 	return string.sub(str, 1, string.len(str)-1)
 end
 
---[[ 
+--[[
 	These functions serialize a table, including nested tables.
 	The code based on code in PiL 2nd edition p113
 ]]--
@@ -97,9 +97,9 @@ end
 -- return true or false for success
 mymodule.save_session = function( sessionpath, sessiontable)
 	if nil == sessiontable or nil == sessiontable.id then return false end
-	
+
 	-- clear the id key, don't need to store that
-	local id = sessiontable.id	
+	local id = sessiontable.id
 	sessiontable.id = nil
 
 	-- If the table only has an "id" field, then don't save it
@@ -157,7 +157,7 @@ mymodule.load_session = function ( sessionpath, session )
 		end
 
 		s = s or {}
-		s.id = session 
+		s.id = session
 		return ts, s
 	else
 		return nil, {}
@@ -177,12 +177,12 @@ mymodule.unlink_session = function (sessionpath, session)
 	return statos
 end
 
--- Record an invalid logon event 
+-- Record an invalid logon event
 -- ID would typically be an ip address or username
 -- the format is lockevent.id.datetime.processid
 mymodule.record_event = function( sessionpath, id_u, id_ip )
 	local x = io.open (string.format ("%s/lockevent.%s.%s.%s.%s",
-		 sessionpath or "/", id_u or "", mymodule.hash_ip_addr(id_ip), os.time(), 
+		 sessionpath or "/", id_u or "", mymodule.hash_ip_addr(id_ip), os.time(),
 		 (posix.getpid("pid")) or "" ), "w")
 	io.close(x)
 end
@@ -232,7 +232,7 @@ mymodule.expired_events = function (sessionpath, minutes)
 	local searchfor = sessionpath .. "/lockevent.*"
 	--first do the lockevent files
 	local temp = posix.glob(searchfor)
-	if temp ~= nil then 
+	if temp ~= nil then
  		for a,b in pairs(temp) do
 			if posix.stat(b,"mtime") < minutes_ago then
 			os.remove(b)

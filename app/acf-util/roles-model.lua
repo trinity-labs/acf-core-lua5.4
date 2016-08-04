@@ -17,7 +17,7 @@ end
 mymodule.get_role_perms = function(self, role)
 	return cfe({ type="structure", value=roles.get_role_perm(self, role), label="Permissions" })
 end
-	
+
 -- Return list of all permissions
 mymodule.get_perms_list = function(self)
 	return cfe({ type="structure", value=roles.get_all_permissions(self), label="All Permissions" })
@@ -37,7 +37,7 @@ mymodule.getpermissions = function(self, clientdata)
 	local tmp, all_perms = roles.get_all_permissions(self)
 	table.sort(all_perms)
 	local my_perms = {}
-	local default_perms = {} 
+	local default_perms = {}
 
 	if clientdata.role then
 		role_cfe.readonly = true
@@ -62,7 +62,7 @@ mymodule.getpermissions = function(self, clientdata)
 			all_perms = newall
 		end
 	end
-	
+
 	local permissions_cfe = cfe({ type="multi", value=my_perms, option=all_perms, label="Role permissions", seq=2 })
 
 	return cfe({ type="structure", value={role=role_cfe, permissions=permissions_cfe} })

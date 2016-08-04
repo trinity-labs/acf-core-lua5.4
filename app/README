@@ -16,7 +16,7 @@ Create a Makefile that describes the the following:
 
  * what files should be installed on the running system
 
- * what additional files should be included in the distribution package 
+ * what additional files should be included in the distribution package
    (tar.gz source package). The Makefile and acf-pkg.mk wil automatically be
    added so only extra files like README and ChangeLog needs to be specified
    here.

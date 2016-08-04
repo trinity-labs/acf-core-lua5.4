@@ -137,7 +137,7 @@ local load_database = function(self)
 		complete = true
 	end
 end
-	
+
 local get_id = function(self, userid)
 	if not authstruct[userid] then
 		parse_entry(userid, auth.read_entry(self, mymodule.usertable, "", userid))
@@ -150,7 +150,7 @@ end
 --	true if password matches or
 --	false if password does not match
 local verify_password = function(plaintext, pwhash)
-	--[[ 
+	--[[
 	from man crypt(3):
 
 	If  salt is a character string starting with the characters "$id$" fol-
@@ -175,7 +175,7 @@ local verify_password = function(plaintext, pwhash)
 		return (pwhash == posix.crypt(plaintext, algo_salt))
 	end
 	-- fall back to old style md5 checksum
-	return (pwhash == md5.sumhexa(plaintext))	
+	return (pwhash == md5.sumhexa(plaintext))
 end
 
 local b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789./"
@@ -185,7 +185,7 @@ local mksalt = function()
 	local str = ""
 	if file == nil then return nil end
 	for i = 1,16 do
-		local offset = (string.byte(file:read(1)) % 64) + 1 
+		local offset = (string.byte(file:read(1)) % 64) + 1
 		str = str .. string.sub (b64, offset, offset)
 	end
 	return "$6$"..str.."$"
@@ -218,7 +218,7 @@ mymodule.authenticate = function(self, userid, password)
 		errtxt = "Invalid parameter"
 	else
 		local id = get_id(self, userid)
-		
+
 		if not id then
 			errtxt = "Userid not found"
 		elseif not verify_password(password, id.password) then
@@ -285,7 +285,7 @@ mymodule.write_userinfo = function(self, userinfo)
 
 	return success
 end
-	
+
 mymodule.list_users = function (self)
 	auth = mymodule.get_subauth(self)
 	load_database(self)
@@ -298,7 +298,7 @@ end
 
 mymodule.delete_user = function (self, userid)
 	auth = mymodule.get_subauth(self)
-	authstruct[userid] = nil	
+	authstruct[userid] = nil
 	return auth.delete_entry(self, mymodule.usertable, "", userid)
 end
 

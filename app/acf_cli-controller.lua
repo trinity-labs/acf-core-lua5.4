@@ -43,7 +43,7 @@ mymodule.handle_clientdata = function(form, clientdata, group)
 			value.value = (clientdata[name] == "true")
 		elseif value.type == "multi" or value.type == "list" then
 			-- for cli we use name[num] as the name
-			local temp = {} 
+			local temp = {}
 			for n,val in pairs(clientdata) do
 				if string.find(n, "^"..name.."%[%d+%]$") then
 					temp[tonumber(string.match(n, "%[(%d+)%]$"))] = val

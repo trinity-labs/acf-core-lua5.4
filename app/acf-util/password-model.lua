@@ -10,10 +10,10 @@ local weak_password = function(password)
 	-- If password is too short, return false
 	if (#password < 4) then
 		return true, "Password is too short!"
-	end	
+	end
 	if (tonumber(password)) then
 		return true, "Password can't contain only numbers!"
-	end	
+	end
 
 	return false, nil
 end
@@ -49,7 +49,7 @@ end
 
 local function get_blank_user(self)
 	local result = cfe({ type="group", value={}, label="User Account" })
-	
+
 	if not avail_roles then
 		avail_roles = roles.list_all_roles(self)
 		for x,role in ipairs(avail_roles) do
@@ -59,7 +59,7 @@ local function get_blank_user(self)
 			end
 		end
 	end
-	
+
 	-- Call into skins controller to get the list of skins
 	if not avail_skins then
 		avail_skins = {""}
@@ -123,7 +123,7 @@ end
 
 function mymodule.update_user(self, settings, submit, create)
 	local success, settings = validate_settings(settings, create)
-	
+
 	if success then
 		local userinfo = authenticator.get_userinfo(self, settings.value.userid.value)
 		if userinfo and create then
@@ -182,7 +182,7 @@ end
 
 function mymodule.read_user_without_roles(self, clientdata)
 	local result = mymodule.read_user(self, clientdata)
-	
+
 	-- We don't allow a user to modify his own roles
 	-- Since they can't modify roles, we should restrict the available options for home
 	result.value.home.option = {""}
@@ -203,7 +203,7 @@ function mymodule.get_users(self)
 	local users = {}
 	local userlist = authenticator.list_users(self)
 	table.sort(userlist)
-	
+
 	for x,user in pairs(userlist) do
 		users[#users+1] = get_user(self, user)
 	end

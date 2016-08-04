@@ -50,7 +50,7 @@ mymodule.read_field = function(self, tabl, field)
 			end
 		end
 		return row
-	else	
+	else
 		return nil
 	end
 end
@@ -106,7 +106,7 @@ mymodule.delete_entry = function (self, tabl, field, id)
 		return false
 	end
 	local result = false
-	
+
 	local passwd_path = self.conf.confdir .. field .. tabl
 	local passwdfilecontent = fs.read_file_as_array(passwd_path) or {}
 	local output = {}
@@ -117,7 +117,7 @@ mymodule.delete_entry = function (self, tabl, field, id)
 			result = true
 		end
 	end
-	
+
 	--Save the updated table
 	if result == true then
 		fs.write_file(passwd_path, table.concat(output,"\n"))
