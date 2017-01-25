@@ -250,7 +250,7 @@ function mymodule.displayformstart(myform, page_info)
 		myform.action = page_info.script .. page_info.prefix .. page_info.controller .. "/" .. page_info.action
 	end
 	mymodule.displayinfo(myform)
-	io.write('<form action="' .. html.html_escape(myform.action) .. '" ')
+	io.write('<form action="' .. html.html_escape(myform.action) .. '" id="' .. html.html_escape(myform.id or page_info.action) .. '" ')
 	if myform.enctype and myform.enctype ~= "" then
 		io.write('enctype="'..html.html_escape(myform.enctype)..'" ')
 	end
