@@ -125,14 +125,22 @@ function mymodule.displayitem(myitem, page_info, header_level, name, group)
 		mymodule.displayformitem(myitem, name, header_level, group)
 	elseif myitem.type ~= "hidden" then
 		if myitem.errtxt then
-			myitem.class = "error"
+			if myitem.class then
+				myitem.class = myitem.class.." error"
+			else
+				myitem.class = "error"
+			end
 		end
 		header_level = mymodule.displayitemstart(myitem, page_info, header_level)
 		if 0 <= header_level then
 			io.write(html.html_escape(myitem.label))
 		end
 		mymodule.displayitemmiddle(myitem, page_info, header_level)
-		io.write("<p>"..string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>") .. "</p>\n")
+		class = ""
+		if myitem.class then
+			class = ' class="'..html.html_escape(myitem.class)..'"'
+		end
+		io.write("<p"..class..">"..string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>") .. "</p>\n")
 		mymodule.displayitemend(myitem, page_info, header_level)
 	end
 end
@@ -142,7 +150,11 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 	myitem.name = name or myitem.name or ""
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
 	if myitem.errtxt then
-		myitem.class = "error"
+		if myitem.class then
+			myitem.class = myitem.class.." error"
+		else
+			myitem.class = "error"
+		end
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		-- Set the id so the label 'for' can point to it
