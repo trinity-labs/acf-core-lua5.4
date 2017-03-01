@@ -89,7 +89,22 @@ mymodule.setpermissions = function(self, permissions, action, newrole)
 	end
 	-- Try to set the value
 	if result==true then
-		result, permissions.value.role.errtxt = roles.set_role_perm(self, permissions.value.role.value, nil, permissions.value.permissions.value)
+		-- Remove the default permissions
+		local reversepermissions = {}
+		for i,p in ipairs(permissions.value.permissions.value) do
+			reversepermissions[p] = i
+		end
+		for i,p in ipairs(permissions.value.permissions.option) do
+			if p.disabled then
+				reversepermissions[p.value] = nil
+			end
+		end
+		local permissionstable = {}
+		for p in pairs(reversepermissions) do
+			permissionstable[#permissionstable+1] = p
+		end
+
+		result, permissions.value.role.errtxt = roles.set_role_perm(self, permissions.value.role.value, nil, permissionstable)
 		if not result then
 			permissions.errtxt = "Failed to save role"
 		end
