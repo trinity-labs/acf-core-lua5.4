@@ -140,7 +140,11 @@ function mymodule.displayitem(myitem, page_info, header_level, name, group)
 		if myitem.class then
 			class = ' class="'..html.html_escape(myitem.class)..'"'
 		end
-		io.write("<p"..class..">"..string.gsub(html.html_escape(tostring(myitem.value)), "\n", "<br/>") .. "</p>\n")
+		local value = tostring(myitem.value)
+		if type(myitem.value) == "table" then
+			value = table.concat(myitem.value, "\n")
+		end
+		io.write("<p"..class..">"..string.gsub(html.html_escape(value), "\n", "<br/>") .. "</p>\n")
 		mymodule.displayitemend(myitem, page_info, header_level)
 	end
 end
