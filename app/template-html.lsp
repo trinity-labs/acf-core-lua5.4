@@ -22,6 +22,7 @@ if pageinfo.skinned ~= "false" and viewlibrary and viewlibrary.dispatch_componen
 end
 %>
 
+
 <!DOCTYPE html>
 <!--[if IE 6]> <html class="ie6"> <![endif]-->
 <!--[if IE 7]> <html class="ie7"> <![endif]-->
