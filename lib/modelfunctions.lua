@@ -155,8 +155,16 @@ function mymodule.validateselect(select)
 	for i,option in ipairs(select.option) do
 		if type(option) == "string" and option == select.value then
 			return true
-		elseif type(option) == "table" and option.value == select.value then
+		elseif type(option.value) == "string" and option.value == select.value then
 			return true
+		elseif type(option.value) == "table" then
+			for j,opt in ipairs(option.value) do
+				if type(opt) == "string" and opt == select.value then
+					return true
+				elseif type(opt.value) == "string" and opt.value == select.value then
+					return true
+				end
+			end
 		end
 	end
 	select.errtxt = "Invalid selection"
@@ -168,8 +176,16 @@ function mymodule.validatemulti(multi)
 	for i,option in ipairs(multi.option) do
 		if type(option) == "string" then
 			reverseoption[option] = i
-		else
+		elseif (type(option.value) == "string") then
 			reverseoption[option.value] = i
+		elseif (type(option.value) == "table") then
+			for j,opt in ipairs(option.value) do
+				if type(opt) == "string" then
+					reverseoption[opt] = i
+				elseif (type(opt.value) == "string") then
+					reverseoption[opt.value] = i
+				end
+			end
 		end
 	end
 	for i,value in ipairs(multi.value) do

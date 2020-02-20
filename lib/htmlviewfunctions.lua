@@ -3,21 +3,29 @@ local mymodule = {}
 html = require("acf.html")
 session = require("session")
 
+local function searchoption(option, value)
+	for x,val in ipairs(option) do
+		local v,l
+		if type(val) == "string" then
+			v = val
+			l = val
+		elseif type(val.value) == "string" then
+			v = val.value
+			l = val.label
+		elseif type(val.value) == "table" then
+			l = searchoption(val.value, value)
+			if l then return l end
+		end
+		if v == value then
+			return l
+		end
+	end
+end
+
 local function getlabel(myitem, value)
 	if myitem and (myitem.type == "select" or myitem.type == "multi") then
-		for x,val in ipairs(myitem.option) do
-			local v,l
-			if type(val) == "string" then
-				v = val
-				l = val
-			else
-				v = val.value
-				l = val.label
-			end
-			if v == value then
-				return l
-			end
-		end
+		local label = searchoption(myitem.option, value)
+		if label then return label end
 	end
 	return tostring(value)
 end
@@ -197,7 +205,7 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 			if type(val) == "string" then
 				v = val
 				l = val
-			else
+			elseif type(val.value) == "string" then
 				v = val.value
 				l = val.label
 				myitem.disabled = val.disabled
@@ -240,14 +248,8 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 		myitem.value = tempval
 	elseif myitem.type == "select" and myitem.readonly then
 		local tempval = myitem.value
-		if myitem.option and myitem.option[1] and type(myitem.option[1]) == "table" then
-			for i,o in ipairs(myitem.option) do
-				if tempval == o.value then
-					myitem.value = o.label
-					break
-				end
-			end
-		end
+		local label = searchoption(myitem.option, myitem.value)
+		if label then myitem.value = label end
 		io.write((html.form.text(myitem) or ""))
 		myitem.value = tempval
 	elseif html.form[myitem.type] then
