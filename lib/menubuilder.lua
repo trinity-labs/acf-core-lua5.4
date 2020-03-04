@@ -40,23 +40,28 @@ local parse_menu_line = function (line)
 			result = {}
 			result.cat, result.cat_prio = parse_menu_entry(item[1])
 			if (item[2]) then result.group, result.group_prio = parse_menu_entry(item[2]) end
-			if (item[3]) then result.tab = parse_menu_entry(item[3]) end
+			if (item[3]) then result.tab, result.tab_prio = parse_menu_entry(item[3]) end
 			if (item[4]) then result.action = parse_menu_entry(item[4]) end
 		end
 	end
 	return result
 end
 
--- Function to compare priorities, missing priority moves to the front, same priority sorted alphabetically
-local prio_compare = function(x,y)
-	if x.priority == y.priority then
-		if x.name < y.name then return true end
-		return false
+-- Function to sort by priority, missing priority moves to the end, same priority maintains initial order
+local sort_by_prio = function(tab)
+	local reversetab = {}
+	for i,t in ipairs(tab) do
+		reversetab[t.name] = i
 	end
-	if nil == x.priority then return true end
-	if nil == y.priority then return false end
-	if tonumber(x.priority) < tonumber(y.priority) then return true end
-	return false
+	prio_compare = function(x,y)
+		if x.priority == y.priority then
+			return reversetab[x.name] < reversetab[y.name]
+		end
+		if nil == x.priority then return false end
+		if nil == y.priority then return true end
+		return tonumber(x.priority) < tonumber(y.priority)
+	end
+	table.sort(tab, prio_compare)
 end
 
 -- returns a table of all the menu items found, sorted by priority
@@ -106,7 +111,8 @@ mymodule.get_menuitems = function (self)
 							local tab = { name = result.tab,
 								controller = controller,
 								prefix = prefix,
-								action = result.action }
+								action = result.action,
+								priority = result.tab_prio}
 							table.insert(group.tabs, tab)
 							if group.reversetabs[tab.name] then
 								-- Flag for two tabs of same name in different controllers
@@ -130,7 +136,7 @@ mymodule.get_menuitems = function (self)
 
 	-- Now that we have the entire menu, sort by priority
 	-- Categories first
-	table.sort(cats, prio_compare)
+	sort_by_prio(cats)
 
 	-- Then groups
 	for x, cat in ipairs(cats) do
@@ -185,9 +191,10 @@ mymodule.get_menuitems = function (self)
 				group.tabs = {}
 			end
 			group.reversetabs = nil -- don't need reverse table anymore
+			sort_by_prio(group.tabs)
 		end
 		cat.reversegroups = nil	-- don't need reverse table anymore
-		table.sort(cat.groups, prio_compare)
+		sort_by_prio(cat.groups)
 	end
 
 	return cats
