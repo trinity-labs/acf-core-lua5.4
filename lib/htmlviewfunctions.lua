@@ -102,6 +102,9 @@ function mymodule.displayitem(myitem, page_info, header_level, name, group)
 	page_info = page_info or {}
 	myitem.name = name or myitem.name or ""
 	if group and group ~= "" then myitem.name = group.."."..myitem.name end
+	if myitem.hidden then
+		myitem.type = "hidden"
+	end
 	if myitem.type == "form" or myitem.type == "link" then
 		header_level = mymodule.displaysectionstart(myitem, page_info, header_level)
 		mymodule.displayform(myitem, page_info, mymodule.incrementheader(header_level))
@@ -167,6 +170,9 @@ function mymodule.displayformitem(myitem, name, header_level, group)
 		else
 			myitem.class = "error"
 		end
+	end
+	if myitem.hidden then
+		myitem.type = "hidden"
 	end
 	if myitem.type ~= "hidden" and myitem.type ~= "group" then
 		-- Set the id so the label 'for' can point to it

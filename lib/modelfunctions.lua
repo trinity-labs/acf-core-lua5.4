@@ -22,7 +22,7 @@ function mymodule.getenabled(servicename)
 end
 
 function mymodule.get_startstop(servicename)
-	local service = cfe({ type="hidden", value=servicename, label="Service Name" })
+	local service = cfe({ hidden=true, value=servicename, label="Service Name" })
         local actions, descr = processinfo.daemon_actions(servicename)
 	local errtxt
 	if not actions then
