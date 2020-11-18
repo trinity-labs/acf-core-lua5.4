@@ -161,7 +161,15 @@ local redirect_to_referrer = function(self, result)
 	end
 	if result and not self.conf.component then
 		-- If we have a result, then we did something, so we might have to redirect
-		if not ENV.HTTP_REFERER then
+		if self.conf.orig_action then
+			local p = self.conf.orig_action:gsub("%%(%x%x)",
+				function(h) return string.char(tonumber(h, 16)) end )
+			local prefix, controller, action, extra = self.parse_redir_string(p)
+			if prefix ~= self.conf.prefix or controller ~= self.conf.controller or action ~= self.conf.action then
+				self.sessiondata[self.conf.action.."result"] = result
+				error({type="redir", prefix=prefix, controller=controller, action=action, extra=extra})
+			end
+		elseif not ENV.HTTP_REFERER then
 			-- If no referrer, we have a potential problem.
 			if not self.find_view(self.conf.appdir, self.conf.prefix, self.conf.controller, self.conf.action, self.conf.viewtype or "html") then
 				-- Action does not have view, so redirect to default action for this controller.
@@ -347,7 +355,7 @@ mymodule.exception_handler = function (self, message )
 			io.write ("Status: 302 Moved\n")
 			if message.type == "redir" then
 				io.write ("Location: " .. ENV["SCRIPT_NAME"] ..
-				  	message.prefix .. message.controller ..
+					message.prefix .. message.controller ..
 					"/" .. message.action ..
 					(message.extra or "" ) .. "\n")
 			elseif message.type == "dispatch" then
@@ -434,6 +442,12 @@ mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 	else
 		self.conf.viewtype = "html"
 	end
+
+	-- Check for component flag
+	if self.clientdata.component == "true" then
+		self.conf.component = true
+	end
+	self.conf.orig_action = self.clientdata.orig_action
 
 	-- Find the proper prefix/controller/action combo
 	local origconf = {}
@@ -535,7 +549,7 @@ mymodule.dispatch = function (self, userprefix, userctlr, useraction)
 		end
 	end
 
-	--self.logevent(self.conf.prefix..self.conf.controller.."/"..self.conf.action.." took"..os.difftime(os.time(), starttime))
+	--self.logevent(self.conf.prefix..self.conf.controller.."/"..self.conf.action.." took "..os.difftime(os.time(), starttime))
 
 	return viewtable
 end
@@ -550,7 +564,7 @@ mymodule.redirect = function (self, str, result)
 	if result then
 		self.sessiondata[self.conf.action.."result"] = result
 	end
-	local prefix, controller, action = self.parse_redir_string(str)
+	local prefix, controller, action, extra = self.parse_redir_string(str)
 	if prefix ~= "/" then self.conf.prefix = prefix end
 	if controller ~= "" then self.conf.controller = controller end
 
@@ -558,6 +572,7 @@ mymodule.redirect = function (self, str, result)
 		action = rawget(self.worker, "default_action") or ""
 	end
 	self.conf.action = action
+	self.conf.extra = extra
 	self.conf.type = "redir"
 	error(self.conf)
 end
@@ -565,8 +580,10 @@ end
 -- parse a "URI" like string into a prefix, controller and action
 -- this is the same as URI string, but opposite preference
 -- if only one is defined, it's assumed to be the action
-mymodule.parse_redir_string = function( str )
-	str = str or ""
+mymodule.parse_redir_string = function( orig_str )
+	str = orig_str or ""
+	extra = string.match(str, "%?.*") or ""
+	str = string.gsub(str, "%?.*", "")
 	str = string.gsub(str, "/+$", "")
 	local action = string.match(str, "[^/]+$") or ""
 	str = string.gsub(str, "/*[^/]*$", "")
@@ -578,7 +595,7 @@ mymodule.parse_redir_string = function( str )
 	else
 		prefix = "/"..prefix.."/"
 	end
-	return prefix, controller, action
+	return prefix, controller, action, extra
 end
 
 mymodule.logevent = function ( message )
@@ -676,6 +693,10 @@ mymodule.handle_form = function(self, getFunction, setFunction, clientdata, opti
 		if clientdata.redir then
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 		end
+		if clientdata.orig_action then
+			form.value.orig_action = cfe({ type="hidden", value=clientdata.orig_action, label="" })
+		end
+
 		if clientdata.redir and not form.errtxt then
 			-- If redirecting to a different action, change the value to a command result
 			local prefix, controller, action = self.parse_redir_string(clientdata.redir)
@@ -694,6 +715,10 @@ mymodule.handle_form = function(self, getFunction, setFunction, clientdata, opti
 		if clientdata.redir then
 			form.value.redir = cfe({ type="hidden", value=clientdata.redir, label="" })
 		end
+		if clientdata.orig_action then
+			form.value.orig_action = cfe({ type="hidden", value=clientdata.orig_action, label="" })
+		end
+
 		form = redirect_to_referrer(self) or form
 	end
 
